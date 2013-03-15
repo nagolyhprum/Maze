@@ -38,7 +38,7 @@ $(function() {
 					});
 				};
 			}
-			while(moves > 0) {
+			while(moves > 0 && character.statistics.health.current > 0) {
 				moves--;
 				var map = [], mg = new MazeGenerator(CONSTANTS.TILE.COLUMNS, CONSTANTS.TILE.ROWS);
 				map.columns = CONSTANTS.TILE.COLUMNS;
@@ -69,8 +69,7 @@ $(function() {
 						};
 					} else if(Math.abs(character.location.column - e.location.column) + 
 							  Math.abs(character.location.row - e.location.row) === 1) {
-						character.statistics.health.current--;
-						Sound.effect(character.sounds.die[Math.floor(character.sounds.die.length * Math.random())])
+						character.damage(1);
 						e.face(character.location.column, character.location.row);
 						action = function() {
 							e.slash(function() {
@@ -84,17 +83,9 @@ $(function() {
 							});
 						};
 					}
-				} else {			
-					var es = enemies;
-					action = function() {
-						e.die(function() {
-							es.splice(enemies.indexOf(e), 1);
-							items.events.invoke("drop");
-						});
-					};
 				}
 			}
-			action();
+			action && action();
 		}
 	}
 });

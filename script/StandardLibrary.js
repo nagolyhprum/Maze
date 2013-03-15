@@ -245,8 +245,7 @@ function Character(args) {
 	args.sounds = args.sounds || {};	
 	this.sounds = {
 		slash : args.sounds.slash || [],
-		die : args.sounds.die || [],
-		walk : args.sounds.walk || []
+		hurt : args.sounds.hurt || []
 	};
 };
 
@@ -284,8 +283,22 @@ Character.prototype.moves = function() {
 	return moves;
 };
 
+var WALK = [
+	"sound/walk/stepstone_1",
+	"sound/walk/stepstone_2",
+	"sound/walk/stepstone_3",
+	"sound/walk/stepstone_4",
+	"sound/walk/stepstone_5",
+	"sound/walk/stepstone_6",
+	"sound/walk/stepstone_7",
+	"sound/walk/stepstone_8"
+];
+
 Character.prototype.moveBy = function(horizontal, vertical, complete) {
 	var me = this;
+	Sound.effect(WALK[Math.floor(WALK.length * Math.random())], function() {
+		Sound.effect(WALK[Math.floor(WALK.length * Math.random())]);
+	});
 	this.tween.push({
 		init : function() {
 			me.location.x = -horizontal;
@@ -343,6 +356,32 @@ Character.prototype.face = function(column, row) {
 	}
 };
 
+var BLOOD = [
+	"sound/blood/blood1",
+	"sound/blood/blood2",
+	"sound/blood/blood3",
+	"sound/blood/blood4"
+];
+
+Character.prototype.damage = function(damage, complete) {
+	var health = this.statistics.health;
+	Sound.effect(BLOOD[Math.floor(BLOOD.length * Math.random())]);
+	new Blood({
+		location : {
+			x : CONSTANTS.START.X() + this.location.column * CONSTANTS.TILE.WIDTH + CONSTANTS.TILE.WIDTH / 2,
+			y : CONSTANTS.START.Y() + this.location.row * CONSTANTS.TILE.WIDTH + CONSTANTS.TILE.HEIGHT / 2
+		}
+	});
+	if(health.current > 0) {
+		Sound.effect(this.sounds.hurt[Math.floor(this.sounds.hurt.length * Math.random())]);
+		health.current -= damage;
+		if(health.current <= 0) {
+			var me = this;
+			this.die(complete);
+		}
+	}
+};
+
 Character.prototype.die = function(complete) {
 	var me = this;
 	this.tween.push({
@@ -354,7 +393,9 @@ Character.prototype.die = function(complete) {
 			return ++me.display.column !== me.active[0].columns;
 		},
 		interval : 100,
-		complete : complete
+		complete : function() {
+			complete && complete.call(me)
+		}
 	});
 };
 

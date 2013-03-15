@@ -8,10 +8,17 @@ $(function() {
 	attachEvent(canvas, "click", function(e) {
 		var bb = canvas.getBoundingClientRect();
 		canvas.events.invoke("click", [{ 
-			x : e.pageX - bb.left, 
-			y : e.pageY - bb.top
+			x : (e.pageX - bb.left) * (canvas.width / canvas.clientWidth), 
+			y : (e.pageY - bb.top) * (canvas.height / canvas.clientHeight)
 		}]);
 	});
+	
+	canvas.events.attach("click", function(location) {
+		Blood({
+			location : location
+		});
+	});
+	
 	var down = [];
 	attachEvent(canvas, "keydown", function(e) {
 		if(!down[e.which]) {

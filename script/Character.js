@@ -4,7 +4,7 @@ $(function() {
 	});
 	
 	canvas.events.attach("keydown", function(which) {
-		if(character.tween.isTweening()) return;
+		if(character.tween.isTweening() || character.statistics.health.current <= 0) return;
 		var moved = 1, l = {
 			column : character.location.column,
 			row : character.location.row,

@@ -48,7 +48,7 @@ var Server = (function() {
 		return new Character({
 			sounds : {
 				slash : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
-				die : [
+				hurt : [
 					"sound/grunts/grunt1",
 					"sound/grunts/grunt2",
 					"sound/grunts/grunt3",
@@ -65,12 +65,12 @@ var Server = (function() {
 			},
 			statistics : {
 				health : {
-					max : 10,
-					current : 10
+					max : 50,
+					current : 50
 				},
 				speed : {
-					current : 10,
-					max : 10
+					current : 25,
+					max : 25
 				}
 			},
 			display : { row : 2 },
@@ -89,6 +89,23 @@ var Server = (function() {
 					columns : 9, 
 					rows : 4, 
 					src : "walkcycle/TORSO_robe_shirt_brown.png"
+				})
+			],
+			hurt : [
+				new TileSet({
+					columns : 6, 
+					rows : 1, 
+					src : "hurt/BODY_male.png"
+				}),
+				new TileSet({
+					columns : 6, 
+					rows : 1, 
+					src : "hurt/LEGS_pants_greenish.png"
+				}),
+				new TileSet({
+					columns : 6, 
+					rows : 1, 
+					src : "hurt/TORSO_robe_shirt_brown.png"
 				})
 			],
 			attack : [
@@ -161,7 +178,7 @@ var Server = (function() {
 						},
 						sounds : {
 							slash : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
-							die : [
+							hurt : [
 								"sound/NPC/shade/shade1",
 								"sound/NPC/shade/shade2",
 								"sound/NPC/shade/shade3",
@@ -177,10 +194,9 @@ var Server = (function() {
 								"sound/NPC/shade/shade13",
 								"sound/NPC/shade/shade14",
 								"sound/NPC/shade/shade15"
-							],
-							walk : []
+							]
 						}
-					})/*,
+					}),
 					new Character({
 						walk : [new TileSet({
 							columns : 9, 
@@ -217,6 +233,26 @@ var Server = (function() {
 								current : 10,
 								max : 10
 							}
+						},
+						sounds : {
+							slash : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
+							hurt : [
+								"sound/NPC/shade/shade1",
+								"sound/NPC/shade/shade2",
+								"sound/NPC/shade/shade3",
+								"sound/NPC/shade/shade4",
+								"sound/NPC/shade/shade5",
+								"sound/NPC/shade/shade6",
+								"sound/NPC/shade/shade7",
+								"sound/NPC/shade/shade8",
+								"sound/NPC/shade/shade9",
+								"sound/NPC/shade/shade10",
+								"sound/NPC/shade/shade11",
+								"sound/NPC/shade/shade12",
+								"sound/NPC/shade/shade13",
+								"sound/NPC/shade/shade14",
+								"sound/NPC/shade/shade15"
+							]
 						}
 					}),
 					new Character({
@@ -255,8 +291,28 @@ var Server = (function() {
 								current : 10,
 								max : 10
 							}
+						},
+						sounds : {
+							slash : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
+							hurt : [
+								"sound/NPC/shade/shade1",
+								"sound/NPC/shade/shade2",
+								"sound/NPC/shade/shade3",
+								"sound/NPC/shade/shade4",
+								"sound/NPC/shade/shade5",
+								"sound/NPC/shade/shade6",
+								"sound/NPC/shade/shade7",
+								"sound/NPC/shade/shade8",
+								"sound/NPC/shade/shade9",
+								"sound/NPC/shade/shade10",
+								"sound/NPC/shade/shade11",
+								"sound/NPC/shade/shade12",
+								"sound/NPC/shade/shade13",
+								"sound/NPC/shade/shade14",
+								"sound/NPC/shade/shade15"
+							]
 						}
-					})*/
+					})
 				];
 			} else {
 				enemies[i] = [];
@@ -292,9 +348,7 @@ var Server = (function() {
 		for(var i = 0; i < es.length; i++) {
 			var l = es[i].location;
 			if(l.row === row && l.column === column) {				
-				es[i].statistics.health.current--;
-				Sound.effect(es[i].sounds.die[Math.floor(es[i].sounds.die.length * Math.random())]);
-				if(es[i].statistics.health.current <= 0) {
+				es[i].damage(1, function() {
 					(
 						roomItems[room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column] = 
 						roomItems[room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column] || []
@@ -313,8 +367,10 @@ var Server = (function() {
 								row : Math.floor(Math.random() * 3)
 							}
 						}
-					}));
-				}
+					}));					
+					es.splice(es.indexOf(this), 1);
+					items.events.invoke("drop");
+				});
 			}
 		}
 	};
