@@ -1,13 +1,85 @@
-var attachEvent = (function() {
-	return function(ele, name, evt) {
-		if(ele.addEventListener) {
-			ele.addEventListener(name, evt, false);
-		} else if(ele.attachEvent) {
-			ele.attachEvent("on" + name, evt);
-		} else {
-			ele["on" + name] = evt;
+function attachEvent(ele, name, evt) {
+	if(ele.addEventListener) {
+		ele.addEventListener(name, evt, false);
+	} else if(ele.attachEvent) {
+		ele.attachEvent("on" + name, evt);
+	} else {
+		ele["on" + name] = evt;
+	}
+};
+
+function detachEvent(element, eventName, handler) {
+	if (element.addEventListener) {
+		element.removeEventListener(eventName, handler, false);
+	} else if (element.detachEvent) {
+		element.detachEvent('on' + eventName, handler);
+	} else {
+		element['on' + eventName] = null;
+	}
+}
+
+var Sound = (function() {	
+	var a = new Audio(), supported = [], cache = {}, S = {};
+	if(a.canPlayType) {
+		if(a.canPlayType('audio/mpeg;').replace("no", "")) {
+			supported.push(".mp3");
 		}
+		if(a.canPlayType('audio/wav;').replace("no", "")) {
+			supported.push(".wav");
+		}
+		if(a.canPlayType('audio/ogg;').replace("no", "")) {
+			supported.push(".ogg");
+		}
+	}
+	
+	S.effect = function (src, complete) {
+		var c = cache[src];
+		if(!c) {
+			c = cache[src] = [];
+		}
+		var a, index = 0;		
+		for(var i = 0; i < c.length && !a; i++) {
+			if(c[i].paused && c[i].canplay) {
+				a = c[i];
+			}
+		}
+		if(!a) {
+			a = new Audio();
+			a.autoplay = true;
+			c.push(a);
+			attachEvent(a, "canplaythrough", function() {
+				this.canplay = true;	
+			});			
+			a.src = S.root + src + supported[index++];
+			attachEvent(a, "error", function() {
+				if(index < supported.length) {
+					a.src = S.root + src + supported[index++];
+				}
+			});		
+		} else {
+			a.play();
+		}
+		var f = function() { complete && complete(); detachEvent(this, "ended", f); };
+		attachEvent(a, "ended", f);
+		return function() {
+			a.autoplay = false;
+			a.pause();						
+		};
 	};
+	
+	S.music = function(src) {
+		var stopper, f = function() {
+			stopper = Sound.effect(src, f);
+		};
+		f();
+		return function() {
+			stopper();
+		};
+	};
+	
+	S.root = "./";
+	
+	return S;
 }());
 
 var loadImage = (function() {
@@ -167,6 +239,15 @@ function Character(args) {
 		column : args.display.column || 0
 	};
 	this.statistics = new Statistics(args.statistics);
+	
+	//SOUND
+	
+	args.sounds = args.sounds || {};	
+	this.sounds = {
+		slash : args.sounds.slash || [],
+		die : args.sounds.die || [],
+		walk : args.sounds.walk || []
+	};
 };
 
 Character.prototype.draw = function(ctx) {
@@ -226,6 +307,7 @@ Character.prototype.moveBy = function(horizontal, vertical, complete) {
 
 Character.prototype.slash = function(complete) {
 	var me = this, column = -1;
+	Sound.effect(this.sounds.slash[Math.floor(this.sounds.slash.length * Math.random())]);
 	this.tween.push({
 		init : function() {
 			me.display.column = 0;
@@ -292,6 +374,11 @@ function Item(args) {
 	this.y = args.y || 0;
 	this.image = new TileSet(args.image);
 	this.statistics = new Statistics(args.statistics);
+	
+	args.sounds = args.sounds || {};
+	this.sounds = {
+		move : args.sounds.move || []
+	};
 }
 
 Item.prototype.draw = function(context) {

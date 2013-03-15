@@ -46,6 +46,23 @@ var Server = (function() {
 	
 	Server.getCharacter = function() {
 		return new Character({
+			sounds : {
+				slash : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
+				die : [
+					"sound/grunts/grunt1",
+					"sound/grunts/grunt2",
+					"sound/grunts/grunt3",
+					"sound/grunts/grunt4",
+					"sound/grunts/grunt5",
+					"sound/grunts/grunt6",
+					"sound/grunts/grunt7",
+					"sound/grunts/grunt8",
+					"sound/grunts/grunt9",
+					"sound/grunts/grunt10",
+					"sound/grunts/grunt11"
+				],
+				walk : []
+			},
 			statistics : {
 				health : {
 					max : 10,
@@ -141,6 +158,27 @@ var Server = (function() {
 								current : 10,
 								max : 10
 							}
+						},
+						sounds : {
+							slash : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
+							die : [
+								"sound/NPC/shade/shade1",
+								"sound/NPC/shade/shade2",
+								"sound/NPC/shade/shade3",
+								"sound/NPC/shade/shade4",
+								"sound/NPC/shade/shade5",
+								"sound/NPC/shade/shade6",
+								"sound/NPC/shade/shade7",
+								"sound/NPC/shade/shade8",
+								"sound/NPC/shade/shade9",
+								"sound/NPC/shade/shade10",
+								"sound/NPC/shade/shade11",
+								"sound/NPC/shade/shade12",
+								"sound/NPC/shade/shade13",
+								"sound/NPC/shade/shade14",
+								"sound/NPC/shade/shade15"
+							],
+							walk : []
 						}
 					})/*,
 					new Character({
@@ -255,11 +293,15 @@ var Server = (function() {
 			var l = es[i].location;
 			if(l.row === row && l.column === column) {				
 				es[i].statistics.health.current--;
+				Sound.effect(es[i].sounds.die[Math.floor(es[i].sounds.die.length * Math.random())]);
 				if(es[i].statistics.health.current <= 0) {
 					(
 						roomItems[room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column] = 
 						roomItems[room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column] || []
 					).push(new Item({
+						sounds : {
+							move : ["sound/inventory/coin"]
+						},
 						x : canvas.width / 2 - CONSTANTS.WIDTH() / 2 + column * CONSTANTS.TILE.WIDTH,
 						y : canvas.height / 2 - CONSTANTS.HEIGHT() / 2 + row * CONSTANTS.TILE.HEIGHT,
 						image : {							

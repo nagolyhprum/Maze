@@ -1,4 +1,7 @@
 $(function() {
+	Sound.root = "audio/";
+	Sound.music("music/dungeon");
+
 	canvas = $("#screen")[0];
 	canvas.events = new EventHandler();
 	context = canvas.getContext("2d");
