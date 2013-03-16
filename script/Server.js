@@ -347,12 +347,10 @@ var Server = (function() {
 		}
 		for(var i = 0; i < es.length; i++) {
 			var l = es[i].location;
-			if(l.row === row && l.column === column) {				
+			if(l.row === row && l.column === column) {
+				var thisRoom = room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column;
 				es[i].damage(1, function() {
-					(
-						roomItems[room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column] = 
-						roomItems[room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column] || []
-					).push(new Item({
+					(roomItems[thisRoom] = roomItems[thisRoom] || []).push(new Item({
 						sounds : {
 							move : ["sound/inventory/coin"]
 						},

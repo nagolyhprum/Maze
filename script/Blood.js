@@ -16,6 +16,10 @@ var Blood = (function() {
 				velocity : {
 					x : Math.cos(rad) * speed,
 					y : Math.sin(rad) * speed
+				},
+				room : {
+					column : room.location.column,
+					row : room.location.row
 				}
 			});
 		}
@@ -28,11 +32,14 @@ var Blood = (function() {
 				var p = particles[i], l = p.location, v = p.velocity;			
 				if(Math.abs(v.x) + Math.abs(v.y) < 1 || l.x <= CONSTANTS.START.X() || l.y <= CONSTANTS.START.Y() || l.x >= CONSTANTS.START.X() + stains_canvas.width || l.y >= CONSTANTS.START.Y() + stains_canvas.height) {
 					particles.splice(i, 1);
-					stains_context.fillStyle = p.color;
-					stains_context.fillRect(l.x - CONSTANTS.START.X(), l.y - CONSTANTS.START.Y(), p.size, p.size);
+					var temp = stains[p.room.row][p.room.column].getContext("2d");
+					temp.fillStyle = p.color;
+					temp.fillRect(l.x - CONSTANTS.START.X(), l.y - CONSTANTS.START.Y(), p.size, p.size);
 				} else {
-					context.fillStyle = p.color;
-					context.fillRect(l.x, l.y, p.size, p.size);
+					if(p.room.column === room.location.column && p.room.row === room.location.row) {
+						context.fillStyle = p.color;
+						context.fillRect(l.x, l.y, p.size, p.size);
+					}
 					l.x += v.x;
 					l.y += v.y;
 					v.x /= 1.1;
