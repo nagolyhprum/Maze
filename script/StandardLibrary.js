@@ -6,7 +6,7 @@ function attachEvent(ele, name, evt) {
 	} else {
 		ele["on" + name] = evt;
 	}
-};
+}
 
 function detachEvent(element, eventName, handler) {
 	if (element.addEventListener) {
@@ -81,6 +81,9 @@ var Sound = (function() {
 	
 	return S;
 }());
+
+Sound.root = "audio/";
+Sound.music("music/dungeon");
 
 var loadImage = (function() {
 	var images = {}, events = {};
@@ -226,6 +229,8 @@ function Character(args) {
 	this.hurt = args.hurt || [];
 	this.active = this.walk;
 	this.id = args.id;
+	this.name = args.name;
+	this.face = args.face;
 	args.location = args.location || {};
 	this.location = {
 		column : args.location.column || 0,
@@ -296,9 +301,7 @@ var WALK = [
 
 Character.prototype.moveBy = function(horizontal, vertical, complete) {
 	var me = this;
-	Sound.effect(WALK[Math.floor(WALK.length * Math.random())], function() {
-		Sound.effect(WALK[Math.floor(WALK.length * Math.random())]);
-	});
+	Sound.effect(WALK[Math.floor(WALK.length * Math.random())]);
 	this.tween.push({
 		init : function() {
 			me.location.x = -horizontal;

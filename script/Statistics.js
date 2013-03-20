@@ -1,11 +1,13 @@
 $(function() {
-	var stats = "",
-		sx = canvas.width / 2 - CONSTANTS.WIDTH() / 2,
-		sy = canvas.height / 2 - CONSTANTS.HEIGHT() / 2;
+	var statistics = $("#ui #statistics")[0], ih = "<div class='title'>Statistics</div>";
+	ih += "<div id='name'><span>" + character.name + "</span></div>";
+	ih += "<div id='image'><img src='" + character.face + "' alt='?' /></div>";
 	for(var i in character.statistics) {
-		if(stats) {
-			stats += "\n";
-		}
-		stats += i + " " + character.statistics[i].current + " / " + character.statistics[i].max;		
+		ih += "<div class='stat' class='" + i + "'>";
+			ih += "<div class='name'>" + i[0].toUpperCase() + i.substring(1) + "</div>";
+			ih += "<div class='max'>" + character.statistics[i].max + "</div>";		
+			ih += "<div class='current'>" + character.statistics[i].current + "</div>";
+		ih += "</div>";
 	}
+	statistics.innerHTML = ih;
 })

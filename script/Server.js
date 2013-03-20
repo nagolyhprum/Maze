@@ -1,6 +1,5 @@
 var Server = (function() {
-	function Server() {
-	}
+	var Server = {};
 	
 	Server.getTiles = function() {
 		var r = [], s;
@@ -46,6 +45,8 @@ var Server = (function() {
 	
 	Server.getCharacter = function() {
 		return new Character({
+			face : "images/face/FlareMaleHero1.png",
+			name : "Logan",
 			sounds : {
 				slash : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
 				hurt : [

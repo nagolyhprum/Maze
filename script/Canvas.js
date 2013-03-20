@@ -1,7 +1,4 @@
 $(function() {
-	Sound.root = "audio/";
-	Sound.music("music/dungeon");
-
 	canvas = $("#screen")[0];
 	canvas.events = new EventHandler();
 	context = canvas.getContext("2d");
@@ -11,12 +8,6 @@ $(function() {
 			x : (e.pageX - bb.left) * (canvas.width / canvas.clientWidth), 
 			y : (e.pageY - bb.top) * (canvas.height / canvas.clientHeight)
 		}]);
-	});
-	
-	canvas.events.attach("click", function(location) {
-		Blood({
-			location : location
-		});
 	});
 	
 	var down = [];
@@ -32,15 +23,6 @@ $(function() {
 		down[e.which] = 0;
 		e.preventDefault();
 	});
-	
-	function frame() {
-		tick();
-		requestAnimFrame(frame);
-		if(background && background.complete) {
-			context.drawImage(background, 0, 0, canvas.width, canvas.height);
-		}
-		canvas.events.invoke("draw");
-	}
 		
 	var tick = (function() {
 		window.setTimeout = function(f, t) {
@@ -107,5 +89,14 @@ $(function() {
 		};		
 	}());
 	
-	frame();
+	function frame() {
+		requestAnimFrame(frame);
+		tick();
+		if(background && background.complete) {
+			context.drawImage(background, 0, 0, canvas.width, canvas.height);
+		}
+		canvas.events.invoke("draw");
+	}
+	
+	//frame();
 });
