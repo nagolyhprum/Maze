@@ -2,7 +2,7 @@ var Blood = (function() {
 	function Blood(obj) { //location must be defined
 		var count = obj.count || 500,
 			colors = obj.colors || BLOOD_RED,
-			max_speed = obj.speed || 10,
+			max_speed = obj.speed || 50,
 			size = obj.size || 5;
 		for(var i = 0; i < count; i++) {
 			var rad = 2 * Math.PI * Math.random(), speed = Math.random() * max_speed;
@@ -42,8 +42,8 @@ var Blood = (function() {
 					}
 					l.x += v.x;
 					l.y += v.y;
-					v.x /= 1.1;
-					v.y /= 1.1;
+					v.x /= 2;
+					v.y /= 2;
 				}
 			}
 			context.drawImage(stains_canvas, CONSTANTS.START.X(), CONSTANTS.START.Y());

@@ -98,5 +98,5 @@ $(function() {
 		canvas.events.invoke("draw");
 	}
 	
-	//frame();
+	frame();
 });

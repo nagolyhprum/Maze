@@ -45,7 +45,7 @@ var Server = (function() {
 	
 	Server.getCharacter = function() {
 		return new Character({
-			face : "images/face/FlareMaleHero1.png",
+			portrait : "images/face/FlareMaleHero1.png",
 			name : "Logan",
 			sounds : {
 				slash : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
@@ -355,8 +355,12 @@ var Server = (function() {
 						sounds : {
 							move : ["sound/inventory/coin"]
 						},
-						x : canvas.width / 2 - CONSTANTS.WIDTH() / 2 + column * CONSTANTS.TILE.WIDTH,
-						y : canvas.height / 2 - CONSTANTS.HEIGHT() / 2 + row * CONSTANTS.TILE.HEIGHT,
+						portrait : "images/items/" + randomItem() + ".png",
+						id : 1,
+						location : {							
+							column : column,
+							row : row
+						},
 						image : {							
 							rows : 3,
 							columns : 5,
@@ -373,6 +377,17 @@ var Server = (function() {
 			}
 		}
 	};
+	
+	function randomItem() {
+		var weight = ["cloth", "hide", "leather", "chain", "steel"],
+			part = ["head", "feet", "hands", "legs", "chest"],
+			item = "cloth-head";
+			
+		while(item === "cloth-head") {
+			item = weight[Math.floor(Math.random() * weight.length)] + "-" + part[Math.floor(Math.random() * part.length)];
+		}
+		return item;
+	}
 	
 	var roomItems = [];
 	

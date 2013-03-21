@@ -230,7 +230,7 @@ function Character(args) {
 	this.active = this.walk;
 	this.id = args.id;
 	this.name = args.name;
-	this.face = args.face;
+	this.portrait = args.portrait;
 	args.location = args.location || {};
 	this.location = {
 		column : args.location.column || 0,
@@ -414,11 +414,15 @@ Character.prototype.wait = function(complete) {
 
 function Item(args) {
 	args = args || {};
-	this.x = args.x || 0;
-	this.y = args.y || 0;
+	args.location = args.location || {};
+	this.location = {
+		row : args.location.row,
+		column : args.location.column
+	};
+	this.portrait = args.portrait;
 	this.image = new TileSet(args.image);
 	this.statistics = new Statistics(args.statistics);
-	
+	this.id = args.id;
 	args.sounds = args.sounds || {};
 	this.sounds = {
 		move : args.sounds.move || []
@@ -426,5 +430,12 @@ function Item(args) {
 }
 
 Item.prototype.draw = function(context) {
-	this.image.draw(context, this.x, this.y, CONSTANTS.TILE.WIDTH, CONSTANTS.TILE.HEIGHT);
+	var canvas = context.canvas;
+	this.image.draw(
+		context, 
+		canvas.width / 2 - CONSTANTS.WIDTH() / 2 + this.location.column * CONSTANTS.TILE.WIDTH, 
+		canvas.height / 2 - CONSTANTS.HEIGHT() / 2 + this.location.row * CONSTANTS.TILE.HEIGHT, 
+		CONSTANTS.TILE.WIDTH, 
+		CONSTANTS.TILE.HEIGHT
+	);
 };

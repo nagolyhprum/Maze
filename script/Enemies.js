@@ -48,8 +48,10 @@ $(function() {
 				}
 				for(var i = 0; i < enemies.length; i++) {
 					if(e !== enemies[i]) {
-						var obs = enemies[i].location;
-						map[obs.column + obs.row * CONSTANTS.TILE.COLUMNS] = CONSTANTS.WALL.ALL;
+						if(enemies[i].statistics.health.current > 0) {
+							var obs = enemies[i].location;
+							map[obs.column + obs.row * CONSTANTS.TILE.COLUMNS] = CONSTANTS.WALL.ALL;
+						}
 					}
 				}
 				if(e.statistics.health.current > 0) {
