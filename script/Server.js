@@ -351,11 +351,13 @@ var Server = (function() {
 			if(l.row === row && l.column === column) {
 				var thisRoom = room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column;
 				es[i].damage(1, function() {
+					var item = randomItem();
 					(roomItems[thisRoom] = roomItems[thisRoom] || []).push(new Item({
 						sounds : {
 							move : ["sound/inventory/coin"]
 						},
-						portrait : "images/items/" + randomItem() + ".png",
+						type : item[1],
+						portrait : "images/items/" + item[0] + "-" + item[1] + ".png",
 						id : 1,
 						location : {							
 							column : column,
@@ -381,10 +383,11 @@ var Server = (function() {
 	function randomItem() {
 		var weight = ["cloth", "hide", "leather", "chain", "steel"],
 			part = ["head", "feet", "hands", "legs", "chest"],
-			item = "cloth-head";
+			item = ["cloth", "head"];
 			
-		while(item === "cloth-head") {
-			item = weight[Math.floor(Math.random() * weight.length)] + "-" + part[Math.floor(Math.random() * part.length)];
+		while(item[0] === "cloth" && item[1] === "head") {
+			item[0] = weight[Math.floor(Math.random() * weight.length)]
+			item[1] = part[Math.floor(Math.random() * part.length)];			
 		}
 		return item;
 	}

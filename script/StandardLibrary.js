@@ -1,3 +1,7 @@
+String.prototype.endsWith = function(suffix) {
+    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+};
+
 function attachEvent(ele, name, evt) {
 	if(ele.addEventListener) {
 		ele.addEventListener(name, evt, false);
@@ -419,6 +423,7 @@ function Item(args) {
 		row : args.location.row,
 		column : args.location.column
 	};
+	this.type = args.type;
 	this.portrait = args.portrait;
 	this.image = new TileSet(args.image);
 	this.statistics = new Statistics(args.statistics);

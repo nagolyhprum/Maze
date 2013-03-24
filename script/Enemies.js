@@ -15,7 +15,7 @@ $(function() {
 	character.events.attach("trymove", function(l) {
 		for(var i = 0; i < enemies.length; i++) {
 			var e = enemies[i];
-			if(l.row === e.location.row && l.column === e.location.column) {
+			if(l.row === e.location.row && l.column === e.location.column && e.statistics.health.current > 0) {
 				l.collides = true;
 			}
 		}

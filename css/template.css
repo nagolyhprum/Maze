@@ -20,7 +20,6 @@ canvas {
 #equipment {
 	top : 50px;
 	right : 500px;
-	display : none;
 }
 
 #statistics #name, #statistics #image {
@@ -201,6 +200,15 @@ canvas {
 	padding : 0;
 }
 
+#equipment .item img {
+	width : 100%;
+	height : 100%;
+}
+
+#equipment .item img[data-id="0"] {
+	display : none;
+}
+
 #equipment #neck {
 	top : 32px;
 	left : 50%;
@@ -299,4 +307,14 @@ canvas {
 	top : 0;
 	left : 0;
 	z-index : -1;
+	background : gray;
+	cursor : pointer;
+}
+
+#context > div > div {
+	padding : 5px;
+}
+
+#context > div > div:hover {
+	background : lightgray;
 }

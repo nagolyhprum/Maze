@@ -11,9 +11,14 @@ $(function() {
 		ih += "</div>";
 	}
 	
+	
+	//I need to make sure there is an item
+	//property for items being held before 
+	//the game was loaded
 	function pickUpItem(item) {
 		var slot = $("[data-id='0']")[0];
 		if(slot) {
+			slot.item = item;
 			slot.setAttribute("data-id", item.id);
 			slot.setAttribute("src", item.portrait);
 			Sound.effect(item.sounds.move);
