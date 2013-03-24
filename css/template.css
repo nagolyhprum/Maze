@@ -7,19 +7,18 @@ canvas {
 }
 
 #inventory {
-	top : 50px;
-	left : 50px;
+	top : 0;
+	left : 0;
 }
 
 #statistics {
-	top : 50px;
-	right : 50px;
-	display : none;
+	top : 0;
+	right : 0;
 }
 
 #equipment {
-	top : 50px;
-	right : 500px;
+	bottom : 0;
+	right : 0;
 }
 
 #statistics #name, #statistics #image {
@@ -203,6 +202,7 @@ canvas {
 #equipment .item img {
 	width : 100%;
 	height : 100%;
+	cursor : pointer;
 }
 
 #equipment .item img[data-id="0"] {

@@ -16,7 +16,7 @@ $(function() {
 	//property for items being held before 
 	//the game was loaded
 	function pickUpItem(item) {
-		var slot = $("[data-id='0']")[0];
+		var slot = $("#inventory [data-id='0']")[0];
 		if(slot) {
 			slot.item = item;
 			slot.setAttribute("data-id", item.id);

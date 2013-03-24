@@ -13,8 +13,8 @@ $(function() {
 	
 	function select(e) {
 		var e = e.toElement || e.relatedTarget;
-		e.parentNode["data-select"][e.innerHTML](dependent);
 		e.parentNode.style.zIndex = -1;
+		e.parentNode.onselect[e.innerHTML](dependent);
 	}
 	
 	function vanish(e) {

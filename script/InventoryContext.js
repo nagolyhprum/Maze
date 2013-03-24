@@ -1,7 +1,7 @@
 $(function() {
 	var inventory_context = $("#inventory_context")[0],
 		ih = "";
-	inventory_context["data-select"] = {
+	inventory_context.onselect = {
 		"Equip / Use" : function(c) {
 			var image = $("#equipment #" + c.item.type + " img")[0], item = c.item;
 			if(image.item) {
@@ -10,7 +10,11 @@ $(function() {
 				}
 				c.item = image.item;
 				c.setAttribute("src", image.item.portrait);
-				c.setAttribute("data-id", image.item.id);				
+				c.setAttribute("data-id", image.item.id);
+				for(var i in c.item.statistics) {
+					character.statistics[i].current -= c.item.statistics[i].current;
+					character.statistics[i].max -= c.item.statistics[i].max;
+				}
 			} else {
 				delete c.item;
 				c.setAttribute("src", "");
@@ -19,6 +23,11 @@ $(function() {
 			image.item = item;
 			image.setAttribute("src", item.portrait);
 			image.setAttribute("data-id", item.id);
+			for(var i in item.statistics) {
+				character.statistics[i].current += item.statistics[i].current;
+				character.statistics[i].max += item.statistics[i].max;
+			}
+			character.updateStatistics();
 		},
 		"Drop" : function(c) {
 			if(confirm("Are you sure you would like to drop that item?")) {

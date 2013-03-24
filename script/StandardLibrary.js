@@ -200,28 +200,16 @@ var getSign = (function() {
 }());
 
 function Statistics(args) {
-
 	args = args || {};
-	args.health = args.health || {};
-	args.energy = args.energy || {};
-	args.experience = args.experience || {};	
-	args.speed = args.speed || {};
-	this.health = {
-		max : args.health.max || 0,
-		current : args.health.current || 0
-	};
-	this.energy = {
-		max : args.energy.max || 0,
-		current : args.energy.current || 0
-	};
-	this.experience = {
-		max : args.experience.max || 0,
-		current : args.experience.current || 0
-	};
-	this.speed = {
-		max : args.speed.max || 1,
-		current : args.speed.current || 1
-	};
+	var stats = ["health", "energy", "experience", "strength", "defense", "speed"];
+	for(var i = 0; i < stats.length; i++) {
+		var stat = stats[i];
+		args[stat] = args[stat] || {};
+		this[stat] = {
+			max : args[stat].max || 0,
+			current : args[stat].current || 0
+		};
+	}
 }
 
 function Character(args) {
@@ -372,14 +360,14 @@ var BLOOD = [
 
 Character.prototype.damage = function(damage, complete) {
 	var health = this.statistics.health;
-	Sound.effect(BLOOD[Math.floor(BLOOD.length * Math.random())]);
-	new Blood({
-		location : {
-			x : CONSTANTS.START.X() + this.location.column * CONSTANTS.TILE.WIDTH + CONSTANTS.TILE.WIDTH / 2,
-			y : CONSTANTS.START.Y() + this.location.row * CONSTANTS.TILE.WIDTH + CONSTANTS.TILE.HEIGHT / 2
-		}
-	});
 	if(health.current > 0) {
+		Sound.effect(BLOOD[Math.floor(BLOOD.length * Math.random())]);
+		new Blood({
+			location : {
+				x : CONSTANTS.START.X() + this.location.column * CONSTANTS.TILE.WIDTH + CONSTANTS.TILE.WIDTH / 2,
+				y : CONSTANTS.START.Y() + this.location.row * CONSTANTS.TILE.WIDTH + CONSTANTS.TILE.HEIGHT / 2
+			}
+		});
 		Sound.effect(this.sounds.hurt[Math.floor(this.sounds.hurt.length * Math.random())]);
 		health.current -= damage;
 		if(health.current <= 0) {

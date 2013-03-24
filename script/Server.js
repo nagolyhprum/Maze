@@ -363,6 +363,20 @@ var Server = (function() {
 							column : column,
 							row : row
 						},
+						statistics : {
+							strength : {
+								current : item[2],
+								max : item[2]
+							},
+							defense : {
+								current : item[2],
+								max : item[2]
+							},
+							speed : {
+								current : item[2],
+								max : item[2]
+							}
+						},
 						image : {							
 							rows : 3,
 							columns : 5,
@@ -386,7 +400,8 @@ var Server = (function() {
 			item = ["cloth", "head"];
 			
 		while(item[0] === "cloth" && item[1] === "head") {
-			item[0] = weight[Math.floor(Math.random() * weight.length)]
+			item[2] = Math.floor(Math.random() * weight.length);
+			item[0] = weight[item[2]];
 			item[1] = part[Math.floor(Math.random() * part.length)];			
 		}
 		return item;
