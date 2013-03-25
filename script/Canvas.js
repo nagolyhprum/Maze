@@ -9,6 +9,13 @@ $(function() {
 			y : (e.pageY - bb.top) * (canvas.height / canvas.clientHeight)
 		}]);
 	});
+	attachEvent(canvas, "mousemove", function(e) {
+		var bb = canvas.getBoundingClientRect();
+		canvas.events.invoke("mousemove", [{ 
+			x : (e.pageX - bb.left) * (canvas.width / canvas.clientWidth), 
+			y : (e.pageY - bb.top) * (canvas.height / canvas.clientHeight)
+		}]);
+	});
 	
 	var down = [];
 	attachEvent(canvas, "keydown", function(e) {

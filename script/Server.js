@@ -45,7 +45,7 @@ var Server = (function() {
 	
 	Server.getCharacter = function() {
 		return new Character({
-			portrait : "images/face/FlareMaleHero1.png",
+			portrait : "face/FlareMaleHero1.png",
 			name : "Logan",
 			sounds : {
 				slash : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
@@ -357,7 +357,15 @@ var Server = (function() {
 							move : ["sound/inventory/coin"]
 						},
 						type : item[1],
-						portrait : "images/items/" + item[0] + "-" + item[1] + ".png",
+						portrait : {												
+							rows : 1,
+							columns : 1,
+							src : "items/" + item[0] + "-" + item[1] + ".png",
+							display : {
+								column : 0,
+								row : 0
+							}
+						},
 						id : 1,
 						location : {							
 							column : column,
@@ -377,7 +385,7 @@ var Server = (function() {
 								max : item[2]
 							}
 						},
-						image : {							
+						ground : {							
 							rows : 3,
 							columns : 5,
 							src : "drops.png",							
@@ -475,6 +483,7 @@ canvas,
 context,
 background = loadImage("background.jpg"),
 character = Server.getCharacter(),
+contexts = [],
 room = {
 	location : Server.getCharacterRoomLocation(),
 	events : new EventHandler()
@@ -483,4 +492,6 @@ items = {
 	list : Server.getRoomItems(),
 	events : new EventHandler()
 },
+inventory_items = [],
+equipment_items = {},
 enemies = [];

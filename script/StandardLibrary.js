@@ -222,7 +222,7 @@ function Character(args) {
 	this.active = this.walk;
 	this.id = args.id;
 	this.name = args.name;
-	this.portrait = args.portrait;
+	this.portrait = loadImage(args.portrait);
 	args.location = args.location || {};
 	this.location = {
 		column : args.location.column || 0,
@@ -408,12 +408,14 @@ function Item(args) {
 	args = args || {};
 	args.location = args.location || {};
 	this.location = {
-		row : args.location.row,
-		column : args.location.column
+		row : args.location.row || 0,
+		column : args.location.column || 0,
+		x : args.location.x || 0,
+		y : args.location.y || 0
 	};
 	this.type = args.type;
-	this.portrait = args.portrait;
-	this.image = new TileSet(args.image);
+	this.portrait = new TileSet(args.portrait);
+	this.ground = new TileSet(args.ground);
 	this.statistics = new Statistics(args.statistics);
 	this.id = args.id;
 	args.sounds = args.sounds || {};
@@ -422,13 +424,35 @@ function Item(args) {
 	};
 }
 
-Item.prototype.draw = function(context) {
+Item.prototype.drawGround = function(context) {
 	var canvas = context.canvas;
-	this.image.draw(
+	this.ground.draw(
 		context, 
 		canvas.width / 2 - CONSTANTS.WIDTH() / 2 + this.location.column * CONSTANTS.TILE.WIDTH, 
 		canvas.height / 2 - CONSTANTS.HEIGHT() / 2 + this.location.row * CONSTANTS.TILE.HEIGHT, 
 		CONSTANTS.TILE.WIDTH, 
 		CONSTANTS.TILE.HEIGHT
+	);
+};
+
+Item.prototype.drawInventory = function(context) {
+	var canvas = context.canvas;
+	this.portrait.draw(
+		context, 
+		this.location.x, 
+		this.location.y, 
+		CONSTANTS.TILE.WIDTH, 
+		CONSTANTS.TILE.HEIGHT
+	);
+};
+
+Item.prototype.drawEquipment = function(context, width, height) {
+	var canvas = context.canvas;
+	this.portrait.draw(
+		context, 
+		this.location.x, 
+		this.location.y, 
+		width, 
+		height
 	);
 };
