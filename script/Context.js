@@ -12,7 +12,12 @@ $(function() {
 			for(var i = 0; i < contexts.length && !contextmenu; i++) {
 				contextmenu = contexts[i].contains(l);
 			}
+			location.x -= 5;
+			location.y -= 5;
 		}
+	});
+	canvas.events.attach("keydown", function() {
+		contextmenu = 0;
 	});
 	canvas.events.attach("mousemove", function(l) {
 		if(contextmenu && (l.x < location.x || l.y < location.y || l.x >= location.x + width || l.y >= location.y + height)) {

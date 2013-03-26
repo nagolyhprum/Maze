@@ -2,6 +2,7 @@ $(function() {
 	canvas = $("#screen")[0];
 	canvas.events = new EventHandler();
 	context = canvas.getContext("2d");
+	context.font = "12px Times New Roman";
 	attachEvent(canvas, "click", function(e) {
 		var bb = canvas.getBoundingClientRect();
 		canvas.events.invoke("click", [{ 
