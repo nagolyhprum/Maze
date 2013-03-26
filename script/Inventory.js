@@ -81,7 +81,7 @@ $(function() {
 				height : cellheight,
 				contains : function(l) {
 					if(visible) {
-						var x = this.x + start.x, y = this.y + start.y, r = x + this.width, b = y + height;
+						var x = this.x + start.x, y = this.y + start.y, r = x + this.width, b = y + this.height;
 						if(l.x >= x && l.y >= y && l.x <= r && l.y <= b) {
 							var item = inventory_items[this.column + this.row * columns];
 							if(item) {

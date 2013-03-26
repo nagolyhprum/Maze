@@ -4,10 +4,11 @@ $(function() {
 	var foreground = loadImage("health/foreground_gray.png"),
 		background = loadImage("health/background.png");
 	canvas.events.attach("draw", function() {
-		var r = character.statistics.health.current / character.statistics.health.max;
-		drawBar("red", 10, sy - CONSTANTS.TILE.HEIGHT, CONSTANTS.INBETWEEN(), 25, r);
+		var h = character.statistics.health.current / character.statistics.health.max,
+			exp = character.statistics.experience.current / character.statistics.experience.max;
+		drawBar("red", 10, sy - CONSTANTS.TILE.HEIGHT, CONSTANTS.INBETWEEN(), 25, h);
 		drawBar("blue", 10, sy - CONSTANTS.TILE.HEIGHT + 35, CONSTANTS.INBETWEEN(), 25, 1);
-		drawBar("green", 10, sy - CONSTANTS.TILE.HEIGHT + 70, CONSTANTS.INBETWEEN(), 25, 0);
+		drawBar("green", 10, sy - CONSTANTS.TILE.HEIGHT + 70, CONSTANTS.INBETWEEN(), 25, exp);
 		for(var i = 0; i < enemies.length; i++) {
 			var l = enemies[i].location,
 				h = enemies[i].statistics.health;

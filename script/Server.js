@@ -72,6 +72,10 @@ var Server = (function() {
 				speed : {
 					current : 25,
 					max : 25
+				},
+				experience : {
+					current : 0,
+					max : 100
 				}
 			},
 			display : { row : 2 },
@@ -175,6 +179,10 @@ var Server = (function() {
 							speed : {
 								current : 10,
 								max : 10
+							},
+							experience : {
+								current : 5,
+								max : 5
 							}
 						},
 						sounds : {
@@ -233,6 +241,10 @@ var Server = (function() {
 							speed : {
 								current : 10,
 								max : 10
+							},
+							experience : {
+								current : 5,
+								max : 5
 							}
 						},
 						sounds : {
@@ -291,6 +303,10 @@ var Server = (function() {
 							speed : {
 								current : 10,
 								max : 10
+							},
+							experience : {
+								current : 5,
+								max : 5
 							}
 						},
 						sounds : {
@@ -352,6 +368,7 @@ var Server = (function() {
 				var thisRoom = room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column;
 				es[i].damage(1, function() {
 					var item = randomItem();
+					character.statistics.experience.current += this.statistics.experience.current;
 					(roomItems[thisRoom] = roomItems[thisRoom] || []).push(new Item({
 						sounds : {
 							move : ["sound/inventory/coin"]
