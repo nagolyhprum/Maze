@@ -12,14 +12,16 @@ $(function() {
 		for(var i = 0; i < enemies.length; i++) {
 			var l = enemies[i].location,
 				h = enemies[i].statistics.health;
-			drawBar(
-				"red",
-				sx + 5 + l.column * CONSTANTS.TILE.WIDTH + l.x, 
-				sy +  l.row * CONSTANTS.TILE.HEIGHT + l.y, 
-				CONSTANTS.TILE.WIDTH - 10, 
-				10, 
-				h.current / h.max
-			);
+			if(h.current > 0) {
+				drawBar(
+					"red",
+					sx + 5 + l.column * CONSTANTS.TILE.WIDTH + l.x, 
+					sy +  l.row * CONSTANTS.TILE.HEIGHT + l.y, 
+					CONSTANTS.TILE.WIDTH - 10, 
+					10, 
+					h.current / h.max
+				);
+			}
 		}
 	});
 	

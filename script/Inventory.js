@@ -1,12 +1,15 @@
 $(function() {	
 	canvas.events.attach("keydown", function(key) {
 		if(key === 17) {
-			for(var i = 0; i < items.list.length; i++) {
-				var item = items.list[i];
-				if(item.location.column === character.location.column && item.location.row === character.location.row) {
-					items.list.splice(i, 1);
-					inventory_items.push(item);
-					break;
+			var index = inventory_items.indexOf(undefined);
+			if(index !== -1) {
+				for(var i = 0; i < items.list.length; i++) {
+					var item = items.list[i];
+					if(item.location.column === character.location.column && item.location.row === character.location.row) {
+						inventory_items[index] = item;			
+						items.list.splice(i, 1);
+						break;
+					}
 				}
 			}
 		}
@@ -17,12 +20,6 @@ $(function() {
 		}
 	});
 
-	function pickUpItem(item) {
-		if(inventory_items.length < columns * rows) {
-			inventory_items.push(item);			
-		}
-	}
-		
 	var start = {x : 0, y : 100},
 		margin = 5,
 		cellwidth = CONSTANTS.TILE.WIDTH, 
@@ -35,21 +32,20 @@ $(function() {
 		height = margin * 2 + titlesize + (cellheight + margin * 2) * rows,
 		visible = 0;
 		
-	inventory_items.max = columns * rows;
 	loadImage("window/texture.png", function(img) {
 		background = context.createPattern(img, "repeat");
 	});
 	var menu = {
 		"Equip / Use" : function(c) {
-			inventory_items.splice(inventory_items.indexOf(c), 1);
-			var item;
+			var item, index = inventory_items.indexOf(c);
+			inventory_items[index] = undefined;
 			if(equipment_items[c.type].item) {
 				item = equipment_items[c.type].item;
 				for(var i in item.statistics) {
 					character.statistics[i].current -= item.statistics[i].current;
 					character.statistics[i].max -= item.statistics[i].max;
 				}
-				inventory_items.push(item);				
+				inventory_items[index] = item;				
 			}
 			item = c;
 			for(var i in item.statistics) {
@@ -59,19 +55,20 @@ $(function() {
 			equipment_items[c.type].item = c;
 		},
 		"Drop" : function(c) {
-			inventory_items.splice(inventory_items.indexOf(c), 1);
+			inventory_items[inventory_items.indexOf(c)] = undefined;
 			c.location.row = character.location.row;
 			c.location.column = character.location.column;
 			items.list.push(c);
 		},
 		"Destroy" : function(c) {
-			inventory_items.splice(inventory_items.indexOf(c), 1);
+			inventory_items[inventory_items.indexOf(c)] = undefined;
 		}
 	};
 	for(var i = 0; i < rows; i++) {
 		for(var j = 0; j < columns; j++) {
 			var x = margin + (margin * 2 + cellwidth) * j, 
 				y = margin * 3 + titlesize + (margin * 2 + cellheight) * i;
+			inventory_items.push(undefined);
 			contexts.push({
 				column : j,
 				row : i,

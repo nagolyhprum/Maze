@@ -106,13 +106,14 @@ $(function() {
 	
 	var menu = {
 		"Unequip" : function(c) {
-			if(inventory_items.length < inventory_items.max) {
+			var index = inventory_items.indexOf(undefined);
+			if(index !== -1) {
 				var item = c.item;
 				for(var i in item.statistics) {
 					character.statistics[i].current -= item.statistics[i].current;
 					character.statistics[i].max -= item.statistics[i].max;
 				}
-				inventory_items.push(c.item);
+				inventory_items[index] = c.item;
 				delete c.item;
 			}
 		}

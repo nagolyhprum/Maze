@@ -358,7 +358,7 @@ var BLOOD = [
 	"sound/blood/blood4"
 ];
 
-Character.prototype.damage = function(damage, complete) {
+Character.prototype.damage = function(damage, killed, complete) {
 	var health = this.statistics.health;
 	if(health.current > 0) {
 		Sound.effect(BLOOD[Math.floor(BLOOD.length * Math.random())]);
@@ -372,6 +372,7 @@ Character.prototype.damage = function(damage, complete) {
 		health.current -= damage;
 		if(health.current <= 0) {
 			var me = this;
+			killed && killed.call(this);
 			this.die(complete);
 		}
 	}

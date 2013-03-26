@@ -412,8 +412,9 @@ var Server = (function() {
 							}
 						}
 					}));					
-					es.splice(es.indexOf(this), 1);
 					items.events.invoke("drop");
+				}, function() {
+					es.splice(es.indexOf(this), 1);
 				});
 			}
 		}
