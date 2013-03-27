@@ -4,7 +4,7 @@ $(function() {
 		if(contextmenu) {
 			var options = Object.keys(contextmenu.menu);
 			contextmenu.menu[options[highlight]](contextmenu.context);
-			contextmenu = 0;
+			contexts.contextmenu = contextmenu = 0;
 		} else {
 			highlight = 0;
 			contextmenu = 0;
@@ -12,16 +12,17 @@ $(function() {
 			for(var i = 0; i < contexts.length && !contextmenu; i++) {
 				contextmenu = contexts[i].contains(l);
 			}
+			contexts.contextmenu = contextmenu;
 			location.x -= 5;
 			location.y -= 5;
 		}
 	});
 	canvas.events.attach("keydown", function() {
-		contextmenu = 0;
+		contexts.contextmenu = contextmenu = 0;
 	});
 	canvas.events.attach("mousemove", function(l) {
 		if(contextmenu && (l.x < location.x || l.y < location.y || l.x >= location.x + width || l.y >= location.y + height)) {
-			contextmenu = 0;
+			contexts.contextmenu = contextmenu = 0;
 		} else if(contextmenu) {
 			highlight = Math.floor((l.y - location.y) / cellheight);
 		}

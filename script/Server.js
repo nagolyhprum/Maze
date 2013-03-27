@@ -370,19 +370,12 @@ var Server = (function() {
 					var item = randomItem();
 					character.statistics.experience.current += this.statistics.experience.current;
 					(roomItems[thisRoom] = roomItems[thisRoom] || []).push(new Item({
+						name : item[0] + " " + item[1],
 						sounds : {
 							move : ["sound/inventory/coin"]
 						},
 						type : item[1],
-						portrait : {												
-							rows : 1,
-							columns : 1,
-							src : "items/" + item[0] + "-" + item[1] + ".png",
-							display : {
-								column : 0,
-								row : 0
-							}
-						},
+						portrait : "items/" + item[0] + "-" + item[1] + ".png",
 						id : 1,
 						location : {							
 							column : column,

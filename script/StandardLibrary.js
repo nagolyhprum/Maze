@@ -22,6 +22,10 @@ function detachEvent(element, eventName, handler) {
 	}
 }
 
+function clamp(input, min, max) {
+	return Math.min(Math.max(input, min), max);
+}
+
 var Sound = (function() {	
 	var a = new Audio(), supported = [], cache = {}, S = {};
 	if(a.canPlayType) {
@@ -415,45 +419,12 @@ function Item(args) {
 		y : args.location.y || 0
 	};
 	this.type = args.type;
-	this.portrait = new TileSet(args.portrait);
-	this.ground = new TileSet(args.ground);
+	this.portrait = loadImage(args.portrait);
 	this.statistics = new Statistics(args.statistics);
 	this.id = args.id;
+	this.name = args.name;
 	args.sounds = args.sounds || {};
 	this.sounds = {
 		move : args.sounds.move || []
 	};
 }
-
-Item.prototype.drawGround = function(context) {
-	var canvas = context.canvas;
-	this.ground.draw(
-		context, 
-		canvas.width / 2 - CONSTANTS.WIDTH() / 2 + this.location.column * CONSTANTS.TILE.WIDTH, 
-		canvas.height / 2 - CONSTANTS.HEIGHT() / 2 + this.location.row * CONSTANTS.TILE.HEIGHT, 
-		CONSTANTS.TILE.WIDTH, 
-		CONSTANTS.TILE.HEIGHT
-	);
-};
-
-Item.prototype.drawInventory = function(context) {
-	var canvas = context.canvas;
-	this.portrait.draw(
-		context, 
-		this.location.x, 
-		this.location.y, 
-		CONSTANTS.TILE.WIDTH, 
-		CONSTANTS.TILE.HEIGHT
-	);
-};
-
-Item.prototype.drawEquipment = function(context, width, height) {
-	var canvas = context.canvas;
-	this.portrait.draw(
-		context, 
-		this.location.x, 
-		this.location.y, 
-		width, 
-		height
-	);
-};

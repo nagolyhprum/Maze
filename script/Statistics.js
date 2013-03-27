@@ -6,10 +6,15 @@ $(function() {
 		background, 
 		statistics = Object.keys(new Statistics()), 
 		visible = 0,
-		height = titlesize + margin * 2 + width / 2 + statistics.length * (margin * 2 + titlesize);
+		height = titlesize + margin * 2 + width / 2 + statistics.length * (margin * 2 + titlesize),
+		location = {x:0,y:0};
 		
 	loadImage("window/texture.png", function(img) {
 		background = context.createPattern(img, "repeat");
+	});
+	
+	canvas.events.attach("mousemove", function(l) {
+		location = l;
 	});
 	
 	canvas.events.attach("keydown", function(keycode) {
@@ -21,23 +26,74 @@ $(function() {
 	});
 	
 	canvas.events.attach("draw", function() {
+		context.save();
+		context.globalAlpha = 0.8;
 		if(visible) {
-			start.x = canvas.width / 2 - width / 2;
-			start.y = canvas.height / 2 - height / 2;
-			context.save();
-			context.globalAlpha = 0.8;
-			context.translate(start.x, start.y);
-			drawStatistics(character);
-			context.globalAlpha = 1;
-			context.restore();
+			drawCharacterStatistics();
+		} else if (!contexts.contextmenu){
+			drawItemStatistics(getHover());
+			if(!equipment_items.visible && !inventory_items.visible) {
+				var column = Math.floor((location.x - CONSTANTS.START.X()) / CONSTANTS.TILE.WIDTH),
+					row = Math.floor((location.y - CONSTANTS.START.Y()) / CONSTANTS.TILE.HEIGHT);
+				for(var i = 0; i < items.list.length; i++) {
+					var item = items.list[i], l = item.location;
+					if(l.column === column && l.row === row) {
+						drawItemStatistics(item);
+						break;
+					}
+				}
+			}
 		}
+		context.restore();
 	});
 	
-	function drawStatistics(obj) {	
+	function drawItemStatistics(item) {	
+		if(item) {
+			if(equipment_items.visible) {
+				item = item.item;
+			}
+			var equipped = equipment_items[item.type].item, final_width = width * (equipped ? 2 : 1);
+			context.save();
+			context.translate(
+				clamp(location.x, 0, canvas.width - final_width), 
+				clamp(location.y, 0, canvas.height - height)
+			);
+			context.strokeStyle = "black";
+			context.fillStyle = background;
+			context.fillRect(0, 0, final_width, height); //container
+			context.strokeRect(0, 0, final_width, height); //container
+			drawStatistics(item);
+			if(equipped) {
+				context.translate(width, 0);
+				drawStatistics(equipped);
+			}
+			context.restore();
+		}
+	}
+	
+	function getHover() {
+		for(var i = 0; i < contexts.length; i++) {
+			var context = contexts[i].contains(location);
+			if(context) {
+				return context.context;
+			}
+		}		
+	}
+	
+	function drawCharacterStatistics() {
+		start.x = canvas.width / 2 - width / 2;
+		start.y = canvas.height / 2 - height / 2;
+		context.save();
+		context.translate(start.x, start.y);
 		context.strokeStyle = "black";
 		context.fillStyle = background;
 		context.fillRect(0, 0, width, height); //container
 		context.strokeRect(0, 0, width, height); //container
+		drawStatistics(character);	
+		context.restore();
+	}
+	
+	function drawStatistics(obj) {	
 		
 		context.strokeRect(margin, margin, width - margin * 2, titlesize); //title
 		
@@ -72,6 +128,5 @@ $(function() {
 		}
 		context.textAlign = 'left';
 		context.fillText("Statistics", margin * 2, margin + titlesize / 2, width);
-		
 	}
 });
