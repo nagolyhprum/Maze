@@ -7,7 +7,8 @@ $(function() {
 		statistics = Object.keys(new Statistics()), 
 		visible = 0,
 		height = titlesize + margin * 2 + width / 2 + statistics.length * (margin * 2 + titlesize),
-		location = {x:0,y:0};
+		location = {x:0,y:0},
+		mousemove = 0;
 		
 	loadImage("window/texture.png", function(img) {
 		background = context.createPattern(img, "repeat");
@@ -15,6 +16,7 @@ $(function() {
 	
 	canvas.events.attach("mousemove", function(l) {
 		location = l;
+		mousemove = 1;
 	});
 	
 	canvas.events.attach("keydown", function(keycode) {
@@ -23,6 +25,7 @@ $(function() {
 		} else {
 			visible = 0;
 		}
+		mousemove = 0;
 	});
 	
 	canvas.events.attach("draw", function() {
@@ -32,7 +35,7 @@ $(function() {
 			drawCharacterStatistics();
 		} else if (!contexts.contextmenu){
 			drawItemStatistics(getHover());
-			if(!equipment_items.visible && !inventory_items.visible) {
+			if(mousemove && !equipment_items.visible && !inventory_items.visible) {
 				var column = Math.floor((location.x - CONSTANTS.START.X()) / CONSTANTS.TILE.WIDTH),
 					row = Math.floor((location.y - CONSTANTS.START.Y()) / CONSTANTS.TILE.HEIGHT);
 				for(var i = 0; i < items.list.length; i++) {
@@ -49,10 +52,16 @@ $(function() {
 	
 	function drawItemStatistics(item) {	
 		if(item) {
+			var equipped, final_width = width;
 			if(equipment_items.visible) {
 				item = item.item;
+			} else {
+				equipped = equipment_items[item.type].item;
+				if(equipped) {
+					final_width *= 2;
+				}
 			}
-			var equipped = equipment_items[item.type].item, final_width = width * (equipped ? 2 : 1);
+			
 			context.save();
 			context.translate(
 				clamp(location.x, 0, canvas.width - final_width), 

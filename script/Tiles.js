@@ -1,8 +1,4 @@
 $(function() {
-	var offset = {
-			x : canvas.width / 2 - CONSTANTS.WIDTH() / 2,
-			y : canvas.height / 2 - CONSTANTS.HEIGHT() / 2
-		};
 	var tiles;
 	room.events.attach("change", function() {
 		tiles = Server.getTiles();
@@ -15,8 +11,8 @@ $(function() {
 					var tile = tiles[j][i],
 						sx = tile.column * tileset.width,
 						sy = tile.row * tileset.height,
-						dx = offset.x + j * CONSTANTS.TILE.WIDTH,
-						dy = offset.y + i * CONSTANTS.TILE.HEIGHT;
+						dx = CONSTANTS.START.X() + j * CONSTANTS.TILE.WIDTH,
+						dy = CONSTANTS.START.Y() + i * CONSTANTS.TILE.HEIGHT;
 					context.drawImage(
 						tileset.image, 
 						sx,
@@ -30,8 +26,8 @@ $(function() {
 					);
 				}
 				context.strokeRect(
-					offset.x + j * CONSTANTS.TILE.WIDTH, 
-					offset.y + i * CONSTANTS.TILE.HEIGHT, 
+					CONSTANTS.START.X() + j * CONSTANTS.TILE.WIDTH, 
+					CONSTANTS.START.Y() + i * CONSTANTS.TILE.HEIGHT, 
 					CONSTANTS.TILE.WIDTH, 
 					CONSTANTS.TILE.HEIGHT
 				);

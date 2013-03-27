@@ -3,6 +3,14 @@ $(function() {
 	canvas.events = new EventHandler();
 	context = canvas.getContext("2d");
 	context.font = "12px Times New Roman";
+	/*
+	attachEvent(window, "resize", resize);
+	function resize() {
+		canvas.width = window.screen.width;
+		canvas.height = window.screen.height;
+	}	
+	resize();
+	*/
 	attachEvent(canvas, "click", function(e) {
 		var bb = canvas.getBoundingClientRect();
 		canvas.events.invoke("click", [{ 
