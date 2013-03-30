@@ -38,11 +38,11 @@ $(function() {
 	});
 	var menu = {
 		"Equip / Use" : function(c) {
-			var item, index = inventory_items.indexOf(c);
+			var item, index = inventory_items.indexOf(c), i;
 			inventory_items[index] = undefined;
 			if(equipment_items[c.type].item) {
 				item = equipment_items[c.type].item;
-				for(var i in item.statistics) {
+				for(i in item.statistics) {
 					character.statistics[i].current -= item.statistics[i].current;
 					character.statistics[i].max -= item.statistics[i].max;
 				}
@@ -50,7 +50,7 @@ $(function() {
 				Sound.effect(item.sounds.move);			
 			}
 			item = c;
-			for(var i in item.statistics) {
+			for(i in item.statistics) {
 				character.statistics[i].current += item.statistics[i].current;
 				character.statistics[i].max += item.statistics[i].max;
 			}

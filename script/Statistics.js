@@ -65,8 +65,7 @@ $(function() {
 			context.save();
 			context.translate(
 				clamp(location.x, 0, canvas.width - final_width), 
-				clamp(location.y, 0, canvas.height - height)
-			);
+				clamp(location.y, 0, canvas.height - height));
 			context.strokeStyle = "black";
 			context.fillStyle = background;
 			context.fillRect(0, 0, final_width, height); //container
@@ -87,6 +86,7 @@ $(function() {
 				return context.context;
 			}
 		}		
+		return false;
 	}
 	
 	function drawCharacterStatistics() {

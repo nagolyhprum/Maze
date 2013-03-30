@@ -26,7 +26,7 @@ $(function() {
 			var e = enemies[i];
 			move(e);
 		}
-	};
+	}
 	
 	function move(e) {
 		if(enemies.indexOf(e) != -1) {
@@ -40,13 +40,13 @@ $(function() {
 			}
 			while(moves > 0 && character.statistics.health.current > 0) {
 				moves--;
-				var map = [], mg = new MazeGenerator(CONSTANTS.TILE.COLUMNS, CONSTANTS.TILE.ROWS);
+				var map = [], mg = new MazeGenerator(CONSTANTS.TILE.COLUMNS, CONSTANTS.TILE.ROWS), i;
 				map.columns = CONSTANTS.TILE.COLUMNS;
 				map.rows = CONSTANTS.TILE.ROWS;
-				for(var i = 0; i < CONSTANTS.TILE.ROWS * CONSTANTS.TILE.COLUMNS; i++) {
+				for(i = 0; i < CONSTANTS.TILE.ROWS * CONSTANTS.TILE.COLUMNS; i++) {
 					map[i] = 0;
 				}
-				for(var i = 0; i < enemies.length; i++) {
+				for(i = 0; i < enemies.length; i++) {
 					if(e !== enemies[i]) {
 						if(enemies[i].statistics.health.current > 0) {
 							var obs = enemies[i].location;

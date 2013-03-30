@@ -47,8 +47,8 @@ var MazeGenerator = (function() {
 	};
 
 	MazeGenerator.prototype.generateCell = function(column, row, walls) {
-		var directions = [], 
-			walls = walls || [], 
+		walls = walls || [];
+		var directions = [],  
 			columns = walls.columns || this.columns, 
 			rows = walls.rows || this.rows;
 		if(row > 0 && 

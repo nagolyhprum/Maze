@@ -58,10 +58,12 @@ var Sound = (function() {
 			attachEvent(a, "canplaythrough", function() {
 				this.canplay = true;	
 			});			
-			a.src = S.root + src + supported[index++];
+			a.src = S.root + src + supported[index];
+			index = index + 1;
 			attachEvent(a, "error", function() {
 				if(index < supported.length) {
-					a.src = S.root + src + supported[index++];
+					a.src = S.root + src + supported[index];
+					index = index + 1;
 				}
 			});		
 		} else {
@@ -152,8 +154,7 @@ TileSet.prototype.draw = function(context, x, y, w, h) {
 		this.display.row * this.height,
 		this.width,
 		this.height,
-		x, y, w, h
-	);
+		x, y, w, h);
 };
 
 var $ = (function() {
@@ -168,11 +169,15 @@ var $ = (function() {
 		if(to === "function") {
 			if(hasLoaded()) {
 				f();
+				return true;
 			} else {
 				onload.attach("load", f);
+				return false;
 			}
 		} else if(to === "string") {
 			return document.querySelectorAll(f);
+		} else {
+			return false;
 		}
 	}
 	
@@ -248,7 +253,7 @@ function Character(args) {
 		slash : args.sounds.slash || [],
 		hurt : args.sounds.hurt || []
 	};
-};
+}
 
 Character.prototype.draw = function(ctx) {
 	for(var i = 0; i < this.active.length; i++) {
@@ -263,8 +268,7 @@ Character.prototype.draw = function(ctx) {
 				CONSTANTS.START.X() + this.location.column * CONSTANTS.TILE.WIDTH + this.location.x,
 				CONSTANTS.START.Y() + this.location.row * CONSTANTS.TILE.HEIGHT + this.location.y,
 				CONSTANTS.TILE.WIDTH,
-				CONSTANTS.TILE.HEIGHT
-			);
+				CONSTANTS.TILE.HEIGHT);
 		}
 	}		
 };
@@ -390,11 +394,12 @@ Character.prototype.die = function(complete) {
 			me.display = { row : 0, column : 0 };
 		},
 		change : function() {
-			return ++me.display.column !== me.active[0].columns;
+			me.display.column = me.display.column + 1;
+			return me.display.column !== me.active[0].columns;
 		},
 		interval : 100,
 		complete : function() {
-			complete && complete.call(me)
+			complete && complete.call(me);
 		}
 	});
 };

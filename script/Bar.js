@@ -4,9 +4,9 @@ $(function() {
 	var foreground = loadImage("health/foreground_gray.png"),
 		background = loadImage("health/background.png");
 	canvas.events.attach("draw", function() {
-		var h = character.statistics.health.current / character.statistics.health.max,
+		var h_rat = character.statistics.health.current / character.statistics.health.max,
 			exp = character.statistics.experience.current / character.statistics.experience.max;
-		drawBar("red", 10, sy - CONSTANTS.TILE.HEIGHT, CONSTANTS.INBETWEEN(), 25, h);
+		drawBar("red", 10, sy - CONSTANTS.TILE.HEIGHT, CONSTANTS.INBETWEEN(), 25, h_rat);
 		drawBar("blue", 10, sy - CONSTANTS.TILE.HEIGHT + 35, CONSTANTS.INBETWEEN(), 25, 1);
 		drawBar("green", 10, sy - CONSTANTS.TILE.HEIGHT + 70, CONSTANTS.INBETWEEN(), 25, exp);
 		for(var i = 0; i < enemies.length; i++) {
@@ -19,8 +19,7 @@ $(function() {
 					sy +  l.row * CONSTANTS.TILE.HEIGHT + l.y, 
 					CONSTANTS.TILE.WIDTH - 10, 
 					10, 
-					h.current / h.max
-				);
+					h.current / h.max);
 			}
 		}
 	});

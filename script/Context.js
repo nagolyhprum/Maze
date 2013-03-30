@@ -30,10 +30,8 @@ $(function() {
 	});
 	canvas.events.attach("draw", function() {
 		if(contextmenu) {
-			var options = Object.keys(contextmenu.menu);
-			context.font = "12px Times New Roman";
-			var max = 0; 
-			for(var i = 0; i < options.length; i++) {
+			var options = Object.keys(contextmenu.menu), max = 0, i; 
+			for(i = 0; i < options.length; i++) {
 				width = context.measureText(options[i]).width;
 				if(width > max) {
 					max = width;
@@ -48,7 +46,7 @@ $(function() {
 			context.fillRect(location.x, location.y, max, height);
 			context.fillStyle = "lightgray";
 			context.fillRect(location.x, location.y  + cellheight * highlight, width, cellheight);
-			for(var i = 0; i < options.length; i++) {
+			for(i = 0; i < options.length; i++) {
 				context.strokeText(options[i], location.x + padding, location.y + (i + 1) * cellheight - cellheight / 2, max);
 			}
 		}

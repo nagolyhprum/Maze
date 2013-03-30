@@ -22,15 +22,13 @@ $(function() {
 						dx, 
 						dy, 
 						CONSTANTS.TILE.WIDTH, 
-						CONSTANTS.TILE.HEIGHT
-					);
+						CONSTANTS.TILE.HEIGHT);
 				}
 				context.strokeRect(
 					CONSTANTS.START.X() + j * CONSTANTS.TILE.WIDTH, 
 					CONSTANTS.START.Y() + i * CONSTANTS.TILE.HEIGHT, 
 					CONSTANTS.TILE.WIDTH, 
-					CONSTANTS.TILE.HEIGHT
-				);
+					CONSTANTS.TILE.HEIGHT);
 			}
 		}
 	});

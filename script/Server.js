@@ -143,7 +143,8 @@ var Server = (function() {
 		var id = 1;
 		for(var i = 0; i < rows * columns; i++) {
 			if(1) {
-				enemies[i] = [
+				enemies[i] = [];
+				enemies[i].push(
 					new Character({
 						walk : [new TileSet({
 							columns : 9, 
@@ -160,7 +161,7 @@ var Server = (function() {
 							rows : 1, 
 							src : "hurt/BODY_skeleton.png"
 						})],
-						id : id++,
+						id : id,
 						location : {
 							row : CONSTANTS.TILE.MIDDLE.ROW() - 2,
 							column : CONSTANTS.TILE.MIDDLE.COLUMN(),
@@ -205,8 +206,9 @@ var Server = (function() {
 								"sound/NPC/shade/shade15"
 							]
 						}
-					}),
-					new Character({
+					}));
+					id = id + 1;
+					enemies[i].push(new Character({
 						walk : [new TileSet({
 							columns : 9, 
 							rows : 4, 
@@ -222,7 +224,7 @@ var Server = (function() {
 							rows : 1, 
 							src : "hurt/BODY_skeleton.png"
 						})],
-						id : id++,
+						id : id,
 						location : {
 							row : CONSTANTS.TILE.MIDDLE.ROW(),
 							column : CONSTANTS.TILE.MIDDLE.COLUMN() - 2,
@@ -267,8 +269,9 @@ var Server = (function() {
 								"sound/NPC/shade/shade15"
 							]
 						}
-					}),
-					new Character({
+					}));					
+					id = id + 1;
+					enemies[i].push(new Character({
 						walk : [new TileSet({
 							columns : 9, 
 							rows : 4, 
@@ -284,7 +287,7 @@ var Server = (function() {
 							rows : 1, 
 							src : "hurt/BODY_skeleton.png"
 						})],
-						id : id++,
+						id : id,
 						location : {
 							row : CONSTANTS.TILE.MIDDLE.ROW() + 2,
 							column : CONSTANTS.TILE.MIDDLE.COLUMN(),
@@ -329,8 +332,8 @@ var Server = (function() {
 								"sound/NPC/shade/shade15"
 							]
 						}
-					})
-				];
+					}));
+				id = id + 1;
 			} else {
 				enemies[i] = [];
 			}

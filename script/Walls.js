@@ -38,8 +38,7 @@ $(function() {
 					sx,
 					sy + i * CONSTANTS.TILE.HEIGHT,
 					CONSTANTS.TILE.WIDTH,
-					CONSTANTS.TILE.HEIGHT
-				);
+					CONSTANTS.TILE.HEIGHT);
 			}
 			if(i !== mid || (walls & CONSTANTS.WALL.RIGHT)) {
 				context.drawImage(tileset.image,
@@ -50,8 +49,7 @@ $(function() {
 					sx + CONSTANTS.WIDTH() + CONSTANTS.TILE.WIDTH,
 					sy + i * CONSTANTS.TILE.HEIGHT,
 					CONSTANTS.TILE.WIDTH,
-					CONSTANTS.TILE.HEIGHT
-				);
+					CONSTANTS.TILE.HEIGHT);
 			}
 		}
 	}
@@ -70,8 +68,7 @@ $(function() {
 					sx + i * CONSTANTS.TILE.WIDTH,
 					sy,
 					CONSTANTS.TILE.WIDTH,
-					CONSTANTS.TILE.HEIGHT
-				);
+					CONSTANTS.TILE.HEIGHT);
 			}
 			if(i !== mid || (walls & CONSTANTS.WALL.BOTTOM)) {
 				context.drawImage(tileset.image,
@@ -82,8 +79,7 @@ $(function() {
 					sx + i * CONSTANTS.TILE.WIDTH,
 					sy + CONSTANTS.TILE.HEIGHT + CONSTANTS.HEIGHT(),
 					CONSTANTS.TILE.WIDTH,
-					CONSTANTS.TILE.HEIGHT
-				);
+					CONSTANTS.TILE.HEIGHT);
 			}
 		}
 	}
