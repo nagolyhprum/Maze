@@ -55,19 +55,17 @@ $(function() {
 			var equipped, final_width = width;
 			if(equipment_items.visible) {
 				item = item.item;
-			} else {
-				var type = item.type, mainhand = 0, offhand = 0;
+			} else {		
+				var type = item.type;
 				if(type === "mainhand") {
-					if(equipment_items.mainhand.item) {
-						mainhand = equipment_items.mainhand.item.weight;
-					}
-					if(equipment_items.offhand.item) {
-						offhand = equipment_items.offhand.item.weight;
-					}
-					if(mainhand < offhand && item.weight < offhand) {						
+					if(item.weight === 1 && !(equipment_items.mainhand.item && equipment_items.mainhand.item.weight === 4)) {
 						type = "offhand";
+					} else if(item.weight === 2) {
+						if(equipment_items.offhand.item && equipment_items.offhand.item.weight === 2) {						
+							type = "offhand";
+						}
 					}
-				}
+				}				
 				equipped = equipment_items[type].item;
 				if(equipped) {
 					final_width *= 2;

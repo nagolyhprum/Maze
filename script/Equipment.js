@@ -115,13 +115,12 @@ $(function() {
 					character.statistics[i].max -= item.statistics[i].max;
 				}
 				inventory_items[index] = c.item;
-				Sound.effect(item.sounds.move);
-				if(c.item.type === "mainhand") {
-					c.item = equipment_items.offhand.item;
-					delete equipment_items.offhand.item;
+				if(c === equipment_items.mainhand) {
+					equipment_items.mainhand.item = undefined;
 				} else {
-					delete c.item;
+					equipment_items.offhand.item = undefined;
 				}
+				Sound.effect(item.sounds.move);
 			}
 		}
 	};

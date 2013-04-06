@@ -36,41 +36,59 @@ $(function() {
 	loadImage("window/texture.png", function(img) {
 		background = context.createPattern(img, "repeat");
 	});
+	
+	function unequip(type, index) {
+		var equipped = equipment_items[type].item;
+		inventory_items[index] = undefined; //remove the item
+		if(equipped !== undefined) { 
+			for(var i in equipped.statistics) {
+				character.statistics[i].current -= equipped.statistics[i].current;
+				character.statistics[i].max -= equipped.statistics[i].max;
+			}
+			inventory_items[index] = equipped;	
+			Sound.effect(equipped.sounds.move);			
+		}
+		equipment_items[type].item = undefined;
+	}
+	
 	var menu = {
 		"Equip / Use" : function(c) {
-			var type = c.type, //get the type of equipment
-				equipped = equipment_items[type].item, //get the equipped item					
-				index = inventory_items.indexOf(c), //get the index of the item to equip
-				i; //preinit
-			if(equipped && type === "mainhand") { //if i am equiping a one hander
-				if((equipment_items.offhand.item && c.weight + equipment_items.offhand.item.weight > CONSTANTS.MAX_WEIGHT) || !equipment_items.offhand.item ||
-					(equipment_items.mainhand.item.weight + c.weight <= CONSTANTS.MAX_WEIGHT && //if it goes to the off hand and is small enough
-						((c.weight >= equipment_items.offhand.item.weight && equipment_items.offhand.item.weight > equipment_items.mainhand.item.weight) ||
-							(equipment_items.offhand.item.weight === c.weight)))) { //should i equip to my offhand
+			var index = inventory_items.indexOf(c), //get the index of the item to equip
+				free = inventory_items.indexOf(undefined),
+				i, 
+				type = c.type; 
+			if(c.type === "mainhand") {
+				if(c.weight === 1) {
+					if(equipment_items.mainhand.item && equipment_items.mainhand.item.weight === 4) {								
+						if(free !== -1) {
+							unequip("mainhand", free);
+						} else {
+							return;
+						}
+					}	
+					unequip("offhand", index);
 					type = "offhand";
+				} else if(c.weight === 2) {
+					if(equipment_items.offhand.item && equipment_items.offhand.item.weight === 2) {						
+						unequip("offhand", index);
+						type = "offhand";
+					} else {
+						unequip("mainhand", index);				
+					}
+				} else if(c.weight === 3) {
+					unequip("mainhand", index);				
+				} else if(c.weight === 4) {
+					if(!equipment_items.offhand.item || free !== -1) {
+						unequip("mainhand", index);					
+						if(equipment_items.offhand.item) {
+							unequip("offhand", free);
+						}
+					} else {
+						return;
+					}
 				}
 			}
-			if(equipped && c.weight === CONSTANTS.MAX_WEIGHT && equipped.weight === CONSTANTS.MAX_WEIGHT) {
-				type = "mainhand";
-			} else if(equipped && (equipped.weight === CONSTANTS.MAX_WEIGHT || c.weight === CONSTANTS.MAX_WEIGHT)) {
-				return; //if a two handed weapon is involved and something is equipped
-			}
-			if((type === "mainhand" && equipment_items.offhand.item && 
-					c.weight + equipment_items.offhand.item.weight > CONSTANTS.MAX_WEIGHT) ||
-				(type === "offhand" && equipment_items.mainhand.item &&
-					c.weight + equipment_items.mainhand.item.weight > CONSTANTS.MAX_WEIGHT)) {
-				return;
-			}
-			inventory_items[index] = undefined; //remove the item
-			if((equipped = equipment_items[type].item) !== undefined) { 
-				for(i in equipped.statistics) {
-					character.statistics[i].current -= equipped.statistics[i].current;
-					character.statistics[i].max -= equipped.statistics[i].max;
-				}
-				inventory_items[index] = equipped;	
-				Sound.effect(equipped.sounds.move);			
-			}
-			equipped = c;
+			var equipped = c;
 			for(i in equipped.statistics) {
 				character.statistics[i].current += equipped.statistics[i].current;
 				character.statistics[i].max += equipped.statistics[i].max;
