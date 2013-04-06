@@ -38,24 +38,45 @@ $(function() {
 	});
 	var menu = {
 		"Equip / Use" : function(c) {
-			var item, index = inventory_items.indexOf(c), i;
-			inventory_items[index] = undefined;
-			if(equipment_items[c.type].item) {
-				item = equipment_items[c.type].item;
-				for(i in item.statistics) {
-					character.statistics[i].current -= item.statistics[i].current;
-					character.statistics[i].max -= item.statistics[i].max;
+			var type = c.type, //get the type of equipment
+				equipped = equipment_items[type].item, //get the equipped item					
+				index = inventory_items.indexOf(c), //get the index of the item to equip
+				i; //preinit
+			if(equipped && type === "mainhand") { //if i am equiping a one hander
+				if((equipment_items.offhand.item && c.weight + equipment_items.offhand.item.weight > CONSTANTS.MAX_WEIGHT) || !equipment_items.offhand.item ||
+					(equipment_items.mainhand.item.weight + c.weight <= CONSTANTS.MAX_WEIGHT && //if it goes to the off hand and is small enough
+						((c.weight >= equipment_items.offhand.item.weight && equipment_items.offhand.item.weight > equipment_items.mainhand.item.weight) ||
+							(equipment_items.offhand.item.weight === c.weight)))) { //should i equip to my offhand
+					type = "offhand";
 				}
-				inventory_items[index] = item;	
-				Sound.effect(item.sounds.move);			
 			}
-			item = c;
-			for(i in item.statistics) {
-				character.statistics[i].current += item.statistics[i].current;
-				character.statistics[i].max += item.statistics[i].max;
+			if(equipped && c.weight === CONSTANTS.MAX_WEIGHT && equipped.weight === CONSTANTS.MAX_WEIGHT) {
+				type = "mainhand";
+			} else if(equipped && (equipped.weight === CONSTANTS.MAX_WEIGHT || c.weight === CONSTANTS.MAX_WEIGHT)) {
+				return; //if a two handed weapon is involved and something is equipped
 			}
-			equipment_items[c.type].item = c;	
-			Sound.effect(item.sounds.move);
+			if((type === "mainhand" && equipment_items.offhand.item && 
+					c.weight + equipment_items.offhand.item.weight > CONSTANTS.MAX_WEIGHT) ||
+				(type === "offhand" && equipment_items.mainhand.item &&
+					c.weight + equipment_items.mainhand.item.weight > CONSTANTS.MAX_WEIGHT)) {
+				return;
+			}
+			inventory_items[index] = undefined; //remove the item
+			if((equipped = equipment_items[type].item) !== undefined) { 
+				for(i in equipped.statistics) {
+					character.statistics[i].current -= equipped.statistics[i].current;
+					character.statistics[i].max -= equipped.statistics[i].max;
+				}
+				inventory_items[index] = equipped;	
+				Sound.effect(equipped.sounds.move);			
+			}
+			equipped = c;
+			for(i in equipped.statistics) {
+				character.statistics[i].current += equipped.statistics[i].current;
+				character.statistics[i].max += equipped.statistics[i].max;
+			}
+			equipment_items[type].item = c;	
+			Sound.effect(equipped.sounds.move);
 		},
 		"Drop" : function(c) {
 			inventory_items[inventory_items.indexOf(c)] = undefined;

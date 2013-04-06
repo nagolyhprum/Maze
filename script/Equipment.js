@@ -116,7 +116,12 @@ $(function() {
 				}
 				inventory_items[index] = c.item;
 				Sound.effect(item.sounds.move);
-				delete c.item;
+				if(c.item.type === "mainhand") {
+					c.item = equipment_items.offhand.item;
+					delete equipment_items.offhand.item;
+				} else {
+					delete c.item;
+				}
 			}
 		}
 	};

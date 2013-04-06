@@ -202,11 +202,9 @@ var requestAnimFrame = (function(){
 		};
 }());
 
-var getSign = (function() {
-	return function(x) {
-		return x ? x / Math.abs(x) : 0;
-	};
-}());
+function getSign(x) {
+	return x ? x / Math.abs(x) : 0;
+}
 
 function Statistics(args) {
 	args = args || {};
@@ -224,6 +222,7 @@ function Statistics(args) {
 function Character(args) {
 	this.tween = new Tween();
 	args = args || {};
+	this.weight = args.weight || 0;
 	this.events = new EventHandler();
 	this.walk = args.walk || [];
 	this.attack = args.attack || [];
@@ -423,6 +422,7 @@ function Item(args) {
 		x : args.location.x || 0,
 		y : args.location.y || 0
 	};
+	this.weight = args.weight || 0;
 	this.type = args.type;
 	this.portrait = loadImage(args.portrait);
 	this.statistics = new Statistics(args.statistics);

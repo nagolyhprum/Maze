@@ -5,7 +5,7 @@ Future
 ---
 
 - Random Cries
-- Weapons, Two Handed, Dual Wielding
+- ~Weapons, Two Handed, Dual Wielding~
 - Bow / Lance
 - Magic
 - Shield

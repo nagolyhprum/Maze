@@ -370,44 +370,9 @@ var Server = (function() {
 			if(l.row === row && l.column === column) {
 				var thisRoom = room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column;
 				es[i].damage(1, function() {
-					var item = randomItem();
+					var item = randomItem(column, row);
 					character.statistics.experience.current += this.statistics.experience.current;
-					(roomItems[thisRoom] = roomItems[thisRoom] || []).push(new Item({
-						name : item[0] + " " + item[1],
-						sounds : {
-							move : ["sound/inventory/coin"]
-						},
-						type : item[1],
-						portrait : "items/" + item[0] + "-" + item[1] + ".png",
-						id : 1,
-						location : {							
-							column : column,
-							row : row
-						},
-						statistics : {
-							strength : {
-								current : item[2],
-								max : item[2]
-							},
-							defense : {
-								current : item[2],
-								max : item[2]
-							},
-							speed : {
-								current : item[2],
-								max : item[2]
-							}
-						},
-						ground : {							
-							rows : 3,
-							columns : 5,
-							src : "drops.png",							
-							display : {
-								column : Math.floor(Math.random() * 5),
-								row : Math.floor(Math.random() * 3)
-							}
-						}
-					}));					
+					(roomItems[thisRoom] = roomItems[thisRoom] || []).push(item);					
 					items.events.invoke("drop");
 				}, function() {
 					es.splice(es.indexOf(this), 1);
@@ -416,7 +381,96 @@ var Server = (function() {
 		}
 	};
 	
-	function randomItem() {
+	function randomItem(column, row) {
+		var val = Math.random();
+		if(val > 1) {
+			return randomArmor(column, row);
+		} else if(val >= 0) {
+			return randomWeapon(column, row);
+		} else {
+			return randomJewelery(column, row);
+		}
+	}
+	
+	function randomJewelery(column, row) {
+		return randomArmor(column, row);
+	}
+	
+	function randomWeapon(column, row) {	
+		var r = [{
+				portrait : "buckler",
+				weight : 1,
+				strength : 0,
+				defense : 5,
+				speed : 0,
+				name : "Buckler"
+			}, {
+				portrait : "dagger",
+				weight : 2,
+				strength : 5,
+				defense : 0,
+				speed : 0,
+				name : "Dagger"
+			}, {
+				portrait : "shortbow",
+				weight : 3,
+				strength : 3,
+				defense : 0,
+				speed : 3,
+				name : "Short Bow"
+			}, {
+				portrait : "wand",
+				weight : 2,
+				strength : 0,
+				defense : 0,
+				speed : 0,
+				energy : 5,
+				name : "Wand"
+			}, {
+				portrait : "longsword",
+				weight : 4,
+				strength : 10,
+				defense : 0,
+				speed : 0,
+				energy : 0,
+				name : "Long Sword"
+			}],
+			item = r[Math.floor(Math.random() * r.length)];
+		return new Item({
+			name : item.name,
+			sounds : {
+				move : ["sound/inventory/coin"]
+			},
+			weight : item.weight,
+			type : "mainhand",
+			portrait : "items/" + item.portrait + ".png",
+			id : 1,
+			location : {							
+				column : column,
+				row : row
+			},
+			statistics : {
+				strength : {
+					current : item.strength,
+					max : item.strength
+				},
+				defense : {
+					current : item.defense,
+					max : item.defense
+				},
+				speed : {
+					current : item.speed,
+					max : item.speed
+				},
+				energy : {					
+					current : item.energy,
+					max : item.energy
+				}
+			}
+		});
+	}
+	
+	function randomArmor(column, row) {
 		var weight = ["cloth", "hide", "leather", "chain", "steel"],
 			part = ["head", "feet", "hands", "legs", "chest"],
 			item = ["cloth", "head"];
@@ -426,7 +480,33 @@ var Server = (function() {
 			item[0] = weight[item[2]];
 			item[1] = part[Math.floor(Math.random() * part.length)];			
 		}
-		return item;
+		return new Item({
+			name : item[0] + " " + item[1],
+			sounds : {
+				move : ["sound/inventory/coin"]
+			},
+			type : item[1],
+			portrait : "items/" + item[0] + "-" + item[1] + ".png",
+			id : 1,
+			location : {							
+				column : column,
+				row : row
+			},
+			statistics : {
+				strength : {
+					current : item[2],
+					max : item[2]
+				},
+				defense : {
+					current : item[2],
+					max : item[2]
+				},
+				speed : {
+					current : item[2],
+					max : item[2]
+				}
+			}
+		});
 	}
 	
 	var roomItems = [];
@@ -486,7 +566,8 @@ var CONSTANTS = {
 		Y : function() {
 			return canvas.height / 2 - CONSTANTS.HEIGHT() / 2;
 		}
-	}
+	},
+	MAX_WEIGHT : 4
 }, 
 tileset = new TileSet({
 	columns : 9, 
