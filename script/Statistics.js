@@ -33,9 +33,9 @@ $(function() {
 		context.globalAlpha = 0.8;
 		if(visible) {
 			drawCharacterStatistics();
-		} else if (!contexts.contextmenu){
+		} else if (!contexts.contextmenu && mousemove){
 			drawItemStatistics(getHover());
-			if(mousemove && !equipment_items.visible && !inventory_items.visible) {
+			if(!equipment_items.visible && !inventory_items.visible) {
 				var column = Math.floor((location.x - CONSTANTS.START.X()) / CONSTANTS.TILE.WIDTH),
 					row = Math.floor((location.y - CONSTANTS.START.Y()) / CONSTANTS.TILE.HEIGHT);
 				for(var i = 0; i < items.list.length; i++) {

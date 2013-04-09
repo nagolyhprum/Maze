@@ -4,7 +4,7 @@ World Tactics
 Future
 ---
 
-- Random Cries
+- ~~Random Cries~~
 - ~~Weapons, Two Handed, Dual Wielding~~
 - ~~Bow / Lance~~
 - ~~Magic~~

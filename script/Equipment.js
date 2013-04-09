@@ -169,6 +169,7 @@ $(function() {
 				}
 			}
 			context.strokeStyle = "white";
+			context.textAlign = "left";
 			context.textBaseline = "middle";
 			context.strokeText("Equipment", margin + 5, margin + titlesize / 2, width);
 			context.restore();

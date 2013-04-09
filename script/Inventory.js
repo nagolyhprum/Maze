@@ -2,14 +2,16 @@ $(function() {
 	canvas.events.attach("keydown", function(key) {
 		if(key === 17) {
 			var index = inventory_items.indexOf(undefined);
-			if(index !== -1) {
-				for(var i = 0; i < items.list.length; i++) {
-					var item = items.list[i];
-					if(item.location.column === character.location.column && item.location.row === character.location.row) {
+			for(var i = 0; i < items.list.length; i++) {
+				var item = items.list[i];
+				if(item.location.column === character.location.column && item.location.row === character.location.row) {						
+					if(index !== -1) {
 						inventory_items[index] = item;		
 						Sound.effect(item.sounds.move);
 						items.list.splice(i, 1);
 						break;
+					} else {
+						alert("You have no room in your inventory for that item.");
 					}
 				}
 			}
@@ -46,13 +48,10 @@ $(function() {
 			if(c.type === "mainhand") {
 				if(c.weight === 1) {
 					if(equipment_items.mainhand.item && equipment_items.mainhand.item.weight === 4) {								
-						if(free !== -1) {
-							unequip("mainhand", free);
-						} else {
-							return;
-						}
-					}	
-					unequip("offhand", index);
+						unequip("mainhand", index);						
+					} else {
+						unequip("offhand", index);
+					}
 					type = "offhand";
 				} else if(c.weight === 2) {
 					unequip("mainhand", index);									
@@ -65,6 +64,7 @@ $(function() {
 							unequip("offhand", free);
 						}
 					} else {
+						alert("You have no room in your inventory for your equipped items.");
 						return;
 					}
 				}
@@ -140,6 +140,7 @@ $(function() {
 			}
 			context.strokeStyle = "white";
 			context.textBaseline = "middle";
+			context.textAlign = "center";
 			context.strokeText("Inventory", margin * 2, margin + titlesize / 2, width - margin * 2);
 			context.restore();			
 		}

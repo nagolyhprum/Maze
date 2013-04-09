@@ -16,23 +16,27 @@ function getDrawingOrder(type) {
 
 function unequip(type, index) {
 	var equipped = equipment_items[type].item;
-	if(index !== -1 && equipped !== undefined) { 
-		for(var i in equipped.statistics) {
-			character.statistics[i].current -= equipped.statistics[i].current;
-			character.statistics[i].max -= equipped.statistics[i].max;
-		}
-		var o = getDrawingOrder(type);
+	if(index !== -1) {
+		if(equipped !== undefined) {
+			for(var i in equipped.statistics) {
+				character.statistics[i].current -= equipped.statistics[i].current;
+				character.statistics[i].max -= equipped.statistics[i].max;
+			}
+			var o = getDrawingOrder(type);
+			
+			character.slash[o] = undefined;
+			character.walk[o] = undefined;
+			character.bow[o] = undefined;
+			character.spellcast[o] = undefined;
+			character.thrust[o] = undefined;
 		
-		character.slash[o] = undefined;
-		character.walk[o] = undefined;
-		character.bow[o] = undefined;
-		character.spellcast[o] = undefined;
-		character.thrust[o] = undefined;
-	
-		inventory_items[index] = equipped;	
-		Sound.effect(equipped.sounds.move);			
+			inventory_items[index] = equipped;	
+			Sound.effect(equipped.sounds.move);			
+			equipment_items[type].item = undefined;
+		}
+	} else {
+		alert("You have no room in your inventory for this item.");
 	}
-	equipment_items[type].item = undefined;
 }
 
 function equip(c, type) {	
@@ -41,7 +45,7 @@ function equip(c, type) {
 		character.statistics[i].max += c.statistics[i].max;
 	}
 	
-	var o = getDrawingOrder(c.type);
+	var o = getDrawingOrder((c.weight === 1 && c.type === "mainhand") ? "offhand" : c.type);
 	c.slash && (character.slash[o] = c.slash);
 	c.walk && (character.walk[o] = c.walk);
 	c.bow && (character.bow[o] = c.bow);
@@ -145,13 +149,6 @@ var Sound = (function() {
 
 Sound.root = "audio/";
 Sound.music("music/dungeon");
-
-function randomSound() {
-	Sound.effect("sound/scream/scream" + (1 + Math.floor(Math.random() * 5)));
-	setTimeout(randomSound, 5000 + 5000 * Math.random());
-}
-
-randomSound();
 
 var loadImage = (function() {
 	var images = {}, events = {};
@@ -333,7 +330,7 @@ Character.prototype.draw = function(ctx) {
 	}		
 };
 
-var SPEED = 200, SLEEP = 500;
+var SPEED = 150, SLEEP = 500;
 
 Character.prototype.timeToMove = function() {
 	return Math.ceil(SPEED / this.statistics.speed.current * CONSTANTS.TILE.WIDTH) + SLEEP;

@@ -40,7 +40,8 @@ $(function() {
 			height = cellheight * options.length;
 			context.fillStyle = "gray";
 			context.strokeStyle = "black";
-			context.textbaseline = "textBaseline";
+			context.textBaseline = "middle";
+			context.textAlign = "left";
 			max += padding * 2;
 			width = max;
 			context.fillRect(location.x, location.y, max, height);
