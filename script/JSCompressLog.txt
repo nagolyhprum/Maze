@@ -1,108 +1,126 @@
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Tween.js
+Tween.js'
+E:\JSCompress\'E:\git\Maze\script\Tween.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-MazeGenerator.js
+MazeGenerator.js'
+E:\JSCompress\'E:\git\Maze\script\MazeGenerator.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-EventHandler.js
+EventHandler.js'
+E:\JSCompress\'E:\git\Maze\script\EventHandler.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-StandardLibrary.js
+StandardLibrary.js'
+E:\JSCompress\'E:\git\Maze\script\StandardLibrary.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Server.js
+Server.js'
+E:\JSCompress\'E:\git\Maze\script\Server.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Canvas.js
+Canvas.js'
+E:\JSCompress\'E:\git\Maze\script\Canvas.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Tiles.js
+Tiles.js'
+E:\JSCompress\'E:\git\Maze\script\Tiles.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Blood.js
+Blood.js'
+E:\JSCompress\'E:\git\Maze\script\Blood.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Items.js
+Items.js'
+E:\JSCompress\'E:\git\Maze\script\Items.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Enemies.js
+Enemies.js'
+E:\JSCompress\'E:\git\Maze\script\Enemies.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Walls.js
+Walls.js'
+E:\JSCompress\'E:\git\Maze\script\Walls.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-MiniMap.js
+MiniMap.js'
+E:\JSCompress\'E:\git\Maze\script\MiniMap.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Character.js
+Character.js'
+E:\JSCompress\'E:\git\Maze\script\Character.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Bar.js
+Bar.js'
+E:\JSCompress\'E:\git\Maze\script\Bar.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Inventory.js
+Inventory.js'
+E:\JSCompress\'E:\git\Maze\script\Inventory.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Equipment.js
+Equipment.js'
+E:\JSCompress\'E:\git\Maze\script\Equipment.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Statistics.js
+Statistics.js'
+E:\JSCompress\'E:\git\Maze\script\Statistics.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-Context.js
+Context.js'
+E:\JSCompress\'E:\git\Maze\script\Context.js'(0): can't open file: Invalid argument
 
 0 error(s), 0 warning(s)

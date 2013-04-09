@@ -5,13 +5,13 @@ Future
 ---
 
 - Random Cries
-- ~Weapons, Two Handed, Dual Wielding~
-- Bow / Lance
-- Magic
-- Shield
+- ~~Weapons, Two Handed, Dual Wielding~~
+- ~~Bow / Lance~~
+- ~~Magic~~
+- ~~Shield~~
 - Amulets
 - Rings
-- Character clothing + weapon is accurate
+- ~~Character clothing + weapon is accurate~~
 - Leveling
 - Skills
 - Increase Statistics / Skills

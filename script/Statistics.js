@@ -60,10 +60,6 @@ $(function() {
 				if(type === "mainhand") {
 					if(item.weight === 1 && !(equipment_items.mainhand.item && equipment_items.mainhand.item.weight === 4)) {
 						type = "offhand";
-					} else if(item.weight === 2) {
-						if(equipment_items.offhand.item && equipment_items.offhand.item.weight === 2) {						
-							type = "offhand";
-						}
 					}
 				}				
 				equipped = equipment_items[type].item;

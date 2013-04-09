@@ -30,7 +30,7 @@ $(function() {
 			moved = 0;
 			if(which === 32) {
 				Server.attack(character.display.row);
-				character.slash();
+				character.attack();
 			}
 		}
 		if(moved) {

@@ -1,4 +1,5 @@
 $(function() {
+	console.log("Hello there");
 	var width = 296, height = 325, background, margin = 5, titlesize = 22, start = {x : 400, y : 0};
 	equipment_items.visible = 0;
 	loadImage("window/texture.png", function(img) {
@@ -107,21 +108,11 @@ $(function() {
 	
 	var menu = {
 		"Unequip" : function(c) {
-			var index = inventory_items.indexOf(undefined);
-			if(index !== -1) {
-				var item = c.item;
-				for(var i in item.statistics) {
-					character.statistics[i].current -= item.statistics[i].current;
-					character.statistics[i].max -= item.statistics[i].max;
-				}
-				inventory_items[index] = c.item;
-				if(c === equipment_items.mainhand) {
-					equipment_items.mainhand.item = undefined;
-				} else {
-					equipment_items.offhand.item = undefined;
-				}
-				Sound.effect(item.sounds.move);
+			var type = c.item.type;
+			if(c === equipment_items.offhand) {
+				type = "offhand";
 			}
+			unequip(type, inventory_items.indexOf(undefined));
 		}
 	};
 	

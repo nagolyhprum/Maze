@@ -2,6 +2,57 @@ String.prototype.endsWith = function(suffix) {
     return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
+function getDrawingOrder(type) {
+	return {
+		legs : 1,
+		feet : 2,
+		chest : 3,
+		hands : 4,
+		head : 5,
+		mainhand : 6,
+		offhand : 7
+	}[type];
+}
+
+function unequip(type, index) {
+	var equipped = equipment_items[type].item;
+	if(index !== -1 && equipped !== undefined) { 
+		for(var i in equipped.statistics) {
+			character.statistics[i].current -= equipped.statistics[i].current;
+			character.statistics[i].max -= equipped.statistics[i].max;
+		}
+		var o = getDrawingOrder(type);
+		
+		character.slash[o] = undefined;
+		character.walk[o] = undefined;
+		character.bow[o] = undefined;
+		character.spellcast[o] = undefined;
+		character.thrust[o] = undefined;
+	
+		inventory_items[index] = equipped;	
+		Sound.effect(equipped.sounds.move);			
+	}
+	equipment_items[type].item = undefined;
+}
+
+function equip(c, type) {	
+	for(var i in c.statistics) {
+		character.statistics[i].current += c.statistics[i].current;
+		character.statistics[i].max += c.statistics[i].max;
+	}
+	
+	var o = getDrawingOrder(c.type);
+	c.slash && (character.slash[o] = c.slash);
+	c.walk && (character.walk[o] = c.walk);
+	c.bow && (character.bow[o] = c.bow);
+	c.spellcast && (character.spellcast[o] = c.spellcast);
+	c.thrust && (character.thrust[o] = c.thrust);
+	
+	inventory_items[inventory_items.indexOf(c)] = undefined;
+	equipment_items[type].item = c;	
+	Sound.effect(c.sounds.move);
+}
+
 function attachEvent(ele, name, evt) {
 	if(ele.addEventListener) {
 		ele.addEventListener(name, evt, false);
@@ -95,6 +146,13 @@ var Sound = (function() {
 Sound.root = "audio/";
 Sound.music("music/dungeon");
 
+function randomSound() {
+	Sound.effect("sound/scream/scream" + (1 + Math.floor(Math.random() * 5)));
+	setTimeout(randomSound, 5000 + 5000 * Math.random());
+}
+
+randomSound();
+
 var loadImage = (function() {
 	var images = {}, events = {};
 	return function(src, complete) {
@@ -123,7 +181,7 @@ var loadImage = (function() {
 
 loadImage.root = "images/";
 
-var TileSet = function(args) {
+function TileSet(args) {
 	var me = this;
 	args = args || {};
 	me.rows = args.rows || 1;
@@ -146,7 +204,7 @@ var TileSet = function(args) {
 		me.height = image.height / me.rows;
 		me.complete = 1;
 	});
-};
+}
 
 TileSet.prototype.draw = function(context, x, y, w, h) {
 	context.drawImage(this.image,
@@ -222,10 +280,13 @@ function Statistics(args) {
 function Character(args) {
 	this.tween = new Tween();
 	args = args || {};
-	this.weight = args.weight || 0;
 	this.events = new EventHandler();
+	this.attackstyle = args.attackstyle || "slash";
 	this.walk = args.walk || [];
-	this.attack = args.attack || [];
+	this.bow = args.bow || [];
+	this.spellcast = args.spellcast || [];
+	this.thrust = args.thrust || [];
+	this.slash = args.slash || [];
 	this.hurt = args.hurt || [];
 	this.active = this.walk;
 	this.id = args.id;
@@ -256,8 +317,8 @@ function Character(args) {
 
 Character.prototype.draw = function(ctx) {
 	for(var i = 0; i < this.active.length; i++) {
-		var tile = this.active[i];
-		if(tile.complete) {
+		var tile = this.active[i];		
+		if(tile && tile.complete) {
 			ctx.drawImage(
 				tile.image,
 				this.display.column * tile.width,
@@ -272,7 +333,7 @@ Character.prototype.draw = function(ctx) {
 	}		
 };
 
-var SPEED = 100, SLEEP = 500;
+var SPEED = 200, SLEEP = 500;
 
 Character.prototype.timeToMove = function() {
 	return Math.ceil(SPEED / this.statistics.speed.current * CONSTANTS.TILE.WIDTH) + SLEEP;
@@ -320,13 +381,13 @@ Character.prototype.moveBy = function(horizontal, vertical, complete) {
 	});
 };
 
-Character.prototype.slash = function(complete) {
+Character.prototype.attack = function(complete) {
 	var me = this, column = -1;
 	Sound.effect(this.sounds.slash[Math.floor(this.sounds.slash.length * Math.random())]);
 	this.tween.push({
 		init : function() {
 			me.display.column = 0;
-			me.active = me.attack;
+			me.active = me[(me === character && equipment_items.mainhand.item) ? equipment_items.mainhand.item.attack : me.attackstyle];
 		},
 		change : function() {
 			column++;
@@ -416,6 +477,14 @@ Character.prototype.wait = function(complete) {
 function Item(args) {
 	args = args || {};
 	args.location = args.location || {};
+	
+	args.walk && (this.walk = new TileSet(args.walk));
+	args.spellcast && (this.spellcast = new TileSet(args.spellcast));
+	args.bow && (this.bow = new TileSet(args.bow));
+	args.slash && (this.slash = new TileSet(args.slash));
+	args.thrust && (this.thrust = new TileSet(args.thrust));
+	
+	this.attack = args.attack || "slash";
 	this.location = {
 		row : args.location.row || 0,
 		column : args.location.column || 0,

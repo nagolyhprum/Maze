@@ -37,20 +37,6 @@ $(function() {
 		background = context.createPattern(img, "repeat");
 	});
 	
-	function unequip(type, index) {
-		var equipped = equipment_items[type].item;
-		inventory_items[index] = undefined; //remove the item
-		if(equipped !== undefined) { 
-			for(var i in equipped.statistics) {
-				character.statistics[i].current -= equipped.statistics[i].current;
-				character.statistics[i].max -= equipped.statistics[i].max;
-			}
-			inventory_items[index] = equipped;	
-			Sound.effect(equipped.sounds.move);			
-		}
-		equipment_items[type].item = undefined;
-	}
-	
 	var menu = {
 		"Equip / Use" : function(c) {
 			var index = inventory_items.indexOf(c), //get the index of the item to equip
@@ -69,12 +55,7 @@ $(function() {
 					unequip("offhand", index);
 					type = "offhand";
 				} else if(c.weight === 2) {
-					if(equipment_items.offhand.item && equipment_items.offhand.item.weight === 2) {						
-						unequip("offhand", index);
-						type = "offhand";
-					} else {
-						unequip("mainhand", index);				
-					}
+					unequip("mainhand", index);									
 				} else if(c.weight === 3) {
 					unequip("mainhand", index);				
 				} else if(c.weight === 4) {
@@ -87,14 +68,10 @@ $(function() {
 						return;
 					}
 				}
+			} else {
+				unequip(c.type, index);
 			}
-			var equipped = c;
-			for(i in equipped.statistics) {
-				character.statistics[i].current += equipped.statistics[i].current;
-				character.statistics[i].max += equipped.statistics[i].max;
-			}
-			equipment_items[type].item = c;	
-			Sound.effect(equipped.sounds.move);
+			equip(c, type);
 		},
 		"Drop" : function(c) {
 			inventory_items[inventory_items.indexOf(c)] = undefined;

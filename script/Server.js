@@ -46,9 +46,12 @@ var Server = (function() {
 	Server.getCharacter = function() {
 		return new Character({
 			portrait : "face/FlareMaleHero1.png",
+			attackstyle : "slash",
 			name : "Logan",
 			sounds : {
 				slash : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
+				bow : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
+				thrust : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
 				hurt : [
 					"sound/grunts/grunt1",
 					"sound/grunts/grunt2",
@@ -61,8 +64,7 @@ var Server = (function() {
 					"sound/grunts/grunt9",
 					"sound/grunts/grunt10",
 					"sound/grunts/grunt11"
-				],
-				walk : []
+				]
 			},
 			statistics : {
 				health : {
@@ -83,17 +85,7 @@ var Server = (function() {
 				new TileSet({
 					columns : 9, 
 					rows : 4, 
-					src : "walkcycle/BODY_male.png"
-				}),
-				new TileSet({
-					columns : 9, 
-					rows : 4, 
-					src : "walkcycle/LEGS_pants_greenish.png"
-				}),
-				new TileSet({
-					columns : 9, 
-					rows : 4, 
-					src : "walkcycle/TORSO_robe_shirt_brown.png"
+					src : "walk/BODY_male.png"
 				})
 			],
 			hurt : [
@@ -101,38 +93,34 @@ var Server = (function() {
 					columns : 6, 
 					rows : 1, 
 					src : "hurt/BODY_male.png"
-				}),
-				new TileSet({
-					columns : 6, 
-					rows : 1, 
-					src : "hurt/LEGS_pants_greenish.png"
-				}),
-				new TileSet({
-					columns : 6, 
-					rows : 1, 
-					src : "hurt/TORSO_robe_shirt_brown.png"
 				})
 			],
-			attack : [
+			slash : [
 				new TileSet({
 					columns : 6, 
 					rows : 4, 
 					src : "slash/BODY_human.png"
-				}),
+				})
+			],
+			thrust : [
 				new TileSet({
-					columns : 6, 
+					columns : 8, 
 					rows : 4, 
-					src : "slash/LEGS_pants_greenish.png"
-				}),
+					src : "thrust/BODY_human.png"
+				})
+			],
+			bow : [
 				new TileSet({
-					columns : 6, 
+					columns : 13, 
 					rows : 4, 
-					src : "slash/TORSO_robe_shirt_brown.png"
-				}),
+					src : "bow/BODY_human.png"
+				})
+			],
+			spellcast : [
 				new TileSet({
-					columns : 6, 
+					columns : 7, 
 					rows : 4, 
-					src : "slash/WEAPON_dagger.png"
+					src : "spellcast/BODY_human.png"
 				})
 			]
 		});
@@ -146,12 +134,13 @@ var Server = (function() {
 				enemies[i] = [];
 				enemies[i].push(
 					new Character({
+						attackstyle : "slash",
 						walk : [new TileSet({
 							columns : 9, 
 							rows : 4, 
-							src : "walkcycle/BODY_skeleton.png"
+							src : "walk/BODY_skeleton.png"
 						})],
-						attack : [new TileSet({
+						slash : [new TileSet({
 							columns : 6, 
 							rows : 4, 
 							src : "slash/BODY_skeleton.png"
@@ -209,12 +198,13 @@ var Server = (function() {
 					}));
 					id = id + 1;
 					enemies[i].push(new Character({
+						attackstyle : "slash",
 						walk : [new TileSet({
 							columns : 9, 
 							rows : 4, 
-							src : "walkcycle/BODY_skeleton.png"
+							src : "walk/BODY_skeleton.png"
 						})],
-						attack : [new TileSet({
+						slash : [new TileSet({
 							columns : 6, 
 							rows : 4, 
 							src : "slash/BODY_skeleton.png"
@@ -272,12 +262,13 @@ var Server = (function() {
 					}));					
 					id = id + 1;
 					enemies[i].push(new Character({
+						attackstyle : "slash",
 						walk : [new TileSet({
 							columns : 9, 
 							rows : 4, 
-							src : "walkcycle/BODY_skeleton.png"
+							src : "walk/BODY_skeleton.png"
 						})],
-						attack : [new TileSet({
+						slash : [new TileSet({
 							columns : 6, 
 							rows : 4, 
 							src : "slash/BODY_skeleton.png"
@@ -383,7 +374,7 @@ var Server = (function() {
 	
 	function randomItem(column, row) {
 		var val = Math.random();
-		if(val > 1) {
+		if(val > 0.5) {
 			return randomArmor(column, row);
 		} else if(val >= 0) {
 			return randomWeapon(column, row);
@@ -403,44 +394,86 @@ var Server = (function() {
 				strength : 0,
 				defense : 5,
 				speed : 0,
-				name : "Buckler"
+				name : "Buckler",
+				
+				walk : {
+					src : "walk/WEAPON_shield_cutout_body.png",
+					rows : 4,
+					columns : 9
+				}
 			}, {
+				attack : "slash",
 				portrait : "dagger",
 				weight : 2,
 				strength : 5,
 				defense : 0,
 				speed : 0,
-				name : "Dagger"
+				name : "Dagger",
+				
+				slash :  {
+					src : "slash/WEAPON_dagger.png",
+					rows : 4,
+					columns : 6
+				}
 			}, {
+				attack : "bow",
 				portrait : "shortbow",
 				weight : 3,
 				strength : 3,
 				defense : 0,
 				speed : 3,
-				name : "Short Bow"
+				name : "Short Bow",
+				
+				bow :  {
+					src : "bow/WEAPON_bow.png",
+					rows : 4,
+					columns : 13
+				}
 			}, {
+				attack : "spellcast",
 				portrait : "wand",
 				weight : 2,
 				strength : 0,
 				defense : 0,
 				speed : 0,
 				energy : 5,
-				name : "Wand"
+				name : "Wand",
+				
+				spellcast :  {
+					src : "spellcast/HEAD_skeleton_eye_glow.png",
+					rows : 4,
+					columns : 6
+				}
 			}, {
+				attack : "thrust",
 				portrait : "longsword",
 				weight : 4,
 				strength : 10,
 				defense : 0,
 				speed : 0,
 				energy : 0,
-				name : "Long Sword"
+				name : "Long Sword",
+				
+				thrust :  {
+					src : "thrust/WEAPON_spear.png",
+					rows : 4,
+					columns : 8
+				}
 			}],
 			item = r[Math.floor(Math.random() * r.length)];
 		return new Item({
+			attack : item.attack,
 			name : item.name,
 			sounds : {
 				move : ["sound/inventory/coin"]
 			},
+			
+			slash : item.slash,
+			walk : item.walk,
+			thrust : item.thrust,
+			bow : item.bow,
+			spellcast : item.spellcast,
+			
 			weight : item.weight,
 			type : "mainhand",
 			portrait : "items/" + item.portrait + ".png",
@@ -480,7 +513,34 @@ var Server = (function() {
 			item[0] = weight[item[2]];
 			item[1] = part[Math.floor(Math.random() * part.length)];			
 		}
-		return new Item({
+		return new Item({			
+			slash : {
+				src : "slash/" + item[1] + ".png",
+				rows : 4,
+				columns : 6
+			},
+			walk : {
+				src : "walk/" + item[1] + ".png",
+				rows : 4,
+				columns : 9
+			},
+			thrust : {
+				src : "thrust/" + item[1] + ".png",
+				rows : 4,
+				columns : 8
+			},
+			bow : {
+				src : "bow/" + item[1] + ".png",
+				rows : 4,
+				columns : 13
+			},
+			spellcast : {
+				src : "spellcast/" + item[1] + ".png",
+				rows : 4,
+				columns : 7
+			},
+			
+		
 			name : item[0] + " " + item[1],
 			sounds : {
 				move : ["sound/inventory/coin"]

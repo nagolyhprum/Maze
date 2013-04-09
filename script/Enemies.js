@@ -74,7 +74,7 @@ $(function() {
 						character.damage(1);
 						e.face(character.location.column, character.location.row);
 						action = function() {
-							e.slash(function() {
+							e.attack(function() {
 								move(e);
 							});
 						};
