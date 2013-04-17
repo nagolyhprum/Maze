@@ -38,7 +38,7 @@ $(function() {
 		context.fillRect(
 			room.location.column * cellw + cellw / 2 - cw / 2, 
 			room.location.row * cellh + cellh / 2 - ch / 2, 
-		cw, ch);
+		cw - 1, ch - 1);
 		context.restore();
 	});
 	room.events.attach("change", function() {

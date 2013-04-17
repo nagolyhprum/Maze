@@ -140,7 +140,7 @@ $(function() {
 			}
 			context.strokeStyle = "white";
 			context.textBaseline = "middle";
-			context.textAlign = "center";
+			context.textAlign = "left";
 			context.strokeText("Inventory", margin * 2, margin + titlesize / 2, width - margin * 2);
 			context.restore();			
 		}
