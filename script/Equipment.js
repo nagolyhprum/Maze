@@ -1,6 +1,10 @@
 $(function() {
-	console.log("Hello there");
-	var width = 296, height = 325, background, margin = 5, titlesize = 22, start = {x : 400, y : 0};
+	var width = 296, 
+		height = 325, 
+		background, 
+		margin = 5, 
+		titlesize = 22, 
+		start = {x : 400, y : 0};
 	equipment_items.visible = 0;
 	loadImage("window/texture.png", function(img) {
 		background = context.createPattern(img, "repeat");

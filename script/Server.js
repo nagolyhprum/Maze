@@ -86,6 +86,21 @@ var Server = (function() {
 					columns : 9, 
 					rows : 4, 
 					src : "walk/BODY_male.png"
+				}),
+				new TileSet({
+					columns : 9, 
+					rows : 4, 
+					src : "walk/LEGS_pants_greenish.png"
+				}),
+				new TileSet({
+					columns : 9, 
+					rows : 4, 
+					src : "walk/TORSO_leather_armor_shirt_white.png"
+				}),
+				new TileSet({
+					columns : 9, 
+					rows : 4, 
+					src : "walk/HEAD_hair_blonde.png"
 				})
 			],
 			hurt : [
@@ -93,6 +108,21 @@ var Server = (function() {
 					columns : 6, 
 					rows : 1, 
 					src : "hurt/BODY_male.png"
+				}),
+				new TileSet({
+					columns : 6, 
+					rows : 1, 
+					src : "hurt/LEGS_pants_greenish.png"
+				}),
+				new TileSet({
+					columns : 6, 
+					rows : 1, 
+					src : "hurt/TORSO_leather_armor_shirt_white.png"
+				}),
+				new TileSet({
+					columns : 6, 
+					rows : 1, 
+					src : "hurt/HEAD_hair_blonde.png"
 				})
 			],
 			slash : [
@@ -100,6 +130,21 @@ var Server = (function() {
 					columns : 6, 
 					rows : 4, 
 					src : "slash/BODY_human.png"
+				}),
+				new TileSet({
+					columns : 6, 
+					rows : 4, 
+					src : "slash/LEGS_pants_greenish.png"
+				}),
+				new TileSet({
+					columns : 6, 
+					rows : 4, 
+					src : "slash/TORSO_leather_armor_shirt_white.png"
+				}),
+				new TileSet({
+					columns : 6, 
+					rows : 4, 
+					src : "slash/HEAD_hair_blonde.png"
 				})
 			],
 			thrust : [
@@ -107,6 +152,21 @@ var Server = (function() {
 					columns : 8, 
 					rows : 4, 
 					src : "thrust/BODY_human.png"
+				}),
+				new TileSet({
+					columns : 8, 
+					rows : 4, 
+					src : "thrust/LEGS_pants_greenish.png"
+				}),
+				new TileSet({
+					columns : 8, 
+					rows : 4, 
+					src : "thrust/TORSO_leather_armor_shirt_white.png"
+				}),
+				new TileSet({
+					columns : 8, 
+					rows : 4, 
+					src : "thrust/HEAD_hair_blonde.png"
 				})
 			],
 			bow : [
@@ -114,6 +174,21 @@ var Server = (function() {
 					columns : 13, 
 					rows : 4, 
 					src : "bow/BODY_human.png"
+				}),
+				new TileSet({
+					columns : 13, 
+					rows : 4, 
+					src : "bow/LEGS_pants_greenish.png"
+				}),
+				new TileSet({
+					columns : 13, 
+					rows : 4, 
+					src : "bow/TORSO_leather_armor_shirt_white.png"
+				}),
+				new TileSet({
+					columns : 13, 
+					rows : 4, 
+					src : "bow/HEAD_hair_blonde.png"
 				})
 			],
 			spellcast : [
@@ -121,6 +196,21 @@ var Server = (function() {
 					columns : 7, 
 					rows : 4, 
 					src : "spellcast/BODY_human.png"
+				}),
+				new TileSet({
+					columns : 7, 
+					rows : 4, 
+					src : "spellcast/LEGS_pants_greenish.png"
+				}),
+				new TileSet({
+					columns : 7, 
+					rows : 4, 
+					src : "spellcast/TORSO_leather_armor_shirt_white.png"
+				}),
+				new TileSet({
+					columns : 7, 
+					rows : 4, 
+					src : "spellcast/HEAD_hair_blonde.png"
 				})
 			]
 		});
@@ -575,6 +665,30 @@ var Server = (function() {
 		return roomItems[room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column] || [];
 	};
 	
+	Server.getSkills = function() {
+		return [{
+			name : "Power Thrust",
+			description : "A powerful thrusting attack that causes significantly more damage than usual.",			
+			action : "thrust_normal",
+			image : {
+				icon : loadImage("skills/thrust/normal.png")
+			},
+			action : "passive",
+			area : 1,
+			duration : 0,
+			cooldown : 1000,
+			cost : 10,
+			level : {
+				current : 0,
+				max : 10
+			},
+			add : new Statistics({
+			}),
+			multiply : new Statistics({
+			})
+		}];
+	};
+	
 	return Server;
 }());
 
@@ -634,6 +748,7 @@ tileset = new TileSet({
 	rows : 16, 
 	src : "tiles.gif"
 }),
+skills = Server.getSkills(),
 canvas,
 context,
 background = loadImage("background.jpg"),

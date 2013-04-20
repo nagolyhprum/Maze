@@ -4,7 +4,7 @@ $(function() {
 		margin = 5,
 		start = {x:0,y:0},
 		background,
-		statistics = Object.keys(new Statistics()),
+		statistics = Statistics.getStatisticNames(),
 		visible = 0,
 		height = titlesize + margin * 2 + width / 2 + statistics.length * (margin * 2 + titlesize),
 		location = {x:0,y:0},

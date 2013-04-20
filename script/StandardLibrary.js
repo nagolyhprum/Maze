@@ -4,13 +4,13 @@ String.prototype.endsWith = function(suffix) {
 
 function getDrawingOrder(type) {
 	return {
-		legs : 1,
-		feet : 2,
-		chest : 3,
-		hands : 4,
-		head : 5,
-		mainhand : 6,
-		offhand : 7
+		legs : 10,
+		feet : 11,
+		chest : 12,
+		hands : 13,
+		head : 14,
+		mainhand : 15,
+		offhand : 16
 	}[type];
 }
 
@@ -18,9 +18,11 @@ function unequip(type, index) {
 	var equipped = equipment_items[type].item;
 	if(index !== -1) {
 		if(equipped !== undefined) {
-			for(var i in equipped.statistics) {
-				character.statistics[i].current -= equipped.statistics[i].current;
-				character.statistics[i].max -= equipped.statistics[i].max;
+			var sn = Statistics.getStatisticNames();
+			for(var i = 0; i < sn.length; i++) {
+				var name = sn[i];
+				character.statistics[name].current -= equipped.statistics[name].current;
+				character.statistics[name].max -= equipped.statistics[name].max;
 			}
 			var o = getDrawingOrder(type);
 			
@@ -29,6 +31,7 @@ function unequip(type, index) {
 			character.bow[o] = undefined;
 			character.spellcast[o] = undefined;
 			character.thrust[o] = undefined;
+			character.hurt[o] = undefined;
 		
 			inventory_items[index] = equipped;	
 			Sound.effect(equipped.sounds.move);			
@@ -40,9 +43,11 @@ function unequip(type, index) {
 }
 
 function equip(c, type) {	
-	for(var i in c.statistics) {
-		character.statistics[i].current += c.statistics[i].current;
-		character.statistics[i].max += c.statistics[i].max;
+	var sn = Statistics.getStatisticNames();
+	for(var i = 0; i < sn.length; i++) {
+		var name = sn[i];
+		character.statistics[name].current += c.statistics[name].current;
+		character.statistics[name].max += c.statistics[name].max;
 	}
 	
 	var o = getDrawingOrder((c.weight === 1 && c.type === "mainhand") ? "offhand" : c.type);
@@ -51,6 +56,7 @@ function equip(c, type) {
 	c.bow && (character.bow[o] = c.bow);
 	c.spellcast && (character.spellcast[o] = c.spellcast);
 	c.thrust && (character.thrust[o] = c.thrust);
+	c.hurt && (character.hurt[o] = c.hurt);
 	
 	inventory_items[inventory_items.indexOf(c)] = undefined;
 	equipment_items[type].item = c;	
@@ -260,19 +266,59 @@ var requestAnimFrame = (function(){
 function getSign(x) {
 	return x ? x / Math.abs(x) : 0;
 }
-
-function Statistics(args) {
-	args = args || {};
+	
+var Statistics = (function() {
 	var stats = ["health", "energy", "experience", "strength", "defense", "speed"];
-	for(var i = 0; i < stats.length; i++) {
-		var stat = stats[i];
-		args[stat] = args[stat] || {};
-		this[stat] = {
-			max : args[stat].max || 0,
-			current : args[stat].current || 0
-		};
-	}
-}
+	var f = function(args) {
+		args = args || {};
+		for(var i = 0; i < stats.length; i++) {
+			var stat = stats[i];
+			args[stat] = args[stat] || {};
+			this[stat] = {
+				max : args[stat].max || 0,
+				current : args[stat].current || 0
+			};
+		}
+		
+		this._add = [];
+		this._multiply = [];
+	};
+	
+	f.getStatisticNames = function() {
+		return stats;
+	};
+		
+	f.prototype.getMax = function(name) {
+		var stat = this[name].max, i = 0;
+		for(; i < this._add.length; i++) {
+			stat += this._add[i][name].max;
+		}
+		for(i = 0; i < this._multiply.length; i++) {
+			stat += stat * this._multiply[i][name].max;
+		}
+		return stat;
+	};
+
+	f.prototype.getCurrent = function(name) {
+		var stat = this[name].max, i = 0;
+		for(; i < this._add.length; i++) {
+			stat += this._add[i][name].max;
+		}
+		for(i = 0; i < this._multiply.length; i++) {
+			stat += stat * this._multiply[i][name].max;
+		}
+		return stat;
+	};
+
+	f.prototype.add = function(s) {
+		this._add.push(s);
+	};
+
+	f.prototype.multiply = function(s) {
+		this._multiply.push(s);
+	};
+	return f;
+}());
 
 function Character(args) {
 	this.tween = new Tween();
