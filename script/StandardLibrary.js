@@ -545,3 +545,46 @@ function Item(args) {
 		move : args.sounds.move || []
 	};
 }
+
+function generateText(obj) {
+    var canvas = document.createElement("canvas"),
+        context = canvas.getContext("2d"),
+        processing = 0,
+        maxWidth = 0;
+    text = obj.text.split("\n");
+    while (processing < text.length) {
+        var toTake = context.measureText(text[processing]).width,
+            pushed = 0;
+        while (toTake > obj.width) {
+            var current = text[processing],
+                io = current.lastIndexOf(" ");
+            if (io === -1) break;
+            var next = current.substring(io + 1),
+                revised = current.substring(0, io);
+            text[processing] = revised;
+            if (pushed > 0) {
+                text[processing + 1] = next + " " + text[processing + 1];
+            } else {
+                text.splice(processing + 1, 0, next);
+            }
+            pushed++;
+			toTake = context.measureText(revised).width
+        }
+        processing++;       
+        if (toTake > maxWidth) {
+            maxWidth = toTake;
+        }
+    }
+    var font = obj.font || context.font;
+    var size = parseInt(font);
+    canvas.width = maxWidth;
+    canvas.height = text.length * size + (size / 3);
+    context.font = font;
+    context.fillStyle = obj.color || "black";
+    context.textBaseline = "top";
+    context.textAlign = "left";
+    for (var i = 0; i < text.length; i++) {
+        context.fillText(text[i], 0, i * size, obj.width);
+    }
+    return canvas;
+}

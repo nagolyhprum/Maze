@@ -20,8 +20,16 @@ JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
 StandardLibrary.js
+F:\git\Maze\script\StandardLibrary.js(572): lint warning: missing semicolon
+        }
+........^
 
-0 error(s), 0 warning(s)
+F:\git\Maze\script\StandardLibrary.js(579): lint warning: parseInt missing radix parameter
+    var size = parseInt(font);
+............................^
+
+
+0 error(s), 2 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
@@ -116,13 +124,29 @@ JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
 Skills.js
-E:\git\Maze\script\Skills.js(20): warning: redeclaration of var background
+F:\git\Maze\script\Skills.js(8): lint warning: parseInt missing radix parameter
+		var key = parseInt(String.fromCharCode(keycode));
+...............................................................^
+
+F:\git\Maze\script\Skills.js(33): warning: redeclaration of var background
 		background,
 ................^
 
-E:\git\Maze\script\Skills.js(24): lint warning: multiple statements separated by commas (use semicolons?)
+F:\git\Maze\script\Skills.js(37): lint warning: multiple statements separated by commas (use semicolons?)
 		inventory_items.visible = 0,
 ...........................................^
 
+F:\git\Maze\script\Skills.js(82): warning: redeclaration of var i
+		for(var i = 0; i < 10; i++) {
+........................^
 
-0 error(s), 2 warning(s)
+F:\git\Maze\script\Skills.js(83): warning: redeclaration of var x
+			var x = i * cellwidth + margin + i * margin, y = canvas.height - cellheight - margin;
+............................^
+
+F:\git\Maze\script\Skills.js(83): warning: redeclaration of var y
+			var x = i * cellwidth + margin + i * margin, y = canvas.height - cellheight - margin;
+.....................................................................^
+
+
+0 error(s), 6 warning(s)
