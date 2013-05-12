@@ -78,6 +78,10 @@ var Server = (function() {
 				experience : {
 					current : 0,
 					max : 100
+				},
+				energy : {
+					current : 100,
+					max : 100
 				}
 			},
 			display : { row : 2 },
@@ -434,32 +438,19 @@ var Server = (function() {
 	Server.moveCharacter = function(l) {
 	};
 
-	Server.attack = function(d) {
-		var es = enemies[room.location.column + room.location.row * columns];
-		var row = character.location.row, column = character.location.column;
-		if(d === CONSTANTS.DIRECTION.UP) {
-			row--;
-		} else if(d === CONSTANTS.DIRECTION.LEFT) {
-			column--;
-		} else if(d === CONSTANTS.DIRECTION.DOWN) {
-			row++;
-		} else if(d === CONSTANTS.DIRECTION.RIGHT) {
-			column++;
-		}
-		for(var i = 0; i < es.length; i++) {
-			var l = es[i].location;
-			if(l.row === row && l.column === column) {
-				var thisRoom = room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column;
-				es[i].damage(1, function() {
-					var item = randomItem(column, row);
-					character.statistics.experience.current += this.statistics.experience.current;
-					(roomItems[thisRoom] = roomItems[thisRoom] || []).push(item);
-					items.events.invoke("drop");
-				}, function() {
-					es.splice(es.indexOf(this), 1);
-				});
-			}
-		}
+	Server.attack = function(enemies, index) {
+		var thisRoom = room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column,
+			e = enemies[index],
+			row = e.location.row,
+			column = e.location.column;
+		e.damage(1, function() {
+			var item = randomItem(column, row);
+			character.statistics.experience.current += this.statistics.experience.current;
+			(roomItems[thisRoom] = roomItems[thisRoom] || []).push(item);
+			items.events.invoke("drop");
+		}, function() {
+			enemies.splice(enemies.indexOf(e), 1);
+		});
 	};
 
 	function randomItem(column, row) {
@@ -485,7 +476,6 @@ var Server = (function() {
 				defense : 5,
 				speed : 0,
 				name : "Buckler",
-
 				walk : {
 					src : "walk/WEAPON_shield_cutout_body.png",
 					rows : 4,
@@ -499,7 +489,7 @@ var Server = (function() {
 				defense : 0,
 				speed : 0,
 				name : "Dagger",
-
+				area : 1,
 				slash :  {
 					src : "slash/WEAPON_dagger.png",
 					rows : 4,
@@ -513,7 +503,7 @@ var Server = (function() {
 				defense : 0,
 				speed : 3,
 				name : "Short Bow",
-
+				area : Math.max(CONSTANTS.TILE.ROWS, CONSTANTS.TILE.COLUMNS),
 				bow :  {
 					src : "bow/WEAPON_bow.png",
 					rows : 4,
@@ -528,7 +518,7 @@ var Server = (function() {
 				speed : 0,
 				energy : 5,
 				name : "Wand",
-
+				area : -1,
 				spellcast :  {
 					src : "spellcast/HEAD_skeleton_eye_glow.png",
 					rows : 4,
@@ -543,7 +533,7 @@ var Server = (function() {
 				speed : 0,
 				energy : 0,
 				name : "Long Sword",
-
+				area : 2,
 				thrust :  {
 					src : "thrust/WEAPON_spear.png",
 					rows : 4,
@@ -557,7 +547,7 @@ var Server = (function() {
 			sounds : {
 				move : ["sound/inventory/coin"]
 			},
-
+			area : item.area,
 			slash : item.slash,
 			walk : item.walk,
 			thrust : item.thrust,
@@ -669,21 +659,82 @@ var Server = (function() {
 		return [{
 			name : "Power Thrust",
 			description : "A powerful thrusting attack that causes significantly more damage than usual.",
-			attack : "thrust",
+			action : "thrust",
 			image : {
 				icon : loadImage("skills/thrust/normal.png")
 			},
 			type : "active",
-			area : 2,
+			area : 1,
 			duration : 0,
+			isCool : true,
+			cooldown : 5000,
+			energy : 10,
+			add : [new Statistics({
+				strength : {
+					current : 10,
+					max : 10
+				},
+				duration : 5000
+			})],
+			multiply : []
+		}, {
+			name : "Heal",
+			description : "A spell that grants new life to the caster and a resistance to fire magic.",
+			action : "spellcast",
+			image : {
+				icon : loadImage("skills/resist/fire.png")
+			},
+			type : "active",
+			area : 0,
+			isCool : true,
+			cooldown : 10000,
+			energy : 10,
+			add : [new Statistics({
+				health : {
+					current : 10
+				},
+				duration : 1 / 0
+			})],
+			multiply : []
+		}, {
+			name : "Fire Arrow",
+			description : "The player's arrows cause fire damage.",
+			action : "bow",
+			image : {
+				icon : loadImage("skills/wave/fire.png")
+			},
+			type : "active",
+			area : 7,
+			isCool : true,
 			cooldown : 1000,
-			cost : 10,
-			penetrates : true,
-			add : new Statistics({
-				attack : 10
-			}),
-			multiply : new Statistics({
-			})
+			energy : 4,
+			add : [new Statistics({
+				strength : {
+					current : 10,
+					max : 10
+				},
+				duration : 0
+			})],
+			multiply : []
+		}, {
+			name : "Fire Wave",
+			description : "Summons a wave of fire around the caster.",
+			action : "spellcast",
+			image : {
+				icon : loadImage("skills/breath/fire.png")
+			},
+			type : "active",
+			area : -7,
+			isCool : true,
+			cooldown : 1000,
+			energy : 4,
+			add : [new Statistics({
+				energy : {
+					max : 10
+				},
+				duration : 0
+			})],
+			multiply : []
 		}];
 	};
 

@@ -1,3 +1,20 @@
+function sendDamage(direction, skill) {
+	var pos = {column : character.location.column + direction.column, row : character.location.row + direction.row},
+		area = Math.abs(skill.area);	
+	while(pos.column >= 0 && pos.row >= 0 && pos.column < CONSTANTS.TILE.COLUMNS && pos.row < CONSTANTS.TILE.ROWS && area > 0) {
+		for(var i = 0; i < enemies.length; i++) {
+			var e = enemies[i];
+			if(e.location.column === pos.column && e.location.row === pos.row) {
+				Server.attack(enemies, i);
+				return;
+			}
+		}
+		pos.column += direction.column;
+		pos.row += direction.row;
+		area--;
+	}
+}
+
 String.prototype.endsWith = function(suffix) {
     return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
@@ -279,13 +296,24 @@ var Statistics = (function() {
 				current : args[stat].current || 0
 			};
 		}
-		
+		this.duration = args.duration;
 		this._add = [];
 		this._multiply = [];
 	};
 	
 	f.getStatisticNames = function() {
 		return stats;
+	};
+	
+	f.prototype.remove = function(s) {
+		var i = this._add.indexOf(s);
+		if(i !== -1) {
+			this._add.splice(i, 1);
+		}
+		i = this._multiply.indexOf(s);
+		if(i !== -1) {
+			this._multiply.splice(i, 1);
+		}
 	};
 		
 	f.prototype.getMax = function(name) {
@@ -300,12 +328,12 @@ var Statistics = (function() {
 	};
 
 	f.prototype.getCurrent = function(name) {
-		var stat = this[name].max, i = 0;
+		var stat = this[name].current, i = 0;
 		for(; i < this._add.length; i++) {
-			stat += this._add[i][name].max;
+			stat += this._add[i][name].current;
 		}
 		for(i = 0; i < this._multiply.length; i++) {
-			stat += stat * this._multiply[i][name].max;
+			stat += stat * this._multiply[i][name].current;
 		}
 		return stat;
 	};
@@ -470,8 +498,8 @@ var BLOOD = [
 ];
 
 Character.prototype.damage = function(damage, killed, complete) {
-	var health = this.statistics.health;
-	if(health.current > 0) {
+	var s = this.statistics;
+	if(s.getCurrent("health") > 0) {
 		Sound.effect(BLOOD[Math.floor(BLOOD.length * Math.random())]);
 		new Blood({
 			location : {
@@ -480,8 +508,8 @@ Character.prototype.damage = function(damage, killed, complete) {
 			}
 		});
 		Sound.effect(this.sounds.hurt[Math.floor(this.sounds.hurt.length * Math.random())]);
-		health.current -= damage;
-		if(health.current <= 0) {
+		s.health.current -= damage;
+		if(s.getCurrent("health") <= 0) {
 			var me = this;
 			killed && killed.call(this);
 			this.die(complete);
@@ -526,7 +554,7 @@ function Item(args) {
 	args.bow && (this.bow = new TileSet(args.bow));
 	args.slash && (this.slash = new TileSet(args.slash));
 	args.thrust && (this.thrust = new TileSet(args.thrust));
-	
+	this.area = args.area || 1;
 	this.attack = args.attack || "slash";
 	this.location = {
 		row : args.location.row || 0,
@@ -588,3 +616,17 @@ function generateText(obj) {
     }
     return canvas;
 }
+
+Character.prototype.getDirection = function() {	
+	var direction = {column : 0, row : 0}, d = this.display.row;
+	if(d === CONSTANTS.DIRECTION.UP) {
+		direction.row--;
+	} else if(d === CONSTANTS.DIRECTION.RIGHT) {
+		direction.column++;
+	} else if(d === CONSTANTS.DIRECTION.DOWN) {
+		direction.row++;
+	} else if(d === CONSTANTS.DIRECTION.LEFT) {
+		direction.column--;
+	}
+	return direction;
+};

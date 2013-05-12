@@ -121,7 +121,7 @@ $(function() {
 
 		context.fillStyle = "white";
 		//name
-		context.textAlign = 'right';
+		context.textAlign = "right";
 		context.textBaseline = "bottom";
 		context.fillText(obj.name, cellwidth - margin * 2, titlesize + cellheight, cellwidth);
 		//end name
@@ -135,13 +135,13 @@ $(function() {
 
 			context.textAlign = 'center';
 
-			context.fillText(obj.statistics[statistics[i]].max, cellwidth + cellwidth / 2, titlesize + margin * 3 + cellheight + i * (margin * 2 + titlesize) + titlesize / 2, cellwidth - margin * 2);
+			context.fillText(obj.statistics.getMax(statistics[i]), cellwidth + cellwidth / 2, titlesize + margin * 3 + cellheight + i * (margin * 2 + titlesize) + titlesize / 2, cellwidth - margin * 2);
 			context.strokeRect(margin + cellwidth, titlesize + margin * 3 + cellheight + i * (margin * 2 + titlesize), cellwidth - margin * 2, titlesize);
 
-			context.fillText(obj.statistics[statistics[i]].current, 2 * cellwidth + cellwidth / 2, titlesize + margin * 3 + cellheight + i * (margin * 2 + titlesize) + titlesize / 2, cellwidth - margin * 2);
+			context.fillText(obj.statistics.getCurrent(statistics[i]), 2 * cellwidth + cellwidth / 2, titlesize + margin * 3 + cellheight + i * (margin * 2 + titlesize) + titlesize / 2, cellwidth - margin * 2);
 			context.strokeRect(margin + 2 * cellwidth, titlesize + margin * 3 + cellheight + i * (margin * 2 + titlesize), cellwidth - margin * 2, titlesize);
 		}
-		context.textAlign = 'left';
+		context.textAlign = "left";
 		context.fillText("Statistics", margin * 2, margin + titlesize / 2, width);
 	}
 });

@@ -42,34 +42,42 @@ $(function() {
 		
 	var tick = (function() {
 		window.setTimeout = function(f, t) {
-			var id = index++;
-			r[id] = {
-				f : f,
-				t : t,
-				r : t
-			};
-			return id;
+			if(t <= 0) {
+				f();
+			} else if(Math.abs(t) !== 1/0) {			
+				var id = index++;
+				r[id] = {
+					f : f,
+					t : t,
+					r : t
+				};
+				return id;
+			}
 		};		
 		window.setInterval = function(f, t) {
-			var id = index++;
-			r[id] = {
-				f : f,
-				t : t,
-				r : t,
-				i : true
-			};
-			return id;
+			if(Math.abs(t) !== 1/0) {			
+				var id = index++;
+				r[id] = {
+					f : f,
+					t : t,
+					r : t,
+					i : true
+				};
+				return id;
+			}
 		};		
 		window.setCatchup = function(f, t) {
-			var id = index++;
-			r[id] = {
-				f : f,
-				t : t,
-				r : t,
-				i : true,
-				c : true
-			};
-			return id;
+			if(Math.abs(t) !== 1/0) {			
+				var id = index++;
+				r[id] = {
+					f : f,
+					t : t,
+					r : t,
+					i : true,
+					c : true
+				};
+				return id;
+			}
 		};		
 		window.clearTimeout = function(id) {
 			delete r[id];

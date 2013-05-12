@@ -3,8 +3,14 @@ $(function() {
 		character.draw(context);
 	});
 	
+	setCatchup(function() {
+		if(character.statistics.getCurrent("energy") < character.statistics.getMax("energy")) {
+			character.statistics.energy.current++;
+		}
+	}, 1000);
+	
 	canvas.events.attach("keydown", function(which) {
-		if(character.tween.isTweening() || character.statistics.health.current <= 0) return;
+		if(character.tween.isTweening() || character.statistics.getCurrent("health") <= 0) return;
 		var moved = 1, l = {
 			column : character.location.column,
 			row : character.location.row,
@@ -28,8 +34,17 @@ $(function() {
 			vertical = CONSTANTS.TILE.HEIGHT;
 		} else {
 			moved = 0;
-			if(which === 32) {
-				Server.attack(character.display.row);
+			if(which === 32) {			
+				if(equipment_items.mainhand.item && equipment_items.mainhand.item.area < 0) {
+					sendDamage({column : 1, row : 0}, { area : equipment_items.mainhand.item.area });
+					sendDamage({column : -1, row : 0}, { area : equipment_items.mainhand.item.area });
+					sendDamage({column : 0, row : 1}, { area : equipment_items.mainhand.item.area });
+					sendDamage({column : 0, row : -1}, { area : equipment_items.mainhand.item.area });
+				} else {
+					sendDamage(character.getDirection(), {
+						area : equipment_items.mainhand.item ? equipment_items.mainhand.item.area : 1
+					});
+				}
 				character.attack();
 			}
 		}

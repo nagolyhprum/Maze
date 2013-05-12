@@ -38,7 +38,7 @@ $(function() {
 					});
 				};
 			}
-			while(moves > 0 && character.statistics.health.current > 0) {
+			while(moves > 0 && character.statistics.getCurrent("health") > 0) {
 				moves--;
 				var map = [], mg = new MazeGenerator(CONSTANTS.TILE.COLUMNS, CONSTANTS.TILE.ROWS), i;
 				map.columns = CONSTANTS.TILE.COLUMNS;
@@ -48,13 +48,13 @@ $(function() {
 				}
 				for(i = 0; i < enemies.length; i++) {
 					if(e !== enemies[i]) {
-						if(enemies[i].statistics.health.current > 0) {
+						if(enemies[i].statistics.getCurrent("health") > 0) {
 							var obs = enemies[i].location;
 							map[obs.column + obs.row * CONSTANTS.TILE.COLUMNS] = CONSTANTS.WALL.ALL;
 						}
 					}
 				}
-				if(e.statistics.health.current > 0) {
+				if(e.statistics.getCurrent("health") > 0) {
 					var path = mg.getPath(map, e.location.column, e.location.row, character.location.column, character.location.row);
 					if(path.length > 2) {
 						var p = path[path.length - 2];
