@@ -71,7 +71,7 @@ $(function() {
 						};
 					} else if(Math.abs(character.location.column - e.location.column) + 
 							  Math.abs(character.location.row - e.location.row) === 1) {
-						character.damage(1);
+						character.damage(Math.max(e.statistics.getCurrent("strength") - character.statistics.getCurrent("defense"), 0));
 						e.face(character.location.column, character.location.row);
 						action = function() {
 							e.attack(function() {

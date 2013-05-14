@@ -3,14 +3,6 @@ $(function() {
 	canvas.events = new EventHandler();
 	context = canvas.getContext("2d");
 	context.font = "12px Times New Roman";
-	/*
-	attachEvent(window, "resize", resize);
-	function resize() {
-		canvas.width = window.screen.width;
-		canvas.height = window.screen.height;
-	}	
-	resize();
-	*/
 	attachEvent(canvas, "click", function(e) {
 		var bb = canvas.getBoundingClientRect();
 		canvas.events.invoke("click", [{ 
@@ -45,7 +37,8 @@ $(function() {
 			if(t <= 0) {
 				f();
 			} else if(Math.abs(t) !== 1/0) {			
-				var id = index++;
+				var id = index;
+				index++;
 				r[id] = {
 					f : f,
 					t : t,
@@ -53,10 +46,12 @@ $(function() {
 				};
 				return id;
 			}
+			return -1;
 		};		
 		window.setInterval = function(f, t) {
 			if(Math.abs(t) !== 1/0) {			
-				var id = index++;
+				var id = index;
+				index++;
 				r[id] = {
 					f : f,
 					t : t,
@@ -65,6 +60,7 @@ $(function() {
 				};
 				return id;
 			}
+			return -1;
 		};		
 		window.setCatchup = function(f, t) {
 			if(Math.abs(t) !== 1/0) {			
@@ -78,6 +74,7 @@ $(function() {
 				};
 				return id;
 			}
+			return -1;
 		};		
 		window.clearTimeout = function(id) {
 			delete r[id];

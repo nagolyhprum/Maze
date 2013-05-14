@@ -5,7 +5,7 @@ $(function() {
 		background = context.createPattern(img, "repeat");
 	});
 	canvas.events.attach("keydown", function(keycode) {
-		var key = parseInt(String.fromCharCode(keycode));
+		var key = parseInt(String.fromCharCode(keycode), 10);
 		if(!skills.visible) {
 			performSkill(key);
 		}
@@ -19,17 +19,17 @@ $(function() {
 	});	
 	
 	function performSkill(key) {
-		var skill = skillMapping[(key + 9) % 10];
+		var skill = skillMapping[(key + 9) % 10], i;
 		if(skill && !character.tween.isTweening()) {
 			if(skill.isCool) {
 				if(equipment_items.mainhand.item && equipment_items.mainhand.item.attack === skill.action) {
 					if(character.statistics.getCurrent("energy") >= skill.energy) {
 						character.statistics.energy.current -= skill.energy;
 						character.attack();
-						for(var i = 0; i < skill.add.length; i++) {
-							character.statistics.add(skill.add[i]);
+						for(i = 0; i < skill.add.length; i++) {
+							character.statistics.add(skill.add[i], true);
 						}
-						for(var i = 0; i < skill.multiply.length; i++) {
+						for(i = 0; i < skill.multiply.length; i++) {
 							character.statistics.multiply(skill.multiply[i]);
 						}
 						if(skill.area > 0) { //then it is a linear skill
@@ -45,10 +45,10 @@ $(function() {
 						setTimeout(function() {
 							skill.isCool = true;
 						}, skill.cooldown);					
-						for(var i = 0; i < skill.add.length; i++) {
+						for(i = 0; i < skill.add.length; i++) {
 							remove(skill.add[i]);
 						}
-						for(var i = 0; i < skill.multiply.length; i++) {
+						for(i = 0; i < skill.multiply.length; i++) {
 							remove(multiply.add[i]);
 						}
 					} else {
@@ -79,22 +79,22 @@ $(function() {
 		click = l;
 	});
 	
-	var margin = 5,
+	var margin = 10,
 		cellwidth = CONSTANTS.TILE.WIDTH, 
 		cellheight = CONSTANTS.TILE.HEIGHT, 
 		rows = 4, 
 		columns = 6, 
-		background,
 		titlesize = 24,
 		width = (cellwidth + margin * 2) * columns, 
-		height = margin * 2 + titlesize + (cellheight + margin * 2) * rows;
-		inventory_items.visible = 0,
+		height = margin * 2 + titlesize + (cellheight + margin * 2) * rows,
 		start = {x : canvas.width / 2 - width / 2, y : canvas.height / 2 - height / 2};
+		inventory_items.visible = 0;
 	canvas.events.attach("draw", function() {
 		context.fillStyle = "gray";
 		if(background) {
 			context.fillStyle = background;
-		}
+		}				
+		var index = 0, toDraw, i, x, y, j, skill;
 		if(skills.visible) {			
 			context.save();					
 			context.translate(start.x, start.y);
@@ -102,11 +102,11 @@ $(function() {
 			context.strokeStyle = "black";
 			context.fillRect(0, 0, width, height); //container
 			context.strokeRect(0, 0, width, height); //container
-			context.strokeRect(margin, margin, width - margin * 2, titlesize); //title						
-			var index = 0;
-			for(var i = 0; i < rows; i++) {
-				for(var j = 0; j < columns; j++, index++) {
-					var x = margin + j * (cellwidth + margin * 2), y = 3 * margin + titlesize + i * (cellheight + margin * 2);
+			context.strokeRect(margin, margin, width - margin * 2, titlesize); //title		
+			for(i = 0; i < rows; i++) {
+				for(j = 0; j < columns; j++, index++) {
+					x = margin + j * (cellwidth + margin * 2);
+					y = 3 * margin + titlesize + i * (cellheight + margin * 2);
 					if(active && skills[index] && active === skills[index]) {	
 						context.strokeStyle = "yellow";
 						context.strokeRect(x, y, cellwidth, cellheight);
@@ -115,10 +115,14 @@ $(function() {
 						context.strokeRect(x, y, cellwidth, cellheight);
 					}
 					if(index < skills.length) {
-						var skill = skills[index];
+						skill = skills[index];
 						drawSkillIcon(skill, x, y);
 						if(location.x >= start.x + x && location.y >= start.y + y && location.x <= start.x + x + cellwidth && location.y <= start.y + y + cellheight) {		
-							drawSkillDescription(skill, start.x, start.y);
+							toDraw = {
+								x : start.x,
+								y : start.y,
+								skill : skill
+							};
 						}
 						if(click && click.x >= start.x + x && click.y >= start.y + y && click.x <= start.x + x + cellwidth && click.y <= start.y + y + cellheight) {
 							active = skill;
@@ -126,6 +130,9 @@ $(function() {
 					}
 				}
 			}					
+			if(toDraw) {
+				drawSkillDescription(toDraw.skill, toDraw.x, toDraw.y);
+			}
 			context.strokeStyle = "white";
 			context.textBaseline = "middle";
 			context.textAlign = "left";
@@ -133,22 +140,26 @@ $(function() {
 			context.globalAlpha = 1;			
 			context.restore();			
 		}			
-		context.strokeStyle = "black";
-		for(var i = 0; i < 10; i++) {
-			var x = i * cellwidth + margin + i * margin, y = canvas.height - cellheight - margin;
+		context.strokeStyle = "black";			
+		toDraw = 0;
+		for(i = 0; i < 10; i++) {
+			x = i * cellwidth + margin + i * margin;
+			y = canvas.height - cellheight - margin;
 			context.fillRect(x, y, cellwidth, cellheight);
 			if(skillMapping[i]) {			
 				drawSkillIcon(skillMapping[i], x, y);
+				if(location && location.x >= x && location.y >= y && location.x <= x + cellwidth && location.y <= y + cellheight) {						
+					toDraw = {
+						x : 0,
+						y : 0,
+						skill : skillMapping[i]
+					};
+				}
 			}
 			context.strokeRect(x, y, cellwidth, cellheight);
 		}
-		for(var i = 0; i < 10; i++) {
-			var x = i * cellwidth + margin + i * margin, y = canvas.height - cellheight - margin;
-			if(skillMapping[i]) {						
-				if(location && location.x >= x && location.y >= y && location.x <= x + cellwidth && location.y <= y + cellheight) {						
-					drawSkillDescription(skillMapping[i], 0, 0);
-				}
-			}
+		if(toDraw) {
+			drawSkillDescription(toDraw.skill, toDraw.x, toDraw.y);
 		}
 		click = 0;
 	});
@@ -161,11 +172,14 @@ $(function() {
 				width : 100
 			}), 
 			h = text.height;
+		context.save();
+		context.globalAlpha = 0.8;
 		x = Math.min(location.x - x, canvas.width - w);
 		y = Math.min(location.y - y, canvas.height - h);
 		context.fillRect(x, y, w, h);
 		context.strokeRect(x, y, w, h);
 		context.drawImage(text, x + margin, y);
+		context.restore();
 	}
 	
 	function drawSkillIcon(skill, x, y) {

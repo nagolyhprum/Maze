@@ -72,8 +72,16 @@ var Server = (function() {
 					current : 50
 				},
 				speed : {
-					current : 25,
-					max : 25
+					current : 10,
+					max : 10
+				},
+				strength : {
+					current : 10,
+					max : 10
+				},
+				defense : {
+					current : 5,
+					max : 5
 				},
 				experience : {
 					current : 0,
@@ -257,16 +265,24 @@ var Server = (function() {
 						},
 						statistics : {
 							health : {
-								max : 3,
-								current : 3
+								max : 20,
+								current : 20
+							},
+							strength : {
+								current : 10,
+								max : 10
 							},
 							speed : {
 								current : 10,
 								max : 10
 							},
-							experience : {
+							defense : {
 								current : 5,
 								max : 5
+							},
+							experience : {
+								current : 10,
+								max : 10
 							}
 						},
 						sounds : {
@@ -321,16 +337,24 @@ var Server = (function() {
 						},
 						statistics : {
 							health : {
-								max : 3,
-								current : 3
+								max : 20,
+								current : 20
+							},
+							strength : {
+								current : 10,
+								max : 10
 							},
 							speed : {
 								current : 10,
 								max : 10
 							},
-							experience : {
+							defense : {
 								current : 5,
 								max : 5
+							},
+							experience : {
+								current : 10,
+								max : 10
 							}
 						},
 						sounds : {
@@ -385,16 +409,24 @@ var Server = (function() {
 						},
 						statistics : {
 							health : {
-								max : 3,
-								current : 3
+								max : 20,
+								current : 20
+							},
+							strength : {
+								current : 10,
+								max : 10
 							},
 							speed : {
 								current : 10,
 								max : 10
 							},
-							experience : {
+							defense : {
 								current : 5,
 								max : 5
+							},
+							experience : {
+								current : 10,
+								max : 10
 							}
 						},
 						sounds : {
@@ -438,14 +470,30 @@ var Server = (function() {
 	Server.moveCharacter = function(l) {
 	};
 
-	Server.attack = function(enemies, index) {
+	Server.attack = function(enemies, index, physical) {
 		var thisRoom = room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column,
 			e = enemies[index],
 			row = e.location.row,
-			column = e.location.column;
-		e.damage(1, function() {
+			column = e.location.column,
+			d = 0;
+		if(physical) {
+			d = Math.max(character.statistics.getCurrent("strength") - e.statistics.getCurrent("defense"), 0);
+		} else {
+			d = Math.max(character.statistics.getCurrent("intelligence") - e.statistics.getCurrent("resistance"), 0);
+		}
+		e.damage(d, function() {
 			var item = randomItem(column, row);
 			character.statistics.experience.current += this.statistics.experience.current;
+			if(character.statistics.experience.current >= character.statistics.experience.max) {
+				alert("Level Up!");
+				character.level++;
+				statisticsPoints += 5;
+				character.statistics.health.max += 10;
+				character.statistics.energy.max += 10;
+				character.statistics.health.current = character.statistics.health.max;
+				character.statistics.energy.current = character.statistics.energy.max;
+				character.statistics.experience.max *= 2;
+			}
 			(roomItems[thisRoom] = roomItems[thisRoom] || []).push(item);
 			items.events.invoke("drop");
 		}, function() {
@@ -517,6 +565,7 @@ var Server = (function() {
 				defense : 0,
 				speed : 0,
 				energy : 5,
+				intelligence : 10,
 				name : "Wand",
 				area : -1,
 				spellcast :  {
@@ -566,6 +615,10 @@ var Server = (function() {
 				strength : {
 					current : item.strength,
 					max : item.strength
+				},
+				intelligence : {
+					current : item.intelligence,
+					max : item.intelligence
 				},
 				defense : {
 					current : item.defense,
@@ -633,17 +686,13 @@ var Server = (function() {
 				row : row
 			},
 			statistics : {
-				strength : {
-					current : item[2],
-					max : item[2]
-				},
 				defense : {
-					current : item[2],
-					max : item[2]
+					current : item[2] + 1,
+					max : item[2] + 1
 				},
 				speed : {
-					current : item[2],
-					max : item[2]
+					current : 4 - item[2],
+					max : 4 - item[2]
 				}
 			}
 		});
@@ -729,7 +778,8 @@ var Server = (function() {
 			cooldown : 1000,
 			energy : 4,
 			add : [new Statistics({
-				energy : {
+				intelligence : {
+					current : 10,
 					max : 10
 				},
 				duration : 0
@@ -797,6 +847,7 @@ tileset = new TileSet({
 	rows : 16,
 	src : "tiles.gif"
 }),
+statisticsPoints = 0,
 skills = Server.getSkills(),
 canvas,
 context,

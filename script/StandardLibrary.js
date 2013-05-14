@@ -1,11 +1,12 @@
 function sendDamage(direction, skill) {
 	var pos = {column : character.location.column + direction.column, row : character.location.row + direction.row},
-		area = Math.abs(skill.area);	
+		area = Math.abs(skill.area),
+		style = skill.attack || skill.action;	
 	while(pos.column >= 0 && pos.row >= 0 && pos.column < CONSTANTS.TILE.COLUMNS && pos.row < CONSTANTS.TILE.ROWS && area > 0) {
 		for(var i = 0; i < enemies.length; i++) {
 			var e = enemies[i];
-			if(e.location.column === pos.column && e.location.row === pos.row) {
-				Server.attack(enemies, i);
+			if(e.statistics.getCurrent("health") > 0 && e.location.column === pos.column && e.location.row === pos.row) {
+				Server.attack(enemies, i, style !== "spellcast");
 				return;
 			}
 		}
@@ -285,7 +286,7 @@ function getSign(x) {
 }
 	
 var Statistics = (function() {
-	var stats = ["health", "energy", "experience", "strength", "defense", "speed"];
+	var stats = ["health", "energy", "experience", "strength", "defense", "intelligence", "resistance", "speed"];
 	var f = function(args) {
 		args = args || {};
 		for(var i = 0; i < stats.length; i++) {
@@ -338,8 +339,14 @@ var Statistics = (function() {
 		return stat;
 	};
 
-	f.prototype.add = function(s) {
-		this._add.push(s);
+	f.prototype.add = function(s, perm) {
+		if(perm && s.duration === 1/0) {
+			for(var i = 0; i < stats.length; i++) {
+				this[stats[i]].current = Math.min(s[stats[i]].current + this[stats[i]].current, this[stats[i]].max);
+			}
+		} else {
+			this._add.push(s);
+		}
 	};
 
 	f.prototype.multiply = function(s) {
@@ -364,6 +371,7 @@ function Character(args) {
 	this.name = args.name;
 	this.portrait = loadImage(args.portrait);
 	args.location = args.location || {};
+	this.level = args.level || 1;
 	this.location = {
 		column : args.location.column || 0,
 		row : args.location.row || 0,
@@ -498,21 +506,23 @@ var BLOOD = [
 ];
 
 Character.prototype.damage = function(damage, killed, complete) {
-	var s = this.statistics;
-	if(s.getCurrent("health") > 0) {
-		Sound.effect(BLOOD[Math.floor(BLOOD.length * Math.random())]);
-		new Blood({
-			location : {
-				x : CONSTANTS.START.X() + this.location.column * CONSTANTS.TILE.WIDTH + CONSTANTS.TILE.WIDTH / 2,
-				y : CONSTANTS.START.Y() + this.location.row * CONSTANTS.TILE.WIDTH + CONSTANTS.TILE.HEIGHT / 2
+	if(damage > 0) {
+		var s = this.statistics;
+		if(s.getCurrent("health") > 0) {
+			Sound.effect(BLOOD[Math.floor(BLOOD.length * Math.random())]);
+			new Blood({
+				location : {
+					x : CONSTANTS.START.X() + this.location.column * CONSTANTS.TILE.WIDTH + CONSTANTS.TILE.WIDTH / 2,
+					y : CONSTANTS.START.Y() + this.location.row * CONSTANTS.TILE.WIDTH + CONSTANTS.TILE.HEIGHT / 2
+				}
+			});
+			Sound.effect(this.sounds.hurt[Math.floor(this.sounds.hurt.length * Math.random())]);
+			s.health.current -= damage;
+			if(s.getCurrent("health") <= 0) {
+				var me = this;
+				killed && killed.call(this);
+				this.die(complete);
 			}
-		});
-		Sound.effect(this.sounds.hurt[Math.floor(this.sounds.hurt.length * Math.random())]);
-		s.health.current -= damage;
-		if(s.getCurrent("health") <= 0) {
-			var me = this;
-			killed && killed.call(this);
-			this.die(complete);
 		}
 	}
 };
@@ -596,7 +606,7 @@ function generateText(obj) {
                 text.splice(processing + 1, 0, next);
             }
             pushed++;
-			toTake = context.measureText(revised).width
+			toTake = context.measureText(revised).width;
         }
         processing++;       
         if (toTake > maxWidth) {
@@ -604,7 +614,7 @@ function generateText(obj) {
         }
     }
     var font = obj.font || context.font;
-    var size = parseInt(font);
+    var size = parseInt(font, 10);
     canvas.width = maxWidth;
     canvas.height = text.length * size + (size / 3);
     context.font = font;
