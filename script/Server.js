@@ -232,10 +232,11 @@ var Server = (function() {
 	$(function() {
 		var id = 1;
 		for(var i = 0; i < rows * columns; i++) {
-			if(1) {
-				enemies[i] = [];
+			enemies[i] = [];
+			if(i !== 0) {
 				enemies[i].push(
 					new Character({
+						name : "Skeleton",
 						attackstyle : "slash",
 						walk : [new TileSet({
 							columns : 9,
@@ -308,6 +309,7 @@ var Server = (function() {
 					}));
 					id = id + 1;
 					enemies[i].push(new Character({
+						name : "Skeleton",
 						attackstyle : "slash",
 						walk : [new TileSet({
 							columns : 9,
@@ -380,6 +382,7 @@ var Server = (function() {
 					}));
 					id = id + 1;
 					enemies[i].push(new Character({
+						name : "Skeleton",
 						attackstyle : "slash",
 						walk : [new TileSet({
 							columns : 9,
@@ -451,8 +454,6 @@ var Server = (function() {
 						}
 					}));
 				id = id + 1;
-			} else {
-				enemies[i] = [];
 			}
 		}
 	});
@@ -484,6 +485,7 @@ var Server = (function() {
 		e.damage(d, function() {
 			var item = randomItem(column, row);
 			character.statistics.experience.current += this.statistics.experience.current;
+			addBehavior("Kill", e.name);
 			if(character.statistics.experience.current >= character.statistics.experience.max) {
 				alert("Level Up!");
 				character.level++;
@@ -787,6 +789,34 @@ var Server = (function() {
 			multiply : []
 		}];
 	};
+	
+	Server.getBehaviors = function() {
+		return {
+			Kill : {
+				Skeleton : 0
+			},			
+			Character : {
+				Deaths : 0,
+				Steps : 0,
+				Attacks : 0,
+				"Seconds Played" : 0
+			},
+			Skill : {
+				"Power Thrust" : 0,
+				"Fire Wave" : 0,
+				"Fire Arrow" : 0,
+				Heal : 0
+			},
+			Damage : {
+				Dealt : 0,
+				Received : 0
+			},
+			Discover : {
+				Rooms : 0,
+				Maps : 0
+			}
+		};
+	};
 
 	return Server;
 }());
@@ -864,4 +894,5 @@ items = {
 },
 inventory_items = [],
 equipment_items = {},
-enemies = [];
+enemies = [],
+behaviors = Server.getBehaviors();

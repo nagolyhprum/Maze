@@ -121,6 +121,10 @@ $(function() {
 	
 	frame();
 	
+	setInterval(function() {
+		addBehavior("Character", "Seconds Played");
+	}, 1000);
+	
 	function randomSound() {
 		Sound.effect("sound/scream/scream" + (1 + Math.floor(Math.random() * 5)));
 		setTimeout(randomSound, 5000 + 5000 * Math.random());

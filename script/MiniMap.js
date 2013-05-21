@@ -42,6 +42,15 @@ $(function() {
 		context.restore();
 	});
 	room.events.attach("change", function() {
-		walls.data[room.location.column + room.location.row * walls.columns] = Server.getWalls();
+		if(!walls.data[room.location.column + room.location.row * walls.columns]) {
+			walls.data[room.location.column + room.location.row * walls.columns] = Server.getWalls();
+			addBehavior("Discover", "Rooms");
+		}
+		for(var i = 0; i < walls.columns * walls.rows; i++) {
+			if(!walls.data[i]) {
+				return;
+			}
+		}
+		addBehavior("Discover", "Maps");
 	}).invoke("change");
 });

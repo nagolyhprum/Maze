@@ -35,7 +35,7 @@ $(function() {
 			drawCharacterStatistics();
 		} else if (!contexts.contextmenu && mousemove){
 			drawItemStatistics(getHover());
-			if(!equipment_items.visible && !inventory_items.visible && !skills.visible) {
+			if(!equipment_items.visible && !inventory_items.visible && !skills.visible && !behaviors.visible) {
 				var column = Math.floor((location.x - CONSTANTS.START.X()) / CONSTANTS.TILE.WIDTH),
 					row = Math.floor((location.y - CONSTANTS.START.Y()) / CONSTANTS.TILE.HEIGHT);
 				for(var i = 0; i < items.list.length; i++) {

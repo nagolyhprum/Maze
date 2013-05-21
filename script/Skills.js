@@ -24,6 +24,7 @@ $(function() {
 			if(skill.isCool) {
 				if(equipment_items.mainhand.item && equipment_items.mainhand.item.attack === skill.action) {
 					if(character.statistics.getCurrent("energy") >= skill.energy) {
+						addBehavior("Skill", skill.name);
 						character.statistics.energy.current -= skill.energy;
 						character.attack();
 						for(i = 0; i < skill.add.length; i++) {
@@ -178,7 +179,7 @@ $(function() {
 		y = Math.min(location.y - y, canvas.height - h);
 		context.fillRect(x, y, w, h);
 		context.strokeRect(x, y, w, h);
-		context.drawImage(text, x + margin, y);
+		context.drawImage(text, x, y);
 		context.restore();
 	}
 	

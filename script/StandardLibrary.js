@@ -507,6 +507,11 @@ var BLOOD = [
 
 Character.prototype.damage = function(damage, killed, complete) {
 	if(damage > 0) {
+		if(this === character) {
+			addBehavior("Damage", "Received", damage);
+		} else {
+			addBehavior("Damage", "Dealt", damage);
+		}
 		var s = this.statistics;
 		if(s.getCurrent("health") > 0) {
 			Sound.effect(BLOOD[Math.floor(BLOOD.length * Math.random())]);
@@ -520,8 +525,21 @@ Character.prototype.damage = function(damage, killed, complete) {
 			s.health.current -= damage;
 			if(s.getCurrent("health") <= 0) {
 				var me = this;
-				killed && killed.call(this);
-				this.die(complete);
+				killed && killed.call(me);				
+				me.die(function() {				
+					if(me === character) {
+						room.location.column = 0;
+						room.location.row = 0;
+						character.statistics.health.current = character.statistics.health.max;
+						character.statistics.energy.current = character.statistics.energy.max;
+						character.location.column = 0;
+						character.location.row = 0;
+						character.active = character.walk;
+						addBehavior("Character", "Deaths");
+						room.events.invoke("change");
+					}
+					complete && complete();
+				});
 			}
 		}
 	}
@@ -589,6 +607,8 @@ function generateText(obj) {
         context = canvas.getContext("2d"),
         processing = 0,
         maxWidth = 0;
+    var font = obj.font || context.font;
+	context.font = font;
     text = obj.text.split("\n");
     while (processing < text.length) {
         var toTake = context.measureText(text[processing]).width,
@@ -613,7 +633,6 @@ function generateText(obj) {
             maxWidth = toTake;
         }
     }
-    var font = obj.font || context.font;
     var size = parseInt(font, 10);
     canvas.width = maxWidth;
     canvas.height = text.length * size + (size / 3);
