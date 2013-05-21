@@ -817,6 +817,51 @@ var Server = (function() {
 			}
 		};
 	};
+	
+	Server.getBadges = function() {
+		return [
+			{
+				name : "First Kill",
+				category : "Kill",
+				count : 1
+			},
+			{
+				name : "Killer",
+				category : "Kill",
+				count : 50
+			},
+			{
+				name : "First Death",
+				category : "Character",
+				subcategory : "Deaths",
+				count : 1
+			},
+			{
+				name : "First Step",
+				category : "Character",
+				subcategory : "Steps",
+				count : 1
+			},
+			{
+				name : "Adventurer",
+				category : "Discover",
+				subcategory : "Rooms",
+				count : 10,
+				complete : 1
+			},
+			{
+				name : "Explorer",
+				category : "Discover",
+				subcategory : "Maps",
+				count : 1
+			},
+			{
+				name : "Skillful",
+				category : "Skill",
+				count : 10
+			}
+		];
+	};
 
 	return Server;
 }());
@@ -895,4 +940,5 @@ items = {
 inventory_items = [],
 equipment_items = {},
 enemies = [],
-behaviors = Server.getBehaviors();
+behaviors = Server.getBehaviors(),
+badges = Server.getBadges();

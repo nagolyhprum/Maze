@@ -1,5 +1,22 @@
 function addBehavior(category, subcategory, amount) {
 	behaviors[category][subcategory] += (amount || 1);
+	for(var i = 0; i < badges.length; i++) {
+		var b = badges[i];
+		if(!b.complete) {
+			var cat = b.category, scat = b.subcategory, count = 0;
+			if(!scat) {
+				for(var j in behaviors[cat]) {
+					count += behaviors[cat][j];
+				}
+			} else {
+				count = behaviors[cat][scat];
+			}
+			if(count >= b.count) {
+				b.complete = 1;
+				alert(b.name + " earned.");
+			}
+		}
+	}
 }
 
 $(function() {
