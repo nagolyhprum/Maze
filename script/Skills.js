@@ -166,20 +166,20 @@ $(function() {
 	});
 	
 	function drawSkillDescription(skill, x, y) {
-		var  w = 100,
+		var  w = 150,
 			text = generateText({
-				text : skill.description,
+				text : skill.name + "\n" + skill.description,
 				color : "white",
-				width : 100
+				width : w - 2 * margin
 			}), 
 			h = text.height;
 		context.save();
 		context.globalAlpha = 0.8;
 		x = Math.min(location.x - x, canvas.width - w);
 		y = Math.min(location.y - y, canvas.height - h);
-		context.fillRect(x, y, w, h);
-		context.strokeRect(x, y, w, h);
-		context.drawImage(text, x, y);
+		context.fillRect(x, y, w, h + margin * 2);
+		context.strokeRect(x, y, w, h + margin * 2);
+		context.drawImage(text, x + margin, y + margin);
 		context.restore();
 	}
 	

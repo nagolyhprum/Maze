@@ -823,42 +823,49 @@ var Server = (function() {
 			{
 				name : "First Kill",
 				category : "Kill",
-				count : 1
+				count : 1,
+				icon : loadImage("badges/death.png")
 			},
 			{
 				name : "Killer",
 				category : "Kill",
-				count : 50
+				count : 50,
+				icon : loadImage("badges/ddeath.png")
 			},
 			{
 				name : "First Death",
 				category : "Character",
 				subcategory : "Deaths",
-				count : 1
+				count : 1,
+				icon : loadImage("badges/killed.png")
 			},
 			{
 				name : "First Step",
 				category : "Character",
 				subcategory : "Steps",
-				count : 1
+				count : 1,
+				icon : loadImage("badges/arrow.png")
 			},
 			{
 				name : "Adventurer",
 				category : "Discover",
 				subcategory : "Rooms",
 				count : 10,
-				complete : 1
+				complete : 1,
+				icon : loadImage("badges/up.png")
 			},
 			{
 				name : "Explorer",
 				category : "Discover",
 				subcategory : "Maps",
-				count : 1
+				count : 1,
+				icon : loadImage("badges/dup.png")
 			},
 			{
 				name : "Skillful",
 				category : "Skill",
-				count : 10
+				count : 10,
+				icon : loadImage("badges/tstar.png")
 			}
 		];
 	};

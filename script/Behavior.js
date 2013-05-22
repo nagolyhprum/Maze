@@ -31,7 +31,7 @@ $(function() {
 		background = context.createPattern(img, "repeat");
 	});
 	canvas.events.attach("keydown", function(keycode) {
-		if(keycode === 66) {
+		if(keycode === 71) { //g
 			behaviors.visible = 1;
 		} else {		
 			behaviors.visible = 0;
@@ -51,7 +51,7 @@ $(function() {
 			context.strokeStyle = "white";
 			context.textAlign = "left";
 			context.textBaseline = "middle";
-			context.strokeText("Information", x + padding * 2, y + padding + (fontsize + 2 * padding) / 2);
+			context.strokeText("General Statistics", x + padding * 2, y + padding + (fontsize + 2 * padding) / 2);
 			var text = "";
 			for(var i in behaviors) {
 				if(behaviors[i] instanceof Object) {

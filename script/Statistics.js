@@ -20,7 +20,7 @@ $(function() {
 	});
 
 	canvas.events.attach("keydown", function(keycode) {
-		if(keycode === 83) { //s
+		if(keycode === 67) { //s
 			visible = !visible;
 		} else {
 			visible = 0;
@@ -35,7 +35,7 @@ $(function() {
 			drawCharacterStatistics();
 		} else if (!contexts.contextmenu && mousemove){
 			drawItemStatistics(getHover());
-			if(!equipment_items.visible && !inventory_items.visible && !skills.visible && !behaviors.visible) {
+			if(!equipment_items.visible && !inventory_items.visible && !skills.visible && !behaviors.visible && !badges.visible) {
 				var column = Math.floor((location.x - CONSTANTS.START.X()) / CONSTANTS.TILE.WIDTH),
 					row = Math.floor((location.y - CONSTANTS.START.Y()) / CONSTANTS.TILE.HEIGHT);
 				for(var i = 0; i < items.list.length; i++) {
@@ -76,10 +76,10 @@ $(function() {
 			context.fillStyle = background;
 			context.fillRect(0, 0, final_width, height); //container
 			context.strokeRect(0, 0, final_width, height); //container
-			drawStatistics(item);
+			drawStatistics(item, "Item");
 			if(equipped) {
 				context.translate(width, 0);
-				drawStatistics(equipped);
+				drawStatistics(equipped, "Equipped");
 			}
 			context.restore();
 		}
@@ -104,11 +104,11 @@ $(function() {
 		context.fillStyle = background;
 		context.fillRect(0, 0, width, height); //container
 		context.strokeRect(0, 0, width, height); //container
-		drawStatistics(character);
+		drawStatistics(character, "Character");
 		context.restore();
 	}
 
-	function drawStatistics(obj) {
+	function drawStatistics(obj, name) {
 
 		context.strokeRect(margin, margin, width - margin * 2, titlesize); //title
 
@@ -142,6 +142,6 @@ $(function() {
 			context.strokeRect(margin + 2 * cellwidth, titlesize + margin * 3 + cellheight + i * (margin * 2 + titlesize), cellwidth - margin * 2, titlesize);
 		}
 		context.textAlign = "left";
-		context.fillText("Statistics", margin * 2, margin + titlesize / 2, width);
+		context.fillText(name + " Statistics", margin * 2, margin + titlesize / 2, width);
 	}
 });
