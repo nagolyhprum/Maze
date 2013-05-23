@@ -17,3 +17,4 @@ Future
 - ~~Increase Statistics / Skills~~
 - Skills may automatically unlock as you level versus you leveling them
 - ~~Badges~~
+- ~~options~~

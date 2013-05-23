@@ -1,5 +1,5 @@
 $(function() {
-	var contextmenu, padding = 5, location, cellheight = padding * 2 + 12, height, width, highlight;
+	var contextmenu, location, cellheight = canvas.padding * 2 + canvas.fontSize(), height, width, highlight;
 	canvas.events.attach("click", function(l) {
 		if(contextmenu) {
 			var options = Object.keys(contextmenu.menu);
@@ -42,13 +42,13 @@ $(function() {
 			context.strokeStyle = "black";
 			context.textBaseline = "middle";
 			context.textAlign = "left";
-			max += padding * 2;
+			max += canvas.padding * 2;
 			width = max;
 			context.fillRect(location.x, location.y, max, height);
 			context.fillStyle = "lightgray";
 			context.fillRect(location.x, location.y  + cellheight * highlight, width, cellheight);
 			for(i = 0; i < options.length; i++) {
-				context.strokeText(options[i], location.x + padding, location.y + (i + 1) * cellheight - cellheight / 2, max);
+				context.strokeText(options[i], location.x + canvas.padding, location.y + (i + 1) * cellheight - cellheight / 2, max);
 			}
 		}
 	});

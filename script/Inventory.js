@@ -24,15 +24,13 @@ $(function() {
 	});
 
 	var start = {x : 0, y : 100},
-		margin = 5,
 		cellwidth = CONSTANTS.TILE.WIDTH, 
 		cellheight = CONSTANTS.TILE.HEIGHT, 
 		rows = 4, 
 		columns = 6, 
 		background,
-		titlesize = 24,
-		width = (cellwidth + margin * 2) * columns, 
-		height = margin * 2 + titlesize + (cellheight + margin * 2) * rows;
+		width = (cellwidth + canvas.padding * 2) * columns, 
+		height = canvas.padding * 2 + canvas.padding * 2 + canvas.fontSize() + (cellheight + canvas.padding * 2) * rows;
 		inventory_items.visible = 0;
 		
 	loadImage("window/texture.png", function(img) {
@@ -87,8 +85,8 @@ $(function() {
 	};
 	for(var i = 0; i < rows; i++) {
 		for(var j = 0; j < columns; j++) {
-			var x = margin + (margin * 2 + cellwidth) * j, 
-				y = margin * 3 + titlesize + (margin * 2 + cellheight) * i;
+			var x = canvas.padding + (canvas.padding * 2 + cellwidth) * j, 
+				y = canvas.padding * 3 + canvas.padding * 2 + canvas.fontSize() + (canvas.padding * 2 + cellheight) * i;
 			inventory_items.push(undefined);
 			contexts.push({
 				column : j,
@@ -126,11 +124,11 @@ $(function() {
 			context.fillStyle = background;
 			context.fillRect(0, 0, width, height); //container
 			context.strokeRect(0, 0, width, height); //container
-			context.strokeRect(margin, margin, width - margin * 2, titlesize); //title				
+			context.strokeRect(canvas.padding, canvas.padding, width - canvas.padding * 2, canvas.padding * 2 + canvas.fontSize()); //title				
 			for(var i = 0; i < rows; i++) {
 				for(var j = 0; j < columns; j++) {
-					var x = margin + (margin * 2 + cellwidth) * j, 
-						y = margin * 3 + titlesize + (margin * 2 + cellheight) * i,
+					var x = canvas.padding + (canvas.padding * 2 + cellwidth) * j, 
+						y = canvas.padding * 3 + canvas.padding * 2 + canvas.fontSize() + (canvas.padding * 2 + cellheight) * i,
 						ii = inventory_items[j + i * columns];
 					context.strokeRect(x, y, cellwidth, cellheight);
 					if(ii) {
@@ -141,7 +139,8 @@ $(function() {
 			context.strokeStyle = "white";
 			context.textBaseline = "middle";
 			context.textAlign = "left";
-			context.strokeText("Inventory", margin * 2, margin + titlesize / 2, width - margin * 2);
+			context.fillStyle = "white";
+			context.fillText("Inventory", canvas.padding * 2, canvas.padding * 2 + canvas.fontSize() / 2, width - canvas.padding * 2);
 			context.restore();			
 		}
 	});

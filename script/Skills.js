@@ -80,14 +80,12 @@ $(function() {
 		click = l;
 	});
 	
-	var margin = 10,
-		cellwidth = CONSTANTS.TILE.WIDTH, 
+	var cellwidth = CONSTANTS.TILE.WIDTH, 
 		cellheight = CONSTANTS.TILE.HEIGHT, 
 		rows = 4, 
 		columns = 6, 
-		titlesize = 24,
-		width = (cellwidth + margin * 2) * columns, 
-		height = margin * 2 + titlesize + (cellheight + margin * 2) * rows,
+		width = (cellwidth + canvas.padding * 2) * columns, 
+		height = canvas.padding * 2 + canvas.padding * 2 + canvas.fontSize() + (cellheight + canvas.padding * 2) * rows,
 		start = {x : canvas.width / 2 - width / 2, y : canvas.height / 2 - height / 2};
 		inventory_items.visible = 0;
 	canvas.events.attach("draw", function() {
@@ -103,11 +101,11 @@ $(function() {
 			context.strokeStyle = "black";
 			context.fillRect(0, 0, width, height); //container
 			context.strokeRect(0, 0, width, height); //container
-			context.strokeRect(margin, margin, width - margin * 2, titlesize); //title		
+			context.strokeRect(canvas.padding, canvas.padding, width - canvas.padding * 2, canvas.padding * 2 + canvas.fontSize()); //title		
 			for(i = 0; i < rows; i++) {
 				for(j = 0; j < columns; j++, index++) {
-					x = margin + j * (cellwidth + margin * 2);
-					y = 3 * margin + titlesize + i * (cellheight + margin * 2);
+					x = canvas.padding + j * (cellwidth + canvas.padding * 2);
+					y = 3 * canvas.padding + canvas.padding * 2 + canvas.fontSize() + i * (cellheight + canvas.padding * 2);
 					if(active && skills[index] && active === skills[index]) {	
 						context.strokeStyle = "yellow";
 						context.strokeRect(x, y, cellwidth, cellheight);
@@ -137,15 +135,16 @@ $(function() {
 			context.strokeStyle = "white";
 			context.textBaseline = "middle";
 			context.textAlign = "left";
-			context.strokeText("Skills", margin * 2, margin + titlesize / 2, width - margin * 2);				
+			context.fillStyle = "white";
+			context.fillText("Skills", canvas.padding * 2, canvas.padding * 2 + canvas.fontSize() / 2, width - canvas.padding * 2);				
 			context.globalAlpha = 1;			
 			context.restore();			
 		}			
 		context.strokeStyle = "black";			
 		toDraw = 0;
 		for(i = 0; i < 10; i++) {
-			x = i * cellwidth + margin + i * margin;
-			y = canvas.height - cellheight - margin;
+			x = i * cellwidth + canvas.padding + i * canvas.padding;
+			y = canvas.height - cellheight - canvas.padding;
 			context.fillRect(x, y, cellwidth, cellheight);
 			if(skillMapping[i]) {			
 				drawSkillIcon(skillMapping[i], x, y);
@@ -170,16 +169,17 @@ $(function() {
 			text = generateText({
 				text : skill.name + "\n" + skill.description,
 				color : "white",
-				width : w - 2 * margin
+				width : w - 2 * canvas.padding,
+				font : context.font
 			}), 
 			h = text.height;
 		context.save();
 		context.globalAlpha = 0.8;
 		x = Math.min(location.x - x, canvas.width - w);
 		y = Math.min(location.y - y, canvas.height - h);
-		context.fillRect(x, y, w, h + margin * 2);
-		context.strokeRect(x, y, w, h + margin * 2);
-		context.drawImage(text, x + margin, y + margin);
+		context.fillRect(x, y, w, h + canvas.padding * 2);
+		context.strokeRect(x, y, w, h + canvas.padding * 2);
+		context.drawImage(text, x + canvas.padding, y + canvas.padding);
 		context.restore();
 	}
 	

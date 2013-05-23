@@ -20,12 +20,10 @@ function addBehavior(category, subcategory, amount) {
 }
 
 $(function() {
-	var fontsize = 12, 
-		width = 200, 
+	var	width = 200, 
 		height = 400,
 		x = canvas.width / 2 - width / 2,
 		y = canvas.height / 2 - height / 2,
-		padding = 5,
 		background;		
 	loadImage("window/texture.png", function(img) {
 		background = context.createPattern(img, "repeat");
@@ -47,11 +45,11 @@ $(function() {
 			}			
 			context.fillRect(x, y, width, height);
 			context.strokeRect(x, y, width, height);
-			context.strokeRect(x + padding, y + padding, width - padding * 2, fontsize + 2 * padding);
+			context.strokeRect(x + canvas.padding, y + canvas.padding, width - canvas.padding * 2, canvas.fontSize() + 2 * canvas.padding);
 			context.strokeStyle = "white";
 			context.textAlign = "left";
 			context.textBaseline = "middle";
-			context.strokeText("General Statistics", x + padding * 2, y + padding + (fontsize + 2 * padding) / 2);
+			context.strokeText("General Statistics", x + canvas.padding * 2, y + canvas.padding + (canvas.fontSize() + 2 * canvas.padding) / 2);
 			var text = "";
 			for(var i in behaviors) {
 				if(behaviors[i] instanceof Object) {
@@ -66,10 +64,11 @@ $(function() {
 			}
 			text = generateText({
 				text : text,
-				width : width - padding * 2,
-				color : "white"
+				width : width - canvas.padding * 2,
+				color : "white",
+				font : context.font
 			});
-			context.drawImage(text, x + padding, y + padding * 4 + fontsize);
+			context.drawImage(text, x + canvas.padding, y + canvas.padding * 4 + canvas.fontSize());
 			
 			context.globalAlpha = 1;
 		}

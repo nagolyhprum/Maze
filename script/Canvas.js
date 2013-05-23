@@ -110,6 +110,12 @@ $(function() {
 		};		
 	}());
 	
+	context.font = "16px Sans-Serif";
+	canvas.padding = 5;	
+	canvas.fontSize = function() {
+		return parseInt(context.font);
+	};
+	
 	function frame() {
 		requestAnimFrame(frame);
 		tick();

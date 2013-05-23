@@ -1,9 +1,7 @@
 $(function() {
 	var width = 296, 
-		height = 325, 
+		height = 330, 
 		background, 
-		margin = 5, 
-		titlesize = 22, 
 		start = {x : 400, y : 0};
 	equipment_items.visible = 0;
 	loadImage("window/texture.png", function(img) {
@@ -13,7 +11,7 @@ $(function() {
 	equipment_items.head = {
 		rectangle : {
 			x : width / 2 - 32,
-			y : margin * 3 + titlesize,
+			y : canvas.padding * 3 + canvas.padding * 2 + canvas.fontSize(),
 			width : 64,
 			height : 64
 		},
@@ -22,8 +20,8 @@ $(function() {
 	
 	equipment_items.neck = {
 		rectangle : {
-			x : width / 2 - 64 - margin * 2,
-			y : margin * 3 + titlesize + equipment_items.head.rectangle.height - 32,
+			x : width / 2 - 64 - canvas.padding * 2,
+			y : canvas.padding * 3 + canvas.padding * 2 + canvas.fontSize() + equipment_items.head.rectangle.height - 32,
 			width : 32,
 			height : 32
 		},
@@ -33,7 +31,7 @@ $(function() {
 	equipment_items.chest = {
 		rectangle : {
 			x : width / 2 - 48,
-			y : margin * 5 + titlesize + equipment_items.head.rectangle.height,
+			y : canvas.padding * 5 + canvas.padding * 2 + canvas.fontSize() + equipment_items.head.rectangle.height,
 			width : 96,
 			height : 86
 		},
@@ -42,8 +40,8 @@ $(function() {
 	
 	equipment_items.mainhand = {
 		rectangle : {
-			x : margin,
-			y : margin * 5 + titlesize + equipment_items.head.rectangle.height,
+			x : canvas.padding,
+			y : canvas.padding * 5 + canvas.padding * 2 + canvas.fontSize() + equipment_items.head.rectangle.height,
 			width : 80,
 			height : 86
 		},
@@ -52,8 +50,8 @@ $(function() {
 	
 	equipment_items.offhand = {
 		rectangle : {
-			x : width - margin - 80,
-			y : margin * 5 + titlesize + equipment_items.head.rectangle.height,
+			x : width - canvas.padding - 80,
+			y : canvas.padding * 5 + canvas.padding * 2 + canvas.fontSize() + equipment_items.head.rectangle.height,
 			width : 80,
 			height : 86
 		},
@@ -63,7 +61,7 @@ $(function() {
 	equipment_items.legs = {
 		rectangle : {
 			x : width / 2 - 56,
-			y : margin * 7 + titlesize + equipment_items.head.rectangle.height + equipment_items.chest.rectangle.height,
+			y : canvas.padding * 7 + canvas.padding * 2 + canvas.fontSize() + equipment_items.head.rectangle.height + equipment_items.chest.rectangle.height,
 			width : 112,
 			height : 112
 		},
@@ -72,8 +70,8 @@ $(function() {
 	
 	equipment_items.feet = {
 		rectangle : {
-			x : margin,
-			y : margin * 7 + titlesize + equipment_items.head.rectangle.height + equipment_items.chest.rectangle.height,
+			x : canvas.padding,
+			y : canvas.padding * 7 + canvas.padding * 2 + canvas.fontSize() + equipment_items.head.rectangle.height + equipment_items.chest.rectangle.height,
 			width : 72,
 			height : 72
 		},
@@ -82,8 +80,8 @@ $(function() {
 	
 	equipment_items.hands = {
 		rectangle : {
-			x : width - 72 - margin,
-			y : margin * 7 + titlesize + equipment_items.head.rectangle.height + equipment_items.chest.rectangle.height,
+			x : width - 72 - canvas.padding,
+			y : canvas.padding * 7 + canvas.padding * 2 + canvas.fontSize() + equipment_items.head.rectangle.height + equipment_items.chest.rectangle.height,
 			width : 72,
 			height : 72
 		},
@@ -92,8 +90,8 @@ $(function() {
 	
 	equipment_items.rightring = {
 		rectangle : {
-			x : width / 2 + margin * 3 + equipment_items.legs.rectangle.width / 2,
-			y : margin * 9 + titlesize + equipment_items.head.rectangle.height + equipment_items.chest.rectangle.height + equipment_items.hands.rectangle.height,
+			x : width / 2 + canvas.padding * 3 + equipment_items.legs.rectangle.width / 2,
+			y : canvas.padding * 9 + canvas.padding * 2 + canvas.fontSize() + equipment_items.head.rectangle.height + equipment_items.chest.rectangle.height + equipment_items.hands.rectangle.height,
 			width : 30,
 			height : 30
 		},
@@ -102,8 +100,8 @@ $(function() {
 	
 	equipment_items.leftring = {
 		rectangle : {
-			x : width / 2 - margin * 3 - equipment_items.legs.rectangle.width / 2 - 30,
-			y : margin * 9 + titlesize + equipment_items.head.rectangle.height + equipment_items.chest.rectangle.height + equipment_items.hands.rectangle.height,
+			x : width / 2 - canvas.padding * 3 - equipment_items.legs.rectangle.width / 2 - 30,
+			y : canvas.padding * 9 + canvas.padding * 2 + canvas.fontSize() + equipment_items.head.rectangle.height + equipment_items.chest.rectangle.height + equipment_items.hands.rectangle.height,
 			width : 30,
 			height : 30
 		},
@@ -156,7 +154,7 @@ $(function() {
 			context.strokeStyle = "black";
 			context.fillStyle = background;
 			context.fillRect(0, 0, width, height);
-			context.strokeRect(margin, margin, width - margin * 2, titlesize);		
+			context.strokeRect(canvas.padding, canvas.padding, width - canvas.padding * 2, canvas.padding * 2 + canvas.fontSize());		
 			context.strokeRect(0, 0, width, height);		
 			for(var i in equipment_items) {
 				var ei = equipment_items[i],
@@ -175,7 +173,8 @@ $(function() {
 			context.strokeStyle = "white";
 			context.textAlign = "left";
 			context.textBaseline = "middle";
-			context.strokeText("Equipment", margin + 5, margin + titlesize / 2, width);
+			context.fillStyle = "white";
+			context.strokeText("Equipment", canvas.padding + 5, canvas.padding + (canvas.padding * 2 + canvas.fontSize()) / 2, width);
 			context.restore();
 		}
 	});

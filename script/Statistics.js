@@ -1,12 +1,10 @@
 $(function() {
 	var width = 300,
-		titlesize = 22,
-		margin = 5,
 		start = {x:0,y:0},
 		background,
 		statistics = Statistics.getStatisticNames(),
 		visible = 0,
-		height = titlesize + margin * 2 + width / 2 + statistics.length * (margin * 2 + titlesize),
+		height = canvas.padding * 2 + canvas.fontSize() + canvas.padding * 2 + width / 2 + statistics.length * (canvas.padding * 2 + canvas.padding * 2 + canvas.fontSize()),
 		location = {x:0,y:0},
 		mousemove = 0;
 
@@ -110,38 +108,49 @@ $(function() {
 
 	function drawStatistics(obj, name) {
 
-		context.strokeRect(margin, margin, width - margin * 2, titlesize); //title
+		context.strokeRect(canvas.padding, canvas.padding, width - canvas.padding * 2, canvas.padding * 2 + canvas.fontSize()); //title
 
 		var cellwidth = width / 2, cellheight = cellwidth;
-		context.strokeRect(margin, margin * 3 + titlesize, cellwidth - margin * 2, cellheight - margin * 2); //left cell
-		context.strokeRect(width - cellwidth + margin, margin * 3 + titlesize, cellwidth - margin * 2, cellheight - margin * 2); //right cell
+		context.strokeRect(canvas.padding, canvas.padding * 3 + canvas.padding * 2 + canvas.fontSize(), cellwidth - canvas.padding * 2, cellheight - canvas.padding * 2); //left cell
+		context.strokeRect(width - cellwidth + canvas.padding, canvas.padding * 3 + canvas.padding * 2 + canvas.fontSize(), cellwidth - canvas.padding * 2, cellheight - canvas.padding * 2); //right cell
 		if(obj.portrait.complete) {
-			context.drawImage(obj.portrait, width - cellwidth + margin, margin * 3 + titlesize, cellwidth - margin * 2, cellwidth - margin * 2);
+			context.drawImage(obj.portrait, width - cellwidth + canvas.padding, canvas.padding * 3 + canvas.padding * 2 + canvas.fontSize(), cellwidth - canvas.padding * 2, cellwidth - canvas.padding * 2);
 		}
 
 		context.fillStyle = "white";
 		//name
 		context.textAlign = "right";
 		context.textBaseline = "bottom";
-		context.fillText(obj.name, cellwidth - margin * 2, titlesize + cellheight, cellwidth);
+		context.fillText(obj.name, cellwidth - canvas.padding * 2, canvas.padding * 2 + canvas.fontSize() + cellheight, cellwidth);
 		//end name
 		context.textBaseline = "middle";
 		cellwidth = width / 3;
 		for(var i = 0; i < statistics.length; i++) {
 			context.textAlign = 'right';
 
-			context.fillText(statistics[i][0].toUpperCase() + statistics[i].substring(1), cellwidth - margin * 2, titlesize + margin * 3 + cellheight + i * (margin * 2 + titlesize) + titlesize / 2, width);
-			context.strokeRect(margin, titlesize + margin * 3 + cellheight + i * (margin * 2 + titlesize), cellwidth - margin * 2, titlesize);
+			var y = canvas.padding +
+				canvas.padding +
+				canvas.fontSize() + 
+				canvas.padding + 
+				canvas.padding + 
+				canvas.padding + 
+				cellheight + 
+				canvas.padding + 
+				//canvas.padding + 
+				canvas.fontSize() / 2 + 
+				i * (canvas.padding * 4 + canvas.fontSize());
+			context.fillText(statistics[i][0].toUpperCase() + statistics[i].substring(1), cellwidth - canvas.padding * 2, y, width);
+			context.strokeRect(canvas.padding, canvas.padding * 2 + canvas.fontSize() + canvas.padding * 3 + cellheight + i * (canvas.padding * 2 + canvas.padding * 2 + canvas.fontSize()), cellwidth - canvas.padding * 2, canvas.padding * 2 + canvas.fontSize());
 
 			context.textAlign = 'center';
 
-			context.fillText(obj.statistics.getMax(statistics[i]), cellwidth + cellwidth / 2, titlesize + margin * 3 + cellheight + i * (margin * 2 + titlesize) + titlesize / 2, cellwidth - margin * 2);
-			context.strokeRect(margin + cellwidth, titlesize + margin * 3 + cellheight + i * (margin * 2 + titlesize), cellwidth - margin * 2, titlesize);
+			context.fillText(obj.statistics.getMax(statistics[i]), cellwidth + cellwidth / 2, y, cellwidth - canvas.padding * 2);
+			context.strokeRect(canvas.padding + cellwidth, canvas.padding * 2 + canvas.fontSize() + canvas.padding * 3 + cellheight + i * (canvas.padding * 2 + canvas.padding * 2 + canvas.fontSize()), cellwidth - canvas.padding * 2, canvas.padding * 2 + canvas.fontSize());
 
-			context.fillText(obj.statistics.getCurrent(statistics[i]), 2 * cellwidth + cellwidth / 2, titlesize + margin * 3 + cellheight + i * (margin * 2 + titlesize) + titlesize / 2, cellwidth - margin * 2);
-			context.strokeRect(margin + 2 * cellwidth, titlesize + margin * 3 + cellheight + i * (margin * 2 + titlesize), cellwidth - margin * 2, titlesize);
+			context.fillText(obj.statistics.getCurrent(statistics[i]), 2 * cellwidth + cellwidth / 2, y, cellwidth - canvas.padding * 2);
+			context.strokeRect(canvas.padding + 2 * cellwidth, canvas.padding * 2 + canvas.fontSize() + canvas.padding * 3 + cellheight + i * (canvas.padding * 2 + canvas.padding * 2 + canvas.fontSize()), cellwidth - canvas.padding * 2, canvas.padding * 2 + canvas.fontSize());
 		}
 		context.textAlign = "left";
-		context.fillText(name + " Statistics", margin * 2, margin + titlesize / 2, width);
+		context.fillText(name + " Statistics", canvas.padding * 2, canvas.padding * 2 + canvas.fontSize() / 2, width);
 	}
 });
