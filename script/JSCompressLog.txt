@@ -32,7 +32,7 @@ JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
 Canvas.js
-F:\git\Maze\script\Canvas.js(116): lint warning: parseInt missing radix parameter
+F:\dev_env\diskw\apache\htdocs\git\Maze\script\Canvas.js(116): lint warning: parseInt missing radix parameter
 		return parseInt(context.font);
 ............................................^
 
