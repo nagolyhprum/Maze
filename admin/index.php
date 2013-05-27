@@ -36,10 +36,17 @@
 				<li><a href="crudBadge.php">Badge</a></li>
 				<li><a href="crudCategory.php">Category</a></li>
 				<li><a href="crudCharacter.php">Character</a></li>
+				<li><a href="crudCharacterAudio.php">Character Audio</a></li>
 				<li><a href="crudCharacterImage.php">Character Image</a></li>
 				<li><a href="crudCharacterImageChoice.php">Character Image Choice</a></li>
 				<li><a href="crudCharacterImageChoiceGroup.php">Character Image Choice Group</a></li>
+				<li><a href="crudCharacterSkill.php">Character Skill</a></li>
+				<li><a href="crudEnemy.php">Enemy</a></li>					
+				<li><a href="crudEnemyAudio.php">Enemy Audio</a></li>				
+				<li><a href="crudEnemyImage.php">Enemy Image</a></li>				
+				
 				<li><a href="crudItemType.php">Item Type</a></li>
+				<li><a href="crudSkill.php">Skill</a></li>
 				<li><a href="crudSubcategory.php">Subcategory</a></li>
 				<li><a href="crudUser.php">User</a></li>
 			</ul>

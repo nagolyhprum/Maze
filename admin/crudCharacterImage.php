@@ -58,7 +58,7 @@
 					?>
 					<hr/>
 					<form method="post" action="crudCharacterImage.php" >
-						<input name="itemtype" type="hidden" value="<?php echo $id; ?>"/>
+						<input name="id" type="hidden" value="<?php echo $id; ?>"/>
 						<div>
 							Character
 							<select name="character">
