@@ -3,7 +3,6 @@
 	require_once("Helper.php");
 	$c = connect();
 	if($c) {
-		$_POST["ismale"] = $_POST["ismale"] === "on";
 		if($_POST["action"] === "Delete") {		
 			$stmt = mysqli_prepare($c, "DELETE FROM CharacterImage WHERE CharacterImageID=?");
 			mysqli_stmt_bind_param($stmt, "i", $_POST["id"]);
@@ -16,7 +15,7 @@
 			mysqli_stmt_close($stmt);
 		} else if($_POST["action"] === "Update") {
 			$stmt = mysqli_prepare($c, "UPDATE CharacterImage SET CharacterID=?, CharacterImageChoiceGroupID=? WHERE CharacterImageID=?");
-			mysqli_stmt_bind_param($stmt, "siii", $_POST["character"], $_POST["characterimagechoicegroup"], $_POST["id"]);
+			mysqli_stmt_bind_param($stmt, "iii", $_POST["character"], $_POST["characterimagechoicegroup"], $_POST["id"]);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
 		}

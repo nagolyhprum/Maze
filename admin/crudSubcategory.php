@@ -14,8 +14,8 @@
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
 		} else if($_POST["action"] === "Update") {
-			$stmt = mysqli_prepare($c, "UPDATE Subcategory SET SubcategoryName=? , CategoryID WHERE SubcategoryID=?");
-			mysqli_stmt_bind_param($stmt, "si", $_POST["name"], $_POST["category"], $_POST["id"]);
+			$stmt = mysqli_prepare($c, "UPDATE Subcategory SET SubcategoryName=? , CategoryID=? WHERE SubcategoryID=?");
+			mysqli_stmt_bind_param($stmt, "sii", $_POST["name"], $_POST["category"], $_POST["id"]);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
 		}
@@ -34,7 +34,7 @@
 			<div>
 				Category
 				<select name="category">
-					<?php asOptions($categories, -1); ?>
+					<?php asOptions($categories); ?>
 				</select>
 			</div>
 			<div>
@@ -52,7 +52,7 @@
 			while(mysqli_stmt_fetch($stmt)) {
 				?>
 					<hr/>
-					<form action="crudSubcategory" method="post">
+					<form action="crudSubcategory.php" method="post">
 						<input type="hidden" value="<?php echo $id; ?>" name="id"/>
 						<div>
 							Category

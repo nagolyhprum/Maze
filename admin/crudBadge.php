@@ -48,19 +48,19 @@
 			<div>
 				Category
 				<select name="category">
-					<?php asOptions($categories, -1); ?>
+					<?php asOptions($categories); ?>
 				</select>
 			</div>
 			<div>
 				Subcategoy
 				<select name="subcategory">
-					<?php asOptions($subcategories, -1); ?>
+					<?php asOptions($subcategories); ?>
 				</select>									
 			</div>
 			<div>
 				Icon
 				<select name="icon" data-image>
-					<?php asOptions($images, -1); ?>
+					<?php asOptions($images); ?>
 				</select>
 			</div>
 			<div>
@@ -69,9 +69,7 @@
 		</form>
 		<?php
 			if($c) {
-				$stmt = mysqli_prepare($c, "SELECT BadgeID, BadgeName, BadgeCount, CategoryID, SubcategoryID, BadgeIcon FROM Badge LIMIT ?, 10");		
-				$start = $_GET["start"];
-				mysqli_stmt_bind_param($stmt, "i", $start);
+				$stmt = mysqli_prepare($c, "SELECT BadgeID, BadgeName, BadgeCount, CategoryID, SubcategoryID, BadgeIcon FROM Badge");		
 				mysqli_stmt_bind_result($stmt, $id, $name, $count, $category, $subcategory, $icon);
 				mysqli_stmt_execute($stmt);
 				while(mysqli_stmt_fetch($stmt)) {

@@ -38,7 +38,7 @@
 			<div>
 				Name to Update or Delete
 				<select name="id">
-					<?php asOptions($attacktypes, -1); ?>
+					<?php asOptions($attacktypes); ?>
 				</select>
 			</div>
 			<input type="submit" name="action" value="Delete"/>

@@ -32,7 +32,7 @@
 	
 	function updateStatisticForm($obj, $prefix) {
 		?>
-		<form method="post" action="./">
+		<form method="post">
 			<input type="hidden" name="id" value="<?php echo $obj["id"]; ?>"/>
 			<div>
 				Health <input type="text" name="<?php echo $prefix; ?>health" value="<?php echo $obj["health"]; ?>"/>
@@ -52,7 +52,7 @@
 			<div>
 				Resistance <input type="text" name="<?php echo $prefix; ?>resistance" value="<?php echo $obj["resistance"]; ?>"/>				
 			</div>
-			<input type="submit" value="Update Statistic"/>
+			<input type="submit" name="action" value="Update Statistic"/>
 		</form>
 		<?php
 	}

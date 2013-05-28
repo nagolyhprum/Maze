@@ -44,19 +44,19 @@
 			<div>
 				Attack Type 
 				<select name="attacktype">
-					<?php asOptions($attacktypes, -1); ?>
+					<?php asOptions($attacktypes); ?>
 				</select>
 			</div>
 			<div>
 				Image
 				<select name="image" data-image>
-					<?php asOptions($images, -1); ?>
+					<?php asOptions($images); ?>
 				</select>
 			</div>
 			<div>
 				Character Image Choice Group
 				<select name="characterimagechoicegroup">
-					<?php asOptions($characterimagechoicegroups, -1); ?>
+					<?php asOptions($characterimagechoicegroups); ?>
 				</select>
 			</div>
 			<div>
@@ -65,8 +65,8 @@
 		</form>
 		<?php
 			if($c) {
-				$stmt = mysqli_prepare($c, "SELECT CharacterImageChoiceRows, CharacterImageChoiceColumns, AttackTypeID, ImageID, CharacterImageChoiceGroupID FROM CharacterImageChoice");		
-				mysqli_stmt_bind_result($stmt, $rows, $columns, $attacktype, $image, $characterimagechoicegroup);
+				$stmt = mysqli_prepare($c, "SELECT CharacterImageChoiceID, CharacterImageChoiceRows, CharacterImageChoiceColumns, AttackTypeID, ImageID, CharacterImageChoiceGroupID FROM CharacterImageChoice");		
+				mysqli_stmt_bind_result($stmt, $id, $rows, $columns, $attacktype, $image, $characterimagechoicegroup);
 				mysqli_stmt_execute($stmt);
 				while(mysqli_stmt_fetch($stmt)) {
 		?>

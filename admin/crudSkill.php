@@ -12,7 +12,7 @@
 			mysqli_stmt_bind_param($stmt, "i", $_POST["id"]);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
-		} else if($_POST["action"] === "Create") {
+		} else if($_POST["action"] === "Create") {			
 			$stmt = mysqli_prepare($c, "INSERT INTO Skill (SkillName, SkillDescription, SkillIcon, AttackTypeID, SkillIsActive, SkillCooldown, SkillEnergy, SkillArea) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 			mysqli_stmt_bind_param($stmt, "ssiiiiii", $_POST["name"], $_POST["description"], $_POST["icon"], $_POST["attacktype"], $_POST["isactive"], $_POST["cooldown"], $_POST["energy"], $_POST["area"]);
 			mysqli_stmt_execute($stmt);

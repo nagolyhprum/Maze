@@ -32,23 +32,37 @@
 	<body>
 		<div id="actions">
 			<ul>
-				<li><a href="crudAttackType.php">Attack Type</a></li>
-				<li><a href="crudBadge.php">Badge</a></li>
-				<li><a href="crudCategory.php">Category</a></li>
-				<li><a href="crudCharacter.php">Character</a></li>
-				<li><a href="crudCharacterAudio.php">Character Audio</a></li>
-				<li><a href="crudCharacterImage.php">Character Image</a></li>
-				<li><a href="crudCharacterImageChoice.php">Character Image Choice</a></li>
-				<li><a href="crudCharacterImageChoiceGroup.php">Character Image Choice Group</a></li>
-				<li><a href="crudCharacterSkill.php">Character Skill</a></li>
-				<li><a href="crudEnemy.php">Enemy</a></li>					
-				<li><a href="crudEnemyAudio.php">Enemy Audio</a></li>				
-				<li><a href="crudEnemyImage.php">Enemy Image</a></li>				
-				
-				<li><a href="crudItemType.php">Item Type</a></li>
-				<li><a href="crudSkill.php">Skill</a></li>
-				<li><a href="crudSubcategory.php">Subcategory</a></li>
-				<li><a href="crudUser.php">User</a></li>
+				<!--COMPLETE--><li><a href="crudAttackType.php">Attack Type</a></li>
+				<!--AUDIO - NO NEED-->
+				<!--COMPLETE BUT BEHAVED STRANGELY--><li><a href="crudBadge.php">Badge</a></li>
+				<!--COMPLETE--><li><a href="crudCategory.php">Category</a></li>
+				<!--MAY NEED TO ALTER ROWS AND COLUMNS--><li><a href="crudCharacter.php">Character</a></li>
+				<!--COMPLETE--><li><a href="crudCharacterAudio.php">Character Audio</a></li>
+				<!--COMPLETE--><li><a href="crudCharacterImage.php">Character Image</a></li>
+				<!--COMPLETE--><li><a href="crudCharacterImageChoice.php">Character Image Choice</a></li>
+				<!--COMPLETE--><li><a href="crudCharacterImageChoiceGroup.php">Character Image Choice Group</a></li>
+				<!--COMPLETE--><li><a href="crudCharacterSkill.php">Character Skill</a></li>
+				<!--COMPLETE--><li><a href="crudEnemy.php">Enemy</a></li>					
+				<!--COMPLETE--><li><a href="crudEnemyAudio.php">Enemy Audio</a></li>				
+				<!--COMPLETE--><li><a href="crudEnemyImage.php">Enemy Image</a></li>								
+				<!--ENEMY IN ROOM - NO NEED-->
+				<!--IMAGE - NO NEED-->
+				<!--ITEM - NO NEED-->
+				<!--ITEM IN EQUIPMENT - NO NEED-->
+				<!--ITEM IN INVENTORY - NO NEED-->
+				<!--ITEM IN ROOM - NO NEED-->
+				<!--COMPLETE--><li><a href="crudItemModel.php">Item Model</a></li>								
+				<!--COMPLETE--><li><a href="crudItemModelAudio.php">Item Model Audio</a></li>								
+				<!--COMPLETE--><li><a href="crudItemModelImage.php">Item Model Image</a></li>								
+				<!--COMPLETE--><li><a href="crudItemType.php">Item Type</a></li>
+				<!--MAP - NO NEED-->				
+				<!--ROOM - NO NEED-->
+				<!--COMPLETE--><li><a href="crudSkill.php">Skill</a></li>
+				<!--COMPLETE--><li><a href="crudSkillStatistic.php">Skill Statistic</a></li>
+				<!--STATISTIC - NO NEED-->				
+				<!--COMPLETE--><li><a href="crudSubcategory.php">Subcategory</a></li>
+				<!--COMPLETE--><li><a href="crudUser.php">User</a></li>
+				<!--USER BEHAVIOR - NO NEED-->
 			</ul>
 		</div>
 		<div id="viewer">

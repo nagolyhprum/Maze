@@ -69,11 +69,11 @@ CREATE  TABLE IF NOT EXISTS `WorldTactics`.`Enemy` (
   `EnemyID` BIGINT NOT NULL AUTO_INCREMENT ,
   `EnemyPortrait` BIGINT NOT NULL ,
   `EnemyName` VARCHAR(32) NOT NULL ,
-  `StatisticsID` BIGINT NOT NULL ,
+  `StatisticID` BIGINT NOT NULL ,
   `AttackTypeID` BIGINT NOT NULL ,
   PRIMARY KEY (`EnemyID`) ,
   INDEX `fk_Enemy_Image1_idx` (`EnemyPortrait` ASC) ,
-  INDEX `fk_Enemy_Statistic1_idx` (`StatisticsID` ASC) ,
+  INDEX `fk_Enemy_Statistic1_idx` (`StatisticID` ASC) ,
   INDEX `fk_Enemy_AttackType1_idx` (`AttackTypeID` ASC) ,
   CONSTRAINT `fk_Enemy_Image1`
     FOREIGN KEY (`EnemyPortrait` )
@@ -81,7 +81,7 @@ CREATE  TABLE IF NOT EXISTS `WorldTactics`.`Enemy` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Enemy_Statistic1`
-    FOREIGN KEY (`StatisticsID` )
+    FOREIGN KEY (`StatisticID` )
     REFERENCES `WorldTactics`.`Statistic` (`StatisticID` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
@@ -208,9 +208,9 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `WorldTactics`.`Category` ;
 
 CREATE  TABLE IF NOT EXISTS `WorldTactics`.`Category` (
-  `BehaviorCategoryID` BIGINT NOT NULL AUTO_INCREMENT ,
-  `BehaviorCategoryName` VARCHAR(32) NOT NULL ,
-  PRIMARY KEY (`BehaviorCategoryID`) )
+  `CategoryID` BIGINT NOT NULL AUTO_INCREMENT ,
+  `CategoryName` VARCHAR(32) NOT NULL ,
+  PRIMARY KEY (`CategoryID`) )
 ENGINE = InnoDB;
 
 
@@ -220,14 +220,14 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `WorldTactics`.`Subcategory` ;
 
 CREATE  TABLE IF NOT EXISTS `WorldTactics`.`Subcategory` (
-  `BehaviorSubcategoryID` BIGINT NOT NULL AUTO_INCREMENT ,
-  `BehaviorCategoryID` BIGINT NOT NULL ,
-  `BehaviorSubcategoryName` VARCHAR(32) NULL ,
-  PRIMARY KEY (`BehaviorSubcategoryID`) ,
-  INDEX `fk_BehaviorSubcategory_BehaviorCategory1_idx` (`BehaviorCategoryID` ASC) ,
+  `SubcategoryID` BIGINT NOT NULL AUTO_INCREMENT ,
+  `CategoryID` BIGINT NOT NULL ,
+  `SubcategoryName` VARCHAR(32) NULL ,
+  PRIMARY KEY (`SubcategoryID`) ,
+  INDEX `fk_BehaviorSubcategory_BehaviorCategory1_idx` (`CategoryID` ASC) ,
   CONSTRAINT `fk_BehaviorSubcategory_BehaviorCategory1`
-    FOREIGN KEY (`BehaviorCategoryID` )
-    REFERENCES `WorldTactics`.`Category` (`BehaviorCategoryID` )
+    FOREIGN KEY (`CategoryID` )
+    REFERENCES `WorldTactics`.`Category` (`CategoryID` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -241,22 +241,22 @@ DROP TABLE IF EXISTS `WorldTactics`.`Badge` ;
 CREATE  TABLE IF NOT EXISTS `WorldTactics`.`Badge` (
   `BadgeId` BIGINT NOT NULL AUTO_INCREMENT ,
   `BadgeName` VARCHAR(32) NOT NULL ,
-  `BadgeCategory` BIGINT NOT NULL ,
-  `BadgeSubcategory` BIGINT NULL ,
+  `CategoryID` BIGINT NULL ,
+  `SubcategoryID` BIGINT NULL ,
   `BadgeCount` BIGINT NOT NULL ,
   `BadgeIcon` BIGINT NOT NULL ,
   PRIMARY KEY (`BadgeId`) ,
-  INDEX `fk_Badge_BehaviorSubcategory1_idx` (`BadgeSubcategory` ASC) ,
-  INDEX `fk_Badge_BehaviorCategory1_idx` (`BadgeCategory` ASC) ,
+  INDEX `fk_Badge_BehaviorSubcategory1_idx` (`SubcategoryID` ASC) ,
+  INDEX `fk_Badge_BehaviorCategory1_idx` (`CategoryID` ASC) ,
   INDEX `fk_Badge_Image1_idx` (`BadgeIcon` ASC) ,
   CONSTRAINT `fk_Badge_BehaviorSubcategory1`
-    FOREIGN KEY (`BadgeSubcategory` )
-    REFERENCES `WorldTactics`.`Subcategory` (`BehaviorCategoryID` )
+    FOREIGN KEY (`SubcategoryID` )
+    REFERENCES `WorldTactics`.`Subcategory` (`CategoryID` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Badge_BehaviorCategory1`
-    FOREIGN KEY (`BadgeCategory` )
-    REFERENCES `WorldTactics`.`Category` (`BehaviorCategoryID` )
+    FOREIGN KEY (`CategoryID` )
+    REFERENCES `WorldTactics`.`Category` (`CategoryID` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Badge_Image1`
@@ -474,7 +474,7 @@ CREATE  TABLE IF NOT EXISTS `WorldTactics`.`UserBehavior` (
   INDEX `fk_UserBehavior_User1_idx` (`UserID` ASC) ,
   CONSTRAINT `fk_UserBehavior_BehaviorSubcategory1`
     FOREIGN KEY (`BehaviorSubcategoryID` )
-    REFERENCES `WorldTactics`.`Subcategory` (`BehaviorSubcategoryID` )
+    REFERENCES `WorldTactics`.`Subcategory` (`SubcategoryID` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_UserBehavior_User1`
@@ -491,12 +491,12 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `WorldTactics`.`SkillStatistic` ;
 
 CREATE  TABLE IF NOT EXISTS `WorldTactics`.`SkillStatistic` (
-  `SkillStatisticsID` BIGINT NOT NULL AUTO_INCREMENT ,
+  `SkillStatisticID` BIGINT NOT NULL AUTO_INCREMENT ,
   `StatisticID` BIGINT NOT NULL ,
   `SkillID` BIGINT NOT NULL ,
   `SkillStatisticIsAdd` TINYINT(1) NOT NULL ,
   `SkillStatisticDuration` BIGINT NOT NULL ,
-  PRIMARY KEY (`SkillStatisticsID`) ,
+  PRIMARY KEY (`SkillStatisticID`) ,
   INDEX `fk_SkillStatistics_Statistic1_idx` (`StatisticID` ASC) ,
   INDEX `fk_SkillStatistics_Skill1_idx` (`SkillID` ASC) ,
   CONSTRAINT `fk_SkillStatistics_Statistic1`
@@ -557,14 +557,14 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `WorldTactics`.`ItemModelAudio` ;
 
 CREATE  TABLE IF NOT EXISTS `WorldTactics`.`ItemModelAudio` (
-  `ItemAudioID` BIGINT NOT NULL AUTO_INCREMENT ,
-  `ItemID` BIGINT NOT NULL ,
+  `ItemModelAudioID` BIGINT NOT NULL AUTO_INCREMENT ,
+  `ItemModelID` BIGINT NOT NULL ,
   `AudioID` BIGINT NOT NULL ,
-  PRIMARY KEY (`ItemAudioID`) ,
-  INDEX `fk_ItemSound_ItemModel1_idx` (`ItemID` ASC) ,
+  PRIMARY KEY (`ItemModelAudioID`) ,
+  INDEX `fk_ItemSound_ItemModel1_idx` (`ItemModelID` ASC) ,
   INDEX `fk_ItemSound_Sound1_idx` (`AudioID` ASC) ,
   CONSTRAINT `fk_ItemSound_ItemModel1`
-    FOREIGN KEY (`ItemID` )
+    FOREIGN KEY (`ItemModelID` )
     REFERENCES `WorldTactics`.`ItemModel` (`ItemModelID` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
@@ -628,13 +628,13 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `WorldTactics`.`ItemModelImage` ;
 
 CREATE  TABLE IF NOT EXISTS `WorldTactics`.`ItemModelImage` (
-  `ItemImageID` BIGINT NOT NULL AUTO_INCREMENT ,
+  `ItemModelImageID` BIGINT NOT NULL AUTO_INCREMENT ,
   `ImageID` BIGINT NOT NULL ,
   `ItemModelID` BIGINT NOT NULL ,
   `AttackTypeID` BIGINT NOT NULL ,
-  `ItemImageColumns` BIGINT NOT NULL ,
-  `ItemImageRows` BIGINT NOT NULL ,
-  PRIMARY KEY (`ItemImageID`) ,
+  `ItemModelImageColumns` BIGINT NOT NULL ,
+  `ItemModelImageRows` BIGINT NOT NULL ,
+  PRIMARY KEY (`ItemModelImageID`) ,
   INDEX `fk_ItemModelImage_Image1_idx` (`ImageID` ASC) ,
   INDEX `fk_ItemModelImage_AttackType1_idx` (`AttackTypeID` ASC) ,
   INDEX `fk_ItemModelImage_ItemModel1_idx` (`ItemModelID` ASC) ,
@@ -758,11 +758,11 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `WorldTactics`.`EnemyAudio` ;
 
 CREATE  TABLE IF NOT EXISTS `WorldTactics`.`EnemyAudio` (
-  `EnemySoundID` BIGINT NOT NULL ,
+  `EnemyAudioID` BIGINT NOT NULL AUTO_INCREMENT ,
   `AudioID` BIGINT NOT NULL ,
   `EnemyID` BIGINT NOT NULL ,
   `AttackTypeID` BIGINT NOT NULL ,
-  PRIMARY KEY (`EnemySoundID`) ,
+  PRIMARY KEY (`EnemyAudioID`) ,
   INDEX `fk_EnemySound_Enemy1_idx` (`EnemyID` ASC) ,
   INDEX `fk_EnemySound_Sound1_idx` (`AudioID` ASC) ,
   INDEX `fk_EnemySound_AttackType1_idx` (`AttackTypeID` ASC) ,

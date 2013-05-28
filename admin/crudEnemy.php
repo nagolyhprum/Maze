@@ -15,7 +15,7 @@
 				ON
 					e.StatisticID=s.StatisticID
 				WHERE 
-					e.EnemeyID=?
+					e.EnemyID=?
 			");
 			mysqli_stmt_bind_param($stmt, "i", $_POST["id"]);
 			mysqli_stmt_execute($stmt);
@@ -28,7 +28,7 @@
 			mysqli_stmt_close($stmt);
 		} else if($_POST["action"] === "Update Enemy") {
 			$stmt = mysqli_prepare($c, "UPDATE Enemy SET EnemyPortrait=?, EnemyName=?, AttackTypeID=? WHERE EnemyID=?");
-			mysqli_stmt_bind_param($stmt, "iiii", $_POST["portrait"], $_POST["name"], $_POST["attacktype"], $_POST["id"]);
+			mysqli_stmt_bind_param($stmt, "isii", $_POST["portrait"], $_POST["name"], $_POST["attacktype"], $_POST["id"]);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
 		} else if($_POST["action"] === "Update Statistic") {
@@ -76,6 +76,7 @@
 						e.EnemyPortrait,
 						e.AttackTypeID,
 						
+						s.StatisticID,
 						s.StatisticHealth,
 						s.StatisticEnergy,
 						s.StatisticStrength,
@@ -90,7 +91,7 @@
 						e.StatisticID=s.StatisticID					
 				");		
 				$statistic = array();
-				mysqli_stmt_bind_result($stmt, $id, $name, $portrait, $attacktype, $statistic["health"], $statistic["energy"], $statistic["strength"], $statistic["defense"], $statistic["intelligence"], $statistic["resistance"]);
+				mysqli_stmt_bind_result($stmt, $id, $name, $portrait, $attacktype, $statistic["id"], $statistic["health"], $statistic["energy"], $statistic["strength"], $statistic["defense"], $statistic["intelligence"], $statistic["resistance"]);
 				mysqli_stmt_execute($stmt);
 				while(mysqli_stmt_fetch($stmt)) {
 					?>
@@ -116,9 +117,9 @@
 							<input type="submit" name="action" value="Delete"/>
 							<input type="submit" name="action" value="Update Enemy"/>
 						</div>
-						<?php updateStatisticForm($statistic, ""); ?>
 					</form>
-					<?php
+					<?php 
+						updateStatisticForm($statistic, ""); 
 				}
 				mysqli_stmt_close($stmt);
 			}

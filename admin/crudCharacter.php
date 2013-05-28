@@ -147,8 +147,8 @@
 					<h3>Current</h3>
 					<?php updateStatisticForm($current, ""); ?>
 					<h3>Max</h3>
-					<?php updateStatisticForm($max, ""); ?>
-					<?php
+					<?php 
+						updateStatisticForm($max, ""); 
 				}
 				mysqli_stmt_close($stmt);
 			}
