@@ -63,6 +63,10 @@
 				<!--COMPLETE--><li><a href="crudSubcategory.php">Subcategory</a></li>
 				<!--COMPLETE--><li><a href="crudUser.php">User</a></li>
 				<!--USER BEHAVIOR - NO NEED-->
+				<li><a href="crudMapModel.php">Map Model</a></li>
+				<li><a href="crudRoomModel.php">Room Model</a></li>
+				<li><a href="crudRoomModelInMapModel.php">Room Model in Map Model</a></li>
+				<li><a href="crudEnemyInRoomModel.php">Enemy in Room Model</a></li>
 			</ul>
 		</div>
 		<div id="viewer">

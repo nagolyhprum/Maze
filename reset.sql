@@ -11,7 +11,7 @@ USE `WorldTactics` ;
 DROP TABLE IF EXISTS `WorldTactics`.`User` ;
 
 CREATE  TABLE IF NOT EXISTS `WorldTactics`.`User` (
-  `UserID` BIGINT NOT NULL ,
+  `UserID` BIGINT NOT NULL AUTO_INCREMENT ,
   `UserName` VARCHAR(64) NOT NULL ,
   `UserFacebookID` BIGINT NOT NULL ,
   PRIMARY KEY (`UserID`) )
@@ -182,7 +182,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `WorldTactics`.`Skill` ;
 
 CREATE  TABLE IF NOT EXISTS `WorldTactics`.`Skill` (
-  `SkillID` BIGINT NOT NULL ,
+  `SkillID` BIGINT NOT NULL AUTO_INCREMENT ,
   `SkillName` VARCHAR(64) NOT NULL ,
   `SkillDescription` VARCHAR(64) NOT NULL ,
   `SkillIcon` BIGINT NOT NULL ,
@@ -662,7 +662,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `WorldTactics`.`CharacterSkill` ;
 
 CREATE  TABLE IF NOT EXISTS `WorldTactics`.`CharacterSkill` (
-  `CharacterSkillID` BIGINT NOT NULL ,
+  `CharacterSkillID` BIGINT NOT NULL AUTO_INCREMENT ,
   `CharacterID` BIGINT NOT NULL ,
   `SkillID` BIGINT NOT NULL ,
   `CharacterSkillIndex` BIGINT NULL ,
@@ -689,7 +689,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `WorldTactics`.`CharacterImageChoice` ;
 
 CREATE  TABLE IF NOT EXISTS `WorldTactics`.`CharacterImageChoice` (
-  `CharacterImageChoiceID` BIGINT NOT NULL ,
+  `CharacterImageChoiceID` BIGINT NOT NULL AUTO_INCREMENT ,
   `CharacterImageChoiceRows` BIGINT NOT NULL ,
   `CharacterImageChoiceColumns` BIGINT NOT NULL ,
   `AttackTypeID` BIGINT NOT NULL ,
@@ -781,6 +781,63 @@ CREATE  TABLE IF NOT EXISTS `WorldTactics`.`EnemyAudio` (
     REFERENCES `WorldTactics`.`AttackType` (`AttackTypeID` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `WorldTactics`.`MapModel`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `WorldTactics`.`MapModel` ;
+
+CREATE  TABLE IF NOT EXISTS `WorldTactics`.`MapModel` (
+  `MapModelID` BIGINT NOT NULL AUTO_INCREMENT ,
+  `MapModelName` VARCHAR(32) NOT NULL ,
+  `ImageID` BIGINT NOT NULL ,
+  `MapModelRows` BIGINT NOT NULL ,
+  `MapModelColumns` BIGINT NOT NULL ,
+  PRIMARY KEY (`MapModelID`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `WorldTactics`.`RoomModel`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `WorldTactics`.`RoomModel` ;
+
+CREATE  TABLE IF NOT EXISTS `WorldTactics`.`RoomModel` (
+  `RoomModelID` BIGINT NOT NULL AUTO_INCREMENT ,
+  `RoomModelName` VARCHAR(32) NOT NULL ,
+  PRIMARY KEY (`RoomModelID`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `WorldTactics`.`EnemyInRoomModel`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `WorldTactics`.`EnemyInRoomModel` ;
+
+CREATE  TABLE IF NOT EXISTS `WorldTactics`.`EnemyInRoomModel` (
+  `EnemyInRoomModelID` BIGINT NOT NULL AUTO_INCREMENT ,
+  `EnemyID` BIGINT NOT NULL ,
+  `RoomModelID` BIGINT NOT NULL ,
+  `EnemyInRoomModelDirection` BIGINT NOT NULL ,
+  `EnemyInRoomModelRow` BIGINT NOT NULL ,
+  `EnemyInRoomModelColumn` BIGINT NOT NULL ,
+  PRIMARY KEY (`EnemyInRoomModelID`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `WorldTactics`.`RoomModelInMapModel`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `WorldTactics`.`RoomModelInMapModel` ;
+
+CREATE  TABLE IF NOT EXISTS `WorldTactics`.`RoomModelInMapModel` (
+  `RoomModelInMapModelID` BIGINT NOT NULL AUTO_INCREMENT ,
+  `RoomModelID` BIGINT NOT NULL ,
+  `MapModelID` BIGINT NOT NULL ,
+  `RoomModelInMapModelCount` BIGINT NOT NULL ,
+  PRIMARY KEY (`RoomModelInMapModelID`) )
 ENGINE = InnoDB;
 
 USE `WorldTactics` ;
