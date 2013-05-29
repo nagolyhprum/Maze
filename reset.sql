@@ -242,18 +242,13 @@ CREATE  TABLE IF NOT EXISTS `WorldTactics`.`Badge` (
   `BadgeId` BIGINT NOT NULL AUTO_INCREMENT ,
   `BadgeName` VARCHAR(32) NOT NULL ,
   `CategoryID` BIGINT NULL ,
-  `SubcategoryID` BIGINT NULL ,
   `BadgeCount` BIGINT NOT NULL ,
   `BadgeIcon` BIGINT NOT NULL ,
+  `SubcategoryID` BIGINT NULL ,
   PRIMARY KEY (`BadgeId`) ,
-  INDEX `fk_Badge_BehaviorSubcategory1_idx` (`SubcategoryID` ASC) ,
   INDEX `fk_Badge_BehaviorCategory1_idx` (`CategoryID` ASC) ,
   INDEX `fk_Badge_Image1_idx` (`BadgeIcon` ASC) ,
-  CONSTRAINT `fk_Badge_BehaviorSubcategory1`
-    FOREIGN KEY (`SubcategoryID` )
-    REFERENCES `WorldTactics`.`Subcategory` (`CategoryID` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+  INDEX `fk_Badge_Subcategory1_idx` (`SubcategoryID` ASC) ,
   CONSTRAINT `fk_Badge_BehaviorCategory1`
     FOREIGN KEY (`CategoryID` )
     REFERENCES `WorldTactics`.`Category` (`CategoryID` )
@@ -262,6 +257,11 @@ CREATE  TABLE IF NOT EXISTS `WorldTactics`.`Badge` (
   CONSTRAINT `fk_Badge_Image1`
     FOREIGN KEY (`BadgeIcon` )
     REFERENCES `WorldTactics`.`Image` (`ImageID` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Badge_Subcategory1`
+    FOREIGN KEY (`SubcategoryID` )
+    REFERENCES `WorldTactics`.`Subcategory` (`SubcategoryID` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
