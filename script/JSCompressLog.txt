@@ -32,12 +32,14 @@ JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
 Canvas.js
-F:\dev_env\diskw\apache\htdocs\git\Maze\script\Canvas.js(116): lint warning: parseInt missing radix parameter
-		return parseInt(context.font);
-............................................^
 
+0 error(s), 0 warning(s)
+JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
+Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
-0 error(s), 1 warning(s)
+Alert.js
+
+0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
@@ -114,12 +116,6 @@ JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
 Context.js
-
-0 error(s), 0 warning(s)
-JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
-Developed by Matthias Miller (http://www.JavaScriptLint.com)
-
-Alert.js
 
 0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)

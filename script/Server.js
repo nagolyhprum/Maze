@@ -1,3 +1,5 @@
+var cid = 1;
+
 var Server = (function() {
 	var Server = {};
 
@@ -20,20 +22,12 @@ var Server = (function() {
 		mg = new MazeGenerator(columns, rows),
 		walls = mg.generateMaze();
 
-	Server.getWalls = function() {
-		return walls[room.location.row * columns + room.location.column];
+	Server.getWalls = function(success) {
+		ajax("php/getWalls.php", {cid : cid}, success);
 	};
 
-	Server.getAllWalls = function() {
-		var data = [];
-		for(var i = 0; i < walls.length; i++) {
-			data[i] = undefined;
-		}
-		return {
-			data : data,
-			rows : rows,
-			columns : columns
-		};
+	Server.getAllWalls = function(success) {
+		ajax("php/getAllWalls.php", {cid:cid}, success);
 	};
 
 	Server.getCharacterRoomLocation = function() {

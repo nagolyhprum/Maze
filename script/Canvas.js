@@ -113,7 +113,7 @@ $(function() {
 	context.font = "16px Sans-Serif";
 	canvas.padding = 5;	
 	canvas.fontSize = function() {
-		return parseInt(context.font);
+		return parseInt(context.font, 10);
 	};
 	
 	function frame() {

@@ -1,3 +1,21 @@
+function ajax(src, params, success) {
+	var xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"), s = "";	
+	for(var i in params) {
+		if(s) {
+			s += "&";
+		}
+		s += i + "=" + params[i];
+	}
+	src += "?" + s;
+	xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+			success(JSON.parse(xmlhttp.responseText));
+		}
+	};
+	xmlhttp.open("GET", src, true);
+	xmlhttp.send();
+}
+
 function sendDamage(direction, skill) {
 	var pos = {column : character.location.column + direction.column, row : character.location.row + direction.row},
 		area = Math.abs(skill.area),

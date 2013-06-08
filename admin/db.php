@@ -6,4 +6,6 @@
 	function close($c) {
 		mysqli_close($c);
 	}
+	
+	$USER = 1;
 ?>

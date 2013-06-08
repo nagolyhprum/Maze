@@ -5,7 +5,9 @@ $(function() {
 			row : 11
 		};
 	room.events.attach("change", function() {
-		walls = Server.getWalls();
+		Server.getWalls(function(w) {
+			walls = w;
+		});
 	});
 	character.events.attach("trymove", function(l) {
 		var mr = CONSTANTS.TILE.MIDDLE.ROW(),
