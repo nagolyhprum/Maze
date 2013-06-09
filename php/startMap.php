@@ -147,7 +147,7 @@
 			}
 			mysqli_stmt_close($stmt);
 			//place the character in 0, 0
-			$stmt = mysqli_prepare($c, "UPDATE `character` SET CharacterColumn=0, CharacterRow=0, RoomID=?, CharacterDirection=" . DOWN . " WHERE CharacterID=?");
+			$stmt = mysqli_prepare($c, "UPDATE `character` SET CharacterColumn=0, CharacterRow=0, RoomID=?, CharacterDirection=" . DOWN . ", CharacterDirection=2 WHERE CharacterID=?");
 			mysqli_stmt_bind_param($stmt, "ii", $rooms[0][0]["id"], $character);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);

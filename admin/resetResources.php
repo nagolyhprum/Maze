@@ -26,14 +26,16 @@
 	//image
 	$stmt = mysqli_prepare($c, "INSERT INTO Image (ImageName) VALUES (?)");
 	mysqli_stmt_bind_param($stmt, "s", $image);
-	foreach(listFolderFiles("images") as $image) {
+	foreach(listFolderFiles("../images") as $image) 
+		$image = substr($image, 5);{
 		mysqli_stmt_execute($stmt);
 	}
 	mysqli_stmt_close($stmt);
 	//sound
 	$stmt = mysqli_prepare($c, "INSERT INTO Audio (AudioName) VALUES (?)");
 	mysqli_stmt_bind_param($stmt, "s", $audio);
-	foreach(listFolderFiles("audio") as $audio) {
+	foreach(listFolderFiles("../audio") as $audio) {
+		$audio = substr($audio, 5);
 		mysqli_stmt_execute($stmt);
 	}
 	mysqli_stmt_close($stmt);

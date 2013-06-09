@@ -30,195 +30,13 @@ var Server = (function() {
 		ajax("php/getAllWalls.php", {cid:cid}, success);
 	};
 
-	Server.getCharacterRoomLocation = function() {
-		return {
-			row : 0,
-			column : 0
-		};
+	Server.getCharacterRoomLocation = function(success) {
+		ajax("php/getCharacterRoomLocation.php", {cid:cid}, success);
 	};
 
-	Server.getCharacter = function() {
-		return new Character({
-			portrait : "face/FlareMaleHero1.png",
-			attackstyle : "slash",
-			name : "Logan",
-			sounds : {
-				slash : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
-				bow : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
-				thrust : ["sound/battle/swing1", "sound/battle/swing2", "sound/battle/swing3"],
-				hurt : [
-					"sound/grunts/grunt1",
-					"sound/grunts/grunt2",
-					"sound/grunts/grunt3",
-					"sound/grunts/grunt4",
-					"sound/grunts/grunt5",
-					"sound/grunts/grunt6",
-					"sound/grunts/grunt7",
-					"sound/grunts/grunt8",
-					"sound/grunts/grunt9",
-					"sound/grunts/grunt10",
-					"sound/grunts/grunt11"
-				]
-			},
-			statistics : {
-				health : {
-					max : 50,
-					current : 50
-				},
-				speed : {
-					current : 10,
-					max : 10
-				},
-				strength : {
-					current : 10,
-					max : 10
-				},
-				defense : {
-					current : 5,
-					max : 5
-				},
-				experience : {
-					current : 0,
-					max : 100
-				},
-				energy : {
-					current : 100,
-					max : 100
-				}
-			},
-			display : { row : 2 },
-			walk : [
-				new TileSet({
-					columns : 9,
-					rows : 4,
-					src : "walk/BODY_male.png"
-				}),
-				new TileSet({
-					columns : 9,
-					rows : 4,
-					src : "walk/LEGS_pants_greenish.png"
-				}),
-				new TileSet({
-					columns : 9,
-					rows : 4,
-					src : "walk/TORSO_leather_armor_shirt_white.png"
-				}),
-				new TileSet({
-					columns : 9,
-					rows : 4,
-					src : "walk/HEAD_hair_blonde.png"
-				})
-			],
-			hurt : [
-				new TileSet({
-					columns : 6,
-					rows : 1,
-					src : "hurt/BODY_male.png"
-				}),
-				new TileSet({
-					columns : 6,
-					rows : 1,
-					src : "hurt/LEGS_pants_greenish.png"
-				}),
-				new TileSet({
-					columns : 6,
-					rows : 1,
-					src : "hurt/TORSO_leather_armor_shirt_white.png"
-				}),
-				new TileSet({
-					columns : 6,
-					rows : 1,
-					src : "hurt/HEAD_hair_blonde.png"
-				})
-			],
-			slash : [
-				new TileSet({
-					columns : 6,
-					rows : 4,
-					src : "slash/BODY_human.png"
-				}),
-				new TileSet({
-					columns : 6,
-					rows : 4,
-					src : "slash/LEGS_pants_greenish.png"
-				}),
-				new TileSet({
-					columns : 6,
-					rows : 4,
-					src : "slash/TORSO_leather_armor_shirt_white.png"
-				}),
-				new TileSet({
-					columns : 6,
-					rows : 4,
-					src : "slash/HEAD_hair_blonde.png"
-				})
-			],
-			thrust : [
-				new TileSet({
-					columns : 8,
-					rows : 4,
-					src : "thrust/BODY_human.png"
-				}),
-				new TileSet({
-					columns : 8,
-					rows : 4,
-					src : "thrust/LEGS_pants_greenish.png"
-				}),
-				new TileSet({
-					columns : 8,
-					rows : 4,
-					src : "thrust/TORSO_leather_armor_shirt_white.png"
-				}),
-				new TileSet({
-					columns : 8,
-					rows : 4,
-					src : "thrust/HEAD_hair_blonde.png"
-				})
-			],
-			bow : [
-				new TileSet({
-					columns : 13,
-					rows : 4,
-					src : "bow/BODY_human.png"
-				}),
-				new TileSet({
-					columns : 13,
-					rows : 4,
-					src : "bow/LEGS_pants_greenish.png"
-				}),
-				new TileSet({
-					columns : 13,
-					rows : 4,
-					src : "bow/TORSO_leather_armor_shirt_white.png"
-				}),
-				new TileSet({
-					columns : 13,
-					rows : 4,
-					src : "bow/HEAD_hair_blonde.png"
-				})
-			],
-			spellcast : [
-				new TileSet({
-					columns : 7,
-					rows : 4,
-					src : "spellcast/BODY_human.png"
-				}),
-				new TileSet({
-					columns : 7,
-					rows : 4,
-					src : "spellcast/LEGS_pants_greenish.png"
-				}),
-				new TileSet({
-					columns : 7,
-					rows : 4,
-					src : "spellcast/TORSO_leather_armor_shirt_white.png"
-				}),
-				new TileSet({
-					columns : 7,
-					rows : 4,
-					src : "spellcast/HEAD_hair_blonde.png"
-				})
-			]
+	Server.getCharacter = function(success) {
+		ajax("php/getCharacter.php", {cid:cid}, function(data) {
+			success(new Character(data));
 		});
 	};
 
@@ -928,10 +746,10 @@ skills = Server.getSkills(),
 canvas,
 context,
 background = loadImage("background.jpg"),
-character = Server.getCharacter(),
+character = {},
 contexts = [],
 room = {
-	location : Server.getCharacterRoomLocation(),
+	location : {column:0,row:0},
 	events : new EventHandler()
 },
 items = {
@@ -943,3 +761,13 @@ equipment_items = {},
 enemies = [],
 behaviors = Server.getBehaviors(),
 badges = Server.getBadges();
+
+Server.getCharacterRoomLocation(function(l) {
+	room.location = l;
+});
+
+Server.getCharacter(function(c) {
+	character = c;
+	character.events = new EventHandler();
+	unlock("character", 4);
+});

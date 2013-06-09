@@ -9,23 +9,26 @@ $(function() {
 			walls = w;
 		});
 	});
-	character.events.attach("trymove", function(l) {
-		var mr = CONSTANTS.TILE.MIDDLE.ROW(),
-			mc = CONSTANTS.TILE.MIDDLE.COLUMN();
-		l.collides = l.collides || 
-			l.column === -1 && l.row === mr && walls & CONSTANTS.WALL.LEFT || 
-			l.column === -1 && l.row !== mr;
-		l.collides = l.collides || 
-			l.column === CONSTANTS.TILE.COLUMNS && l.row === mr && walls & CONSTANTS.WALL.RIGHT || 
-			l.column === CONSTANTS.TILE.COLUMNS && l.row !== mr;		
-		l.collides = l.collides || 
-			l.row === -1 && l.column === mc && walls & CONSTANTS.WALL.TOP || 
-			l.row === -1 && l.column !== mc;
-		l.collides = l.collides || 
-			l.row === CONSTANTS.TILE.ROWS && l.column === mc && walls & CONSTANTS.WALL.BOTTOM || 
-			l.row === CONSTANTS.TILE.ROWS && l.column !== mc;
-			
+	lock("character", function() {
+		character.events.attach("trymove", function(l) {
+			var mr = CONSTANTS.TILE.MIDDLE.ROW(),
+				mc = CONSTANTS.TILE.MIDDLE.COLUMN();
+			l.collides = l.collides || 
+				l.column === -1 && l.row === mr && walls & CONSTANTS.WALL.LEFT || 
+				l.column === -1 && l.row !== mr;
+			l.collides = l.collides || 
+				l.column === CONSTANTS.TILE.COLUMNS && l.row === mr && walls & CONSTANTS.WALL.RIGHT || 
+				l.column === CONSTANTS.TILE.COLUMNS && l.row !== mr;		
+			l.collides = l.collides || 
+				l.row === -1 && l.column === mc && walls & CONSTANTS.WALL.TOP || 
+				l.row === -1 && l.column !== mc;
+			l.collides = l.collides || 
+				l.row === CONSTANTS.TILE.ROWS && l.column === mc && walls & CONSTANTS.WALL.BOTTOM || 
+				l.row === CONSTANTS.TILE.ROWS && l.column !== mc;
+				
+		});
 	});
+	
 	function drawHorizontalWalls() {
 		var sx = canvas.width / 2 - CONSTANTS.WIDTH() / 2 - CONSTANTS.TILE.WIDTH,
 			sy = canvas.height / 2 - CONSTANTS.HEIGHT() / 2 - CONSTANTS.TILE.HEIGHT,

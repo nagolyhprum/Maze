@@ -1,3 +1,26 @@
+(function() {
+	var waiting = {};
+	window.lock = function(name, complete) {
+		if(!waiting[name]) {
+			waiting[name] = [];
+			waiting[name].allowed = 0;
+		}
+		waiting[name].push(complete);
+		unlock(name, 0);
+	};
+	window.unlock = function(name, allowed) {
+		if(!waiting[name]) {
+			waiting[name] = [];
+			waiting[name].allowed = 0;
+		}
+		waiting[name].allowed += allowed;
+		for(var i = 0; waiting[name].allowed && waiting[name].length; i++) {
+			waiting[name].splice(0, 1)[0]();
+			waiting[name].allowed--;
+		}
+	};
+}());
+
 function ajax(src, params, success) {
 	var xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"), s = "";	
 	for(var i in params) {
@@ -373,17 +396,27 @@ var Statistics = (function() {
 	return f;
 }());
 
+function tileify(r) {
+	if(r) {
+		for(var i = 0; i < r.length; i++) {
+			r[i] = new TileSet(r[i]);
+		}
+		return r;
+	}
+	return [];
+}
+
 function Character(args) {
 	this.tween = new Tween();
 	args = args || {};
 	this.events = new EventHandler();
 	this.attackstyle = args.attackstyle || "slash";
-	this.walk = args.walk || [];
-	this.bow = args.bow || [];
-	this.spellcast = args.spellcast || [];
-	this.thrust = args.thrust || [];
-	this.slash = args.slash || [];
-	this.hurt = args.hurt || [];
+	this.walk = tileify(args.walk);
+	this.bow = tileify(args.bow);
+	this.spellcast = tileify(args.spellcast);
+	this.thrust = tileify(args.thrust);
+	this.slash = tileify(args.slash);
+	this.hurt = tileify(args.hurt);
 	this.active = this.walk;
 	this.id = args.id;
 	this.name = args.name;

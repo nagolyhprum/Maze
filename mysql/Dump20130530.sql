@@ -956,6 +956,8 @@ CREATE TABLE `statistic` (
   `StatisticEnergy` bigint(20) NOT NULL,
   `StatisticIntelligence` bigint(20) NOT NULL,
   `StatisticResistance` bigint(20) NOT NULL,
+  `StatisticSpeed` BIGINT(20) NOT NULL,
+  `StatisticExperience` BIGINT(20) NOT NULL,
   PRIMARY KEY (`StatisticID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -966,7 +968,7 @@ CREATE TABLE `statistic` (
 
 LOCK TABLES `statistic` WRITE;
 /*!40000 ALTER TABLE `statistic` DISABLE KEYS */;
-INSERT INTO `statistic` (`StatisticID`, `StatisticStrength`, `StatisticDefense`, `StatisticHealth`, `StatisticEnergy`, `StatisticIntelligence`, `StatisticResistance`) VALUES (1,0,0,100,100,0,0),(2,0,0,100,100,0,0),(3,20,20,20,0,20,20),(4,5,0,0,0,0,0),(5,0,0,50,0,0,0);
+INSERT INTO `statistic` (`StatisticID`, `StatisticStrength`, `StatisticDefense`, `StatisticHealth`, `StatisticEnergy`, `StatisticIntelligence`, `StatisticResistance`, `StatisticExperience`, `StatisticSpeed`) VALUES (1,0,0,100,100,0,0,0,1),(2,0,0,100,100,0,0,0,1),(3,20,20,20,0,20,20,0,1),(4,5,0,0,0,0,0,0,1),(5,0,0,50,0,0,0,0,1);
 /*!40000 ALTER TABLE `statistic` ENABLE KEYS */;
 UNLOCK TABLES;
 
