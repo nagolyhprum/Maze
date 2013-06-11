@@ -4,10 +4,14 @@
 	function getCharacterRoomLocation($c, $cid, $uid) {
 		$stmt = mysqli_prepare($c, "
 			SELECT 
-				CharacterColumn, 
-				CharacterRow 
+				RoomColumn, 
+				RoomRow 
 			FROM 
-				`Character`
+				`Character` as c
+			INNER JOIN
+				Room as r
+			ON
+				r.RoomID=c.RoomID
 			WHERE 
 				CharacterID=? AND UserID=?");
 		mysqli_stmt_bind_param($stmt, "ii", $cid, $uid);

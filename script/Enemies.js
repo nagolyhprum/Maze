@@ -9,8 +9,10 @@ $(function() {
 		});
 		
 		room.events.attach("change", function() {
-			enemies = Server.getRoomEnemies();
-			moveEnemies();
+			Server.getRoomEnemies(function(e) {
+				enemies = e;
+				moveEnemies();
+			});
 		});
 		
 		character.events.attach("trymove", function(l) {

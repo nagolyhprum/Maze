@@ -3,27 +3,77 @@
 
 	function getCharacter($c, $cid, $uid) {
 		$character = array();
-		//get image and name
+		//get image, name, and statistics
 		$stmt = mysqli_prepare($c, "
 			SELECT
 				c.CharacterName,
 				i.ImageName,
 				c.CharacterIsMale,
-				c.CharacterDirection
+				c.CharacterDirection,
+				c.CharacterRow,
+				c.CharacterColumn,
+				currs.StatisticHealth,
+				currs.StatisticEnergy,
+				currs.StatisticStrength,
+				currs.StatisticDefense,
+				currs.StatisticIntelligence,
+				currs.StatisticResistance,
+				currs.StatisticSpeed,
+				currs.StatisticExperience,
+				maxs.StatisticHealth,
+				maxs.StatisticEnergy,
+				maxs.StatisticStrength,
+				maxs.StatisticDefense,
+				maxs.StatisticIntelligence,
+				maxs.StatisticResistance,
+				maxs.StatisticSpeed,
+				maxs.StatisticExperience
 			FROM
 				`Character` as c
 			INNER JOIN
 				Image as i
 			ON
 				c.CharacterPortrait=i.ImageID
+			INNER JOIN
+				Statistic as currs
+			ON
+				currs.StatisticID=c.CharacterCurrentStatisticID
+			INNER JOIN
+				Statistic as maxs
+			ON
+				maxs.StatisticID=c.CharacterCurrentStatisticID
 			WHERE 
 				c.CharacterID=? AND c.UserID=?
 		");
 		mysqli_stmt_bind_param($stmt, "ii", $cid, $uid);
-		mysqli_stmt_bind_result($stmt, $character["name"], $character["portrait"], $isMale, $character["direction"]["row"]);
+		$statistics = array();
+		mysqli_stmt_bind_result($stmt, 
+			$character["name"], 
+			$character["portrait"], 
+			$isMale, 
+			$character["direction"]["row"], 
+			$character["location"]["row"], 
+			$character["location"]["column"],
+			$statistics["health"]["current"], 
+			$statistics["energy"]["current"], 
+			$statistics["strength"]["current"], 
+			$statistics["defense"]["current"], 
+			$statistics["intelligence"]["current"], 
+			$statistics["resistance"]["current"], 
+			$statistics["speed"]["current"], 
+			$statistics["experience"]["current"], 
+			$statistics["health"]["max"], 
+			$statistics["energy"]["max"], 
+			$statistics["strength"]["max"], 
+			$statistics["defense"]["max"], 
+			$statistics["intelligence"]["max"], 
+			$statistics["resistance"]["max"], 
+			$statistics["speed"]["max"], 
+			$statistics["experience"]["max"]);
 		mysqli_stmt_execute($stmt);
 		mysqli_stmt_fetch($stmt);
 		mysqli_stmt_close($stmt);
+		$character["statistics"] = $statistics;
 		//get sounds
 		$stmt = mysqli_prepare($c, "
 			SELECT
@@ -47,68 +97,10 @@
 		mysqli_stmt_execute($stmt);
 		$sounds = array();
 		while(mysqli_stmt_fetch($stmt)) {
-			if(!$sounds[$attacktype]) {
-				$sounds[$attacktype] = array();
-			}
 			$sounds[$attacktype][] = $audio;
 		}
 		mysqli_stmt_close($stmt);
 		$character["sounds"] = $sounds;
-		//statistics		
-		$stmt = mysqli_prepare($c, "
-			SELECT
-				currs.StatisticHealth,
-				currs.StatisticEnergy,
-				currs.StatisticStrength,
-				currs.StatisticDefense,
-				currs.StatisticIntelligence,
-				currs.StatisticResistance,
-				currs.StatisticSpeed,
-				currs.StatisticExperience,
-				maxs.StatisticHealth,
-				maxs.StatisticEnergy,
-				maxs.StatisticStrength,
-				maxs.StatisticDefense,
-				maxs.StatisticIntelligence,
-				maxs.StatisticResistance,
-				maxs.StatisticSpeed,
-				maxs.StatisticExperience
-			FROM
-				`Character` as c
-			INNER JOIN
-				Statistic as currs
-			ON
-				currs.StatisticID=c.CharacterCurrentStatisticID
-			INNER JOIN
-				Statistic as maxs
-			ON
-				maxs.StatisticID=c.CharacterCurrentStatisticID
-			WHERE 
-				c.CharacterID=? AND c.UserID=?
-		");
-		mysqli_stmt_bind_param($stmt, "ii", $cid, $uid);
-		$statistics = array();
-		mysqli_stmt_bind_result($stmt, 
-			$statistics["health"]["current"], 
-			$statistics["energy"]["current"], 
-			$statistics["strength"]["current"], 
-			$statistics["defense"]["current"], 
-			$statistics["intelligence"]["current"], 
-			$statistics["resistance"]["current"], 
-			$statistics["speed"]["current"], 
-			$statistics["experience"]["current"], 
-			$statistics["health"]["max"], 
-			$statistics["energy"]["max"], 
-			$statistics["strength"]["max"], 
-			$statistics["defense"]["max"], 
-			$statistics["intelligence"]["max"], 
-			$statistics["resistance"]["max"], 
-			$statistics["speed"]["max"], 
-			$statistics["experience"]["max"]);
-		mysqli_stmt_execute($stmt);
-		mysqli_stmt_fetch($stmt);
-		mysqli_stmt_close($stmt);
-		$character["statistics"] = $statistics;
 		$stmt = mysqli_prepare($c, "
 			SELECT
 				cic.CharacterImageChoiceRows,
@@ -144,9 +136,6 @@
 		mysqli_stmt_bind_result($stmt, $rows, $columns, $attacktype, $image);
 		mysqli_stmt_execute($stmt);
 		while(mysqli_stmt_fetch($stmt)) {
-			if(!$character[$attacktype]) {
-				$character[$attacktype] = array();
-			}
 			$character[$attacktype][] = array(
 				"columns" => $columns,
 				"rows" => $rows,
