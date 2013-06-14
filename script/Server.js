@@ -50,6 +50,9 @@ var Server = (function() {
 	};
 
 	Server.moveCharacter = function(l) {
+		ajax("php/moveCharacter.php", {cid:cid,row:l.row,column:l.column}, function(data) {
+			console.log(data);
+		});
 	};
 
 	Server.attack = function(enemies, index, physical) {
@@ -488,9 +491,9 @@ var CONSTANTS = {
 	},
 	DIRECTION : {
 		UP : 0,
-		LEFT : 1,
+		RIGHT : 3,
 		DOWN : 2,
-		RIGHT : 3
+		LEFT : 1
 	},
 	INBETWEEN : function() {
 		return canvas.width / 2 - ((CONSTANTS.TILE.ROWS + 2) * CONSTANTS.TILE.WIDTH) / 2 - 20;

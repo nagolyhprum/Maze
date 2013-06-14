@@ -136,7 +136,7 @@
 			mysqli_stmt_close($stmt);
 			$map = mysqli_insert_id($c);
 			//insert into the room in map
-			$stmt = mysqli_prepare($c, "INSERT INTO Room (RoomWalls, MapID, RoomColumn, RoomRow, RoomIsDiscovered) VALUES (?, ?, ?, ?, 0)");
+			$stmt = mysqli_prepare($c, "INSERT INTO Room (RoomWalls, MapID, RoomColumn, RoomRow, RoomIsDiscovered) VALUES (?, ?, ?, ?, 1)");
 			mysqli_stmt_bind_param($stmt, "iiii", $walls, $map, $row, $column);
 			for($row = 0; $row < $mapmodel["rows"]; $row++) {			
 				for($column = 0; $column < $mapmodel["columns"]; $column++) {
@@ -181,12 +181,6 @@
 		mysqli_stmt_close($stmt);
 		return mysqli_insert_id($c);
 	}
-	
-	define("UP", 1);
-	define("RIGHT", 2);
-	define("DOWN", 4);
-	define("LEFT", 8);
-	define("ALL", 15);
 	
 	function oppositeDirection($direction) {
 		switch($direction) {
