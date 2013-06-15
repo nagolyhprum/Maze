@@ -110,7 +110,7 @@
 				$visited[$i] = array();
 				for($j = 0; $j < $mapmodel["columns"]; $j++) {
 					$rooms[$i][$j] = array(
-						"walls" => ALL,
+						"walls" => WALL_ALL,
 						"enemies" => array()
 					);
 					if($i !==  0 || $j !== 0) {
@@ -184,31 +184,31 @@
 	
 	function oppositeDirection($direction) {
 		switch($direction) {
-			case UP : return DOWN;
-			case RIGHT : return LEFT;
-			case DOWN : return UP;
-			case LEFT : return RIGHT;
+			case WALL_UP : return WALL_DOWN;
+			case WALL_RIGHT : return WALL_LEFT;
+			case WALL_DOWN : return WALL_UP;
+			case WALL_LEFT : return WALL_RIGHT;
 		}
 	}
 	
 	function makeMap($fromrow, $fromcolumn, $rows, $columns, &$rooms, &$visited) {
 		$visited[$fromrow][$fromcolumn] = true;
-		$unvisited = array(UP, RIGHT, DOWN, LEFT);
+		$unvisited = array(WALL_UP, WALL_RIGHT, WALL_DOWN, WALL_LEFT);
 		while(count($unvisited)) {
 			$tocolumn = $fromcolumn;
 			$torow = $fromrow;
 			$direction = array_splice($unvisited, floor(mt_rand(0, count($unvisited))), 1);
 			$direction = $direction[0];
-			if($direction === UP) {
+			if($direction === WALL_UP) {
 				$torow--;
 			}
-			if($direction === RIGHT) {
+			if($direction === WALL_RIGHT) {
 				$tocolumn++;
 			}
-			if($direction === DOWN) {
+			if($direction === WALL_DOWN) {
 				$torow++;
 			}
-			if($direction === LEFT) {
+			if($direction === WALL_LEFT) {
 				$tocolumn--;
 			}
 			if($torow >= 0 && $tocolumn >= 0 && $torow < $rows && $tocolumn < $columns && !$visited[$torow][$tocolumn]) {

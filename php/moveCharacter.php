@@ -17,7 +17,18 @@
 			ON
 				eir.RoomID=c.RoomID			
 			SET
-				c.CharacterRow=?, c.CharacterColumn=?
+				c.CharacterDirection=
+				(
+					CASE 
+						WHEN c.CharacterColumn - ? = -1 THEN " . DIRECTION_RIGHT . "
+						WHEN c.CharacterRow - ? = -1 THEN " . DIRECTION_DOWN . "
+						WHEN c.CharacterColumn - ? = 1 THEN " . DIRECTION_LEFT . "
+						WHEN c.CharacterRow - ? = 1 THEN " . DIRECTION_UP . "
+						ELSE -1
+					END
+				),
+				c.CharacterColumn=?,
+				c.CharacterRow=?
 			WHERE
 				c.CharacterID=? AND c.UserID=? -- the users character
 			AND 
@@ -26,19 +37,21 @@
 				eir.EnemyInRoomID IS NULL -- there are no enemies
 			AND -- make sure they are still in the room
 			(
-					(? > 0 AND ? > 0 AND ? < $COLUMNS AND ? < $ROWS) -- in the room
+					(? >= 0 AND ? >= 0 AND ? < $COLUMNS AND ? < $ROWS) -- in the room
 				OR
-					(? = -1 AND ? = $HALF_ROWS AND r.RoomWalls & " . LEFT . " = 0) -- going to the left room
+					(? = -1 AND ? = $HALF_ROWS AND r.RoomWalls & " . WALL_LEFT . " = 0) -- going to the left room
 				OR
-					(? = $COLUMNS AND ? = $HALF_ROWS AND r.RoomWalls & " . RIGHT . " = 0) -- going to the right room
+					(? = $COLUMNS AND ? = $HALF_ROWS AND r.RoomWalls & " . WALL_RIGHT . " = 0) -- going to the right room
 				OR
-					(? = $HALF_COLUMNS AND ? = -1 AND r.RoomWalls & " . UP . " = 0) -- going to the top room
+					(? = $HALF_COLUMNS AND ? = -1 AND r.RoomWalls & " . WALL_UP . " = 0) -- going to the top room
 				OR
-					(? = $HALF_COLUMNS AND ? = $ROWS AND r.RoomWalls & " . DOWN . " = 0) -- going to the bottom room
+					(? = $HALF_COLUMNS AND ? = $ROWS AND r.RoomWalls & " . WALL_DOWN . " = 0) -- going to the bottom room
 			)
 			");
-		mysqli_stmt_bind_param($stmt, "iiiiiiiiiiiiiiiiii", 
-			$row, $column, //set the column and row
+		echo mysqli_error($c);
+		mysqli_stmt_bind_param($stmt, "iiiiiiiiiiiiiiiiiiiiii", 
+			$column, $row, $column, $row, //direction logic
+			$column, $row, //set the column and row
 			$cid, $uid, //this character and user
 			$column, $row, //check the distance of the movement
 			$column, $row, $column, $row, //in the map

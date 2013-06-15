@@ -51,7 +51,7 @@
 			$character["name"], 
 			$character["portrait"], 
 			$isMale, 
-			$character["direction"]["row"], 
+			$character["display"]["row"], 
 			$character["location"]["row"], 
 			$character["location"]["column"],
 			$statistics["health"]["current"], 
