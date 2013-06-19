@@ -143,6 +143,7 @@ CREATE TABLE `character` (
   `CharacterRow` bigint(20) DEFAULT NULL,
   `CharacterDirection` bigint(20) DEFAULT NULL,
   `CharacterIsMale` tinyint(1) NOT NULL,
+  `CharacterCanUse` TIMESTAMP DEFAULT NOW(),
   PRIMARY KEY (`CharacterID`),
   KEY `fk_Character_Image1_idx` (`CharacterPortrait`),
   KEY `fk_Character_Statistic1_idx` (`CharacterCurrentStatisticID`),
@@ -299,7 +300,7 @@ CREATE TABLE `characterskill` (
   `CharacterID` bigint(20) NOT NULL,
   `SkillID` bigint(20) NOT NULL,
   `CharacterSkillIndex` bigint(20) DEFAULT NULL,
-  `CharacterSkillExpireTime` timestamp NULL DEFAULT NULL,
+  `CharacterSkillCanUse` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`CharacterSkillID`),
   KEY `fk_CharacterSkill_Skill2_idx` (`SkillID`),
   KEY `fk_CharacterSkill_Character2_idx` (`CharacterID`),
@@ -314,7 +315,7 @@ CREATE TABLE `characterskill` (
 
 LOCK TABLES `characterskill` WRITE;
 /*!40000 ALTER TABLE `characterskill` DISABLE KEYS */;
-INSERT INTO `characterskill` (`CharacterSkillID`, `CharacterID`, `SkillID`, `CharacterSkillIndex`, `CharacterSkillExpireTime`) VALUES (1,1,3,0,'0000-00-00 00:00:00'),(2,1,4,1,'0000-00-00 00:00:00'),(3,1,1,2,'0000-00-00 00:00:00'),(4,1,2,3,'0000-00-00 00:00:00');
+INSERT INTO `characterskill` (`CharacterSkillID`, `CharacterID`, `SkillID`, `CharacterSkillIndex`, `CharacterSkillCanUse`) VALUES (1,1,3,0,'0000-00-00 00:00:00'),(2,1,4,1,'0000-00-00 00:00:00'),(3,1,1,2,'0000-00-00 00:00:00'),(4,1,2,3,'0000-00-00 00:00:00');
 /*!40000 ALTER TABLE `characterskill` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -331,6 +332,7 @@ CREATE TABLE `enemy` (
   `EnemyName` varchar(32) NOT NULL,
   `StatisticID` bigint(20) NOT NULL,
   `AttackTypeID` bigint(20) NOT NULL,
+  `EnemyCanMove` TIMESTAMP DEFAULT NOW(),
   PRIMARY KEY (`EnemyID`),
   KEY `fk_Enemy_Image1_idx` (`EnemyPortrait`),
   KEY `fk_Enemy_Statistic1_idx` (`StatisticID`),

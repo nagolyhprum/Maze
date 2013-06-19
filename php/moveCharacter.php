@@ -6,7 +6,11 @@
 		$HALF_ROWS = floor(ROOM_ROWS / 2);
 		$stmt = mysqli_prepare($c, "
 			UPDATE
+				Statistic as s
+			INNER JOIN
 				`Character` as c
+			ON
+				s.StatisticID=c.CharacterCurrentStatisticID
 			INNER JOIN
 				Room as r
 			ON
@@ -73,7 +77,8 @@
 						WHEN c.CharacterColumn = " . ROOM_COLUMNS . " THEN 0
 						ELSE c.CharacterColumn
 					END
-				)
+				),
+				c.CharacterCanUse = timeToMove(s.StatisticSpeed)
 			WHERE
 				c.CharacterID=? AND c.UserID=? -- the users character
 			AND 
@@ -92,8 +97,9 @@
 				OR
 					(? = $HALF_COLUMNS AND ? = " . ROOM_ROWS . " AND r.RoomWalls & " . WALL_DOWN . " = 0) -- going to the bottom room
 			)
+			AND
+				c.CharacterCanUse<= NOW()
 			");
-		echo mysqli_error($c);
 		mysqli_stmt_bind_param($stmt, "iiiiiiiiiiiiiiiiiiiiiiii", 
 			$column, $row, //test for enemies
 			$column, $row, $column, $row, //direction logic
@@ -123,8 +129,4 @@
 	$cid = $_GET["cid"];
 	echo json_encode(moveCharacter($c, $cid, $USER, $column, $row));
 	close($c);
-	
-	/*
-	
-	*/
 ?>
