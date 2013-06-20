@@ -78,7 +78,7 @@
 						ELSE c.CharacterColumn
 					END
 				),
-				c.CharacterCanUse = timeToMove(s.StatisticSpeed)
+				c.CharacterCanUse = timeToMove(NOW(), s.StatisticSpeed)
 			WHERE
 				c.CharacterID=? AND c.UserID=? -- the users character
 			AND 

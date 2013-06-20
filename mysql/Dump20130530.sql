@@ -1065,3 +1065,8 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2013-05-30  1:30:36
+
+
+UPDATE Audio SET AudioName=substr(AudioName, 7);
+
+UPDATE Image SET ImageName=substr(ImageName, 8);
