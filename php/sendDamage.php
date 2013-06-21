@@ -1,5 +1,4 @@
 <?php
-	//need to factor in skills
 	
 	require_once("../admin/db.php");
 
@@ -78,13 +77,19 @@
 								Statistic as s
 							ON
 								ss.StatisticID=s.StatisticID
-							WHERE
-							(
-								NOT SkillIsActive 
-							AND 
-								cs.CharacterSkillIndex IS NOT NULL 
+							WHERE					
+								cs.CharacterSkillIndex IS NOT NULL
 							AND
-								ADDTIME(SUBTIME(cs.CharacterSkillCanUse, UNIX_TIMESTAMP(Skill.SkillCoolDown)), UNIX_TIMESTAMP(ss.SkillStatisticDuration)) >= NOW()
+							(
+									NOT SkillIsActive
+								OR 
+									(SkillIsActive AND (cs.CharacterSkillIndex=? AND ? IS NOT NULL))
+								OR
+								(
+										SkillIsActive 
+									AND 
+										ADDTIME(SUBTIME(cs.CharacterSkillCanUse, UNIX_TIMESTAMP(Skill.SkillCoolDown)), UNIX_TIMESTAMP(ss.SkillStatisticDuration)) >= NOW()
+								)
 							)
 						), 0),
 						cStat.StatisticIntelligence + IFNULL(
@@ -130,13 +135,19 @@
 								Statistic as s
 							ON
 								ss.StatisticID=s.StatisticID
-							WHERE
-							(
-								NOT SkillIsActive 
-							AND 
-								cs.CharacterSkillIndex IS NOT NULL 
+							WHERE							
+								cs.CharacterSkillIndex IS NOT NULL
 							AND
-								ADDTIME(SUBTIME(cs.CharacterSkillCanUse, UNIX_TIMESTAMP(Skill.SkillCoolDown)), UNIX_TIMESTAMP(ss.SkillStatisticDuration)) >= NOW()
+							(
+									NOT SkillIsActive
+								OR 
+									(SkillIsActive AND (cs.CharacterSkillIndex=? AND ? IS NOT NULL))
+								OR
+								(
+										SkillIsActive 
+									AND 
+										ADDTIME(SUBTIME(cs.CharacterSkillCanUse, UNIX_TIMESTAMP(Skill.SkillCoolDown)), UNIX_TIMESTAMP(ss.SkillStatisticDuration)) >= NOW()
+								)
 							)
 						), 0),
 						eStat.StatisticDefense,
@@ -176,7 +187,7 @@
 						(it.ItemTypeName='mainhand' OR it.ItemTypeName IS NULL) AND c.CharacterID=? AND c.UserID=?
 				");
 				echo mysqli_error($c);
-				mysqli_stmt_bind_param($stmt, "iiii", $cid, $cid, $cid, $uid);
+				mysqli_stmt_bind_param($stmt, "iiiiiiii", $cid, $skill, $skill, $cid, $skill, $skill, $cid, $uid);
 				mysqli_stmt_bind_result($stmt, $eRow, $eColumn, $e, $cDirection, $cColumn, $cRow, $cStrength, $cIntelligence, $eDefense, $eResistance, $iArea);
 				mysqli_stmt_execute($stmt);
 				if(mysqli_stmt_fetch($stmt)) {

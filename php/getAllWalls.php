@@ -2,46 +2,21 @@
 	require_once("../admin/db.php");
 	
 	function getAllWalls($c, $uid, $cid) {
-		$stmt = mysqli_prepare($c, "
-			SELECT 
-				s.RoomWalls,
-				s.RoomIsDiscovered,
-				s.RoomColumn,
-				s.RoomRow
-			FROM
-				`Character` as c
-			INNER JOIN
-				Room as r
-			ON
-				c.RoomID=r.RoomID
-			INNER JOIN 
-				Room as s
-			ON
-				s.MapID=r.MapID
-			WHERE
-				c.UserID=? AND c.CharacterID=?
-		");
-		mysqli_stmt_bind_param($stmt, "ii", $uid, $cid);
-		mysqli_stmt_bind_result($stmt, $walls, $isDiscovered, $columns, $rows);
-		mysqli_stmt_execute($stmt);
-		$data = array();
-		$c = -1;
-		$r = -1;
-		while(mysqli_stmt_fetch($stmt)) {
-			if($isDiscovered) {
-				$data[] = $walls;
-			} else {
-				$data[] = null;
+		mysqli_multi_query($c, "CALL getAllWalls(" . mysqli_real_escape_string($c, $cid) . ", " . mysqli_real_escape_string($c, $uid) . ")");
+		$column = $row = -1;
+		if($result = mysqli_store_result($c)) {
+			while($r = mysqli_fetch_assoc($result)) {
+				if($r["RoomIsDiscovered"]) {
+					$data[] = (int) $r["RoomWalls"];
+				} else {
+					$data[] = null;
+				}
+				$column = max($r["RoomColumn"], $column);
+				$row = max($r["RoomRow"], $row);
 			}
-			$c = max($columns, $c);
-			$r = max($rows, $r);
+			mysqli_free_result($result);
 		}
-		mysqli_stmt_close($stmt);
-		return array(
-			"data" => $data,
-			"columns" => $c + 1,
-			"rows" => $r + 1
-		);
+		return array("data" => $data, "columns" => $column + 1, "rows" => $row + 1);
 	}
 
 	$cid = 1;

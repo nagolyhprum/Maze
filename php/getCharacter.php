@@ -2,147 +2,39 @@
 	require_once("../admin/db.php");
 
 	function getCharacter($c, $cid, $uid) {
-		$character = array();
-		//get image, name, and statistics
-		$stmt = mysqli_prepare($c, "
-			SELECT
-				c.CharacterName,
-				i.ImageName,
-				c.CharacterIsMale,
-				c.CharacterDirection,
-				c.CharacterRow,
-				c.CharacterColumn,
-				currs.StatisticHealth,
-				currs.StatisticEnergy,
-				currs.StatisticStrength,
-				currs.StatisticDefense,
-				currs.StatisticIntelligence,
-				currs.StatisticResistance,
-				currs.StatisticSpeed,
-				currs.StatisticExperience,
-				maxs.StatisticHealth,
-				maxs.StatisticEnergy,
-				maxs.StatisticStrength,
-				maxs.StatisticDefense,
-				maxs.StatisticIntelligence,
-				maxs.StatisticResistance,
-				maxs.StatisticSpeed,
-				maxs.StatisticExperience
-			FROM
-				`Character` as c
-			INNER JOIN
-				Image as i
-			ON
-				c.CharacterPortrait=i.ImageID
-			INNER JOIN
-				Statistic as currs
-			ON
-				currs.StatisticID=c.CharacterCurrentStatisticID
-			INNER JOIN
-				Statistic as maxs
-			ON
-				maxs.StatisticID=c.CharacterCurrentStatisticID
-			WHERE 
-				c.CharacterID=? AND c.UserID=?
-		");
-		mysqli_stmt_bind_param($stmt, "ii", $cid, $uid);
-		$statistics = array();
-		mysqli_stmt_bind_result($stmt, 
-			$character["name"], 
-			$character["portrait"], 
-			$isMale, 
-			$character["display"]["row"], 
-			$character["location"]["row"], 
-			$character["location"]["column"],
-			$statistics["health"]["current"], 
-			$statistics["energy"]["current"], 
-			$statistics["strength"]["current"], 
-			$statistics["defense"]["current"], 
-			$statistics["intelligence"]["current"], 
-			$statistics["resistance"]["current"], 
-			$statistics["speed"]["current"], 
-			$statistics["experience"]["current"], 
-			$statistics["health"]["max"], 
-			$statistics["energy"]["max"], 
-			$statistics["strength"]["max"], 
-			$statistics["defense"]["max"], 
-			$statistics["intelligence"]["max"], 
-			$statistics["resistance"]["max"], 
-			$statistics["speed"]["max"], 
-			$statistics["experience"]["max"]);
-		mysqli_stmt_execute($stmt);
-		mysqli_stmt_fetch($stmt);
-		mysqli_stmt_close($stmt);
-		$character["statistics"] = $statistics;
-		//get sounds
-		$stmt = mysqli_prepare($c, "
-			SELECT
-				a.AudioName,
-				at.AttackTypeName
-			FROM
-				CharacterAudio as ca
-			INNER JOIN
-				Audio as a
-			ON
-				ca.AudioID=a.AudioID
-			INNER JOIN
-				AttackType as at
-			ON
-				at.AttackTypeID=ca.AttackTypeID
-			WHERE 
-				ca.CharacterAudioIsMale=?
-		");
-		mysqli_stmt_bind_param($stmt, "i", $isMale);
-		mysqli_stmt_bind_result($stmt, $audio, $attacktype);
-		mysqli_stmt_execute($stmt);
-		$sounds = array();
-		while(mysqli_stmt_fetch($stmt)) {
-			$sounds[$attacktype][] = $audio;
+		mysqli_multi_query($c, "CALL getCharacter(" . mysqli_real_escape_string($c, $cid) . ", " . mysqli_real_escape_string($c, $uid) . ")");
+		if($result = mysqli_store_result($c)) {
+			$r = mysqli_fetch_assoc($result);
+			$character["name"] = $r["CharacterName"]; 
+			$character["portrait"] = $r["ImageName"];			
+			$character["display"]["row"] = (int) $r["CharacterDirection"];
+			$character["location"] = array("row" => (int) $r["CharacterRow"], "column" => (int) $r["CharacterColumn"]);
+			foreach(array("Health", "Energy", "Strength", "Defense", "Intelligence", "Resistance", "Speed", "Experience") as $s) {
+				$statistics[strtolower($s)]["current"] = (int) $r["c$s"]; 
+				$statistics[strtolower($s)]["max"] = (int) $r["m$s"]; 
+			}
+			$character["statistics"] = $statistics;
+			mysqli_free_result($result);
 		}
-		mysqli_stmt_close($stmt);
-		$character["sounds"] = $sounds;
-		$stmt = mysqli_prepare($c, "
-			SELECT
-				cic.CharacterImageChoiceRows,
-				cic.CharacterImageChoiceColumns,				
-				at.AttackTypeName,
-				i.ImageName
-			FROM
-				`Character` as c
-			INNER JOIN
-				CharacterImage as ci
-			ON
-				c.CharacterID=ci.CharacterID
-			INNER JOIN
-				CharacterImageChoiceGroup as cicg
-			ON
-				ci.CharacterImageChoiceGroupID=cicg.CharacterImageChoiceGroupID
-			INNER JOIN
-				CharacterImageChoice as cic
-			ON
-				cicg.CharacterImageChoiceGroupID=cic.CharacterImageChoiceGroupID
-			INNER JOIN
-				AttackType as at
-			ON
-				at.AttackTypeID=cic.AttackTypeID
-			INNER JOIN
-				Image as i
-			ON
-				cic.ImageID=i.ImageID
-			WHERE
-				c.CharacterID=? AND c.UserID=?
-		");
-		mysqli_stmt_bind_param($stmt, "ii", $cid, $uid);		
-		mysqli_stmt_bind_result($stmt, $rows, $columns, $attacktype, $image);
-		mysqli_stmt_execute($stmt);
-		while(mysqli_stmt_fetch($stmt)) {
-			$character[$attacktype][] = array(
-				"columns" => $columns,
-				"rows" => $rows,
-				"src" => $image
-			);
+		mysqli_next_result($c);
+		if($result = mysqli_store_result($c)) {
+			while($r = mysqli_fetch_assoc($result)) {				
+				$sounds[$r["AttackTypeName"]][] = $r["AudioName"];
+			}
+			$character["sounds"] = $sounds;
+			mysqli_free_result($result);
 		}
-		mysqli_stmt_close($stmt);
+		mysqli_next_result($c);
+		if($result = mysqli_store_result($c)) {			
+			while($r = mysqli_fetch_assoc($result)) {				
+				$character[$r["AttackTypeName"]][] = array(
+					"columns" => (int) $r["CharacterImageChoiceColumns"],
+					"rows" => (int) $r["CharacterImageChoiceRows"],
+					"src" => $r["ImageName"]
+				);
+			}
+			mysqli_free_result($result);
+		}
 		return $character;
 	}
 	
