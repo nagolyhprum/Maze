@@ -11,7 +11,7 @@
 		return $walls;
 	}
 
-	$cid = 1;
+	$cid = $_GET["cid"];
 	$c = connect();
 	echo json_encode(getWalls($c, $USER, $cid));
 	close($c);

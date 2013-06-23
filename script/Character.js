@@ -35,18 +35,8 @@ $(function() {
 				vertical = CONSTANTS.TILE.HEIGHT;
 			} else {
 				moved = 0;
-				if(which === 32) {			
-					if(equipment_items.mainhand.item && equipment_items.mainhand.item.area < 0) {
-						sendDamage({column : 1, row : 0}, { area : equipment_items.mainhand.item.area, attack : equipment_items.mainhand.item ? equipment_items.mainhand.item.attack : "slash" });
-						sendDamage({column : -1, row : 0}, { area : equipment_items.mainhand.item.area, attack : equipment_items.mainhand.item ? equipment_items.mainhand.item.attack : "slash" });
-						sendDamage({column : 0, row : 1}, { area : equipment_items.mainhand.item.area, attack : equipment_items.mainhand.item ? equipment_items.mainhand.item.attack : "slash" });
-						sendDamage({column : 0, row : -1}, { area : equipment_items.mainhand.item.area, attack : equipment_items.mainhand.item ? equipment_items.mainhand.item.attack : "slash"});
-					} else {
-						sendDamage(character.getDirection(), {
-							area : equipment_items.mainhand.item ? equipment_items.mainhand.item.area : 1,
-							attack : equipment_items.mainhand.item ? equipment_items.mainhand.item.attack : "slash"
-						});
-					}
+				if(which === 32) {							
+					Server.sendDamage();
 					addBehavior("Character", "Attacks");
 					character.attack();
 				}

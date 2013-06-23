@@ -2,9 +2,6 @@
 	require_once("../admin/db.php");
 
 	function getRoomEnemies($c, $uid, $cid) {
-		$enemies = array();
-		$current = array();
-		$max = array();
 		//get primary enemy statistics
 		$stmt = mysqli_prepare($c, "
 			SELECT 
@@ -53,7 +50,7 @@
 			ON
 				e.StatisticID=maxs.StatisticID
 			WHERE
-				c.UserID=? AND c.CharacterID=?");		
+				c.UserID=? AND c.CharacterID=? AND currs.StatisticHealth>0");		
 		mysqli_stmt_bind_result($stmt, 
 			$id, 
 			$column, 
@@ -196,7 +193,7 @@
 			}
 		}
 		mysqli_stmt_close($stmt);
-		return $enemies;
+		return $enemies ? $enemies : array();
 	}
 	
 	$cid = 1;

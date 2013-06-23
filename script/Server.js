@@ -3,6 +3,18 @@ var cid = 1;
 var Server = (function() {
 	var Server = {};
 
+	Server.sendDamage = function() {
+		ajax("php/sendDamage.php", {cid:cid, direction:character.display.row}, function(result) {
+			for(var i = 0; i < result.length; i++) {
+				for(var j = 0; j < enemies.length; j++) {
+					if(result[i].id === enemies[j].id) {
+						enemies[j].damage(result[i].damage);
+					}
+				}
+			}
+		});
+	};
+	
 	Server.getTiles = function() {
 		var r = [], s;
 		for(var i = 0; i < CONSTANTS.TILE.ROWS; i++) {
@@ -34,8 +46,6 @@ var Server = (function() {
 			success(new Character(data));
 		});
 	};
-
-	var enemies = [];
 
 	Server.getRoomEnemies = function(success) {
 		ajax("php/getRoomEnemies.php", {cid:cid}, function(e) {

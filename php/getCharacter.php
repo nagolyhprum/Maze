@@ -38,7 +38,7 @@
 		return $character;
 	}
 	
-	$cid = 1;
+	$cid = $_GET["cid"];
 	$c = connect();
 	echo json_encode(getCharacter($c, $cid, $USER));
 	close($c);

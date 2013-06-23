@@ -19,7 +19,7 @@
 		return array("data" => $data, "columns" => $column + 1, "rows" => $row + 1);
 	}
 
-	$cid = 1;
+	$cid = $_GET["cid"];
 	$c = connect();
 	echo json_encode(getAllWalls($c, $USER, $cid));
 	close($c);

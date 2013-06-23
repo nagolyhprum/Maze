@@ -19,6 +19,9 @@
 	define("DIRECTION_RIGHT", 3);
 	define("DIRECTION_DOWN", 2);
 	define("DIRECTION_LEFT", 1);
+	//ROOM	
+	define("ROOM_ROWS", 7);
+	define("ROOM_COLUMNS", 7);
 	//USER
 	$USER = 1;
 ?>
