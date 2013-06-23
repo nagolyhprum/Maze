@@ -463,7 +463,7 @@ Character.prototype.draw = function(ctx) {
 	}		
 };
 
-var SPEED = 150, SLEEP = 500;
+var SPEED = 600, SLEEP = 500;
 
 Character.prototype.timeToMove = function() {
 	return Math.ceil(SPEED / this.statistics.speed.current * CONSTANTS.TILE.WIDTH) + SLEEP;

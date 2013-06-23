@@ -49,9 +49,10 @@ var Server = (function() {
 		});
 	};
 
-	Server.moveCharacter = function(l) {
+	Server.moveCharacter = function(l, success) {
 		ajax("php/moveCharacter.php", {cid:cid,row:l.row,column:l.column}, function(data) {
 			console.log(data);
+			success();
 		});
 	};
 

@@ -66,13 +66,15 @@ $(function() {
 					} else {
 						change = false;
 					}
-					Server.moveCharacter(l);
+					Server.moveCharacter(l, function() {
+						if(change) {			
+							room.events.invoke("change");
+						}
+					});
 					character.location.column = (l.column + CONSTANTS.TILE.COLUMNS) % CONSTANTS.TILE.COLUMNS;
 					character.location.row = (l.row + CONSTANTS.TILE.ROWS) % CONSTANTS.TILE.ROWS;
 					addBehavior("Character", "Steps");
-					if(change) {			
-						room.events.invoke("change");
-					} else {
+					if(!change) {
 						character.moveBy(horizontal, vertical);
 					}
 				}

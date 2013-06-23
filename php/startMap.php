@@ -175,7 +175,32 @@
 	}
 	
 	function cloneStatistics($c, $id) {
-		$stmt = mysqli_prepare($c, "INSERT INTO Statistic (StatisticStrength, StatisticDefense, StatisticHealth, StatisticEnergy, StatisticIntelligence, StatisticResistance) SELECT StatisticStrength, StatisticDefense, StatisticHealth, StatisticEnergy, StatisticIntelligence, StatisticResistance FROM Statistic WHERE StatisticID=?");
+		$stmt = mysqli_prepare($c, "
+			INSERT INTO 
+				Statistic 
+				(
+					StatisticStrength, 
+					StatisticDefense, 
+					StatisticHealth, 
+					StatisticEnergy, 
+					StatisticIntelligence, 
+					StatisticResistance,
+					StatisticSpeed,
+					StatisticExperience
+				) 
+			SELECT 
+				StatisticStrength, 
+				StatisticDefense, 
+				StatisticHealth, 
+				StatisticEnergy, 
+				StatisticIntelligence, 
+				StatisticResistance ,
+				StatisticSpeed,
+				StatisticExperience
+			FROM 
+				Statistic 
+			WHERE 
+				StatisticID=?");
 		mysqli_stmt_bind_param($stmt, "i", $id);
 		mysqli_stmt_execute($stmt);
 		mysqli_stmt_close($stmt);
