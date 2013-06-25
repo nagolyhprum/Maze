@@ -147,14 +147,14 @@
 			}
 			mysqli_stmt_close($stmt);
 			//place the character in 0, 0
-			$stmt = mysqli_prepare($c, "UPDATE `character` SET CharacterColumn=0, CharacterRow=0, RoomID=?, CharacterDirection=" . DIRECTION_DOWN . ", CharacterDirection=2 WHERE CharacterID=?");
+			$stmt = mysqli_prepare($c, "UPDATE `character` SET CharacterColumn=" . floor(ROOM_COLUMNS / 2) . ", CharacterRow=" . floor(ROOM_ROWS / 2) . ", RoomID=?, CharacterDirection=" . DIRECTION_DOWN . ", CharacterDirection=2 WHERE CharacterID=?");
 			mysqli_stmt_bind_param($stmt, "ii", $rooms[0][0]["id"], $character);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
 			//update the character statistics and skills
 			//TODO
 			//insert into the enemy in room
-			$stmt = mysqli_prepare($c, "INSERT INTO EnemyInRoom (EnemyInRoomStatistics, EnemyID, RoomID, EnemyInRoomColumn, EnemyInRoomRow, EnemyInRoomDirection) VALUES (?, ?, ?, ?, ?, ?)");	
+			$stmt = mysqli_prepare($c, "INSERT INTO EnemyInRoom (EnemyInRoomStatistics, EnemyID, RoomID, EnemyInRoomColumn, EnemyInRoomRow, EnemyInRoomDirection, EnemyInRoomCanUse) VALUES (?, ?, ?, ?, ?, ?, NOW())");	
 			mysqli_stmt_bind_param($stmt, "iiiiii", $statistics, $enemy, $room, $column, $row, $direction);
 			for($r = 0; $r < $mapmodel["rows"]; $r++) {
 				for($col = 0; $col < $mapmodel["columns"]; $col++) {

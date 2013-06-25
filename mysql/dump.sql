@@ -66,7 +66,7 @@ CREATE TABLE `audio` (
 
 LOCK TABLES `audio` WRITE;
 /*!40000 ALTER TABLE `audio` DISABLE KEYS */;
-INSERT INTO `audio` VALUES (1,'music/dungeon'),(56,'sound/battle/magic1'),(57,'sound/battle/spell'),(58,'sound/battle/swing1'),(59,'sound/battle/swing2'),(60,'sound/battle/swing3'),(61,'sound/battle/sword-unsheat'),(66,'sound/blood/blood1'),(67,'sound/blood/blood2'),(68,'sound/blood/blood3'),(69,'sound/blood/blood4'),(70,'sound/grunts/grunt1'),(71,'sound/grunts/grunt10'),(72,'sound/grunts/grunt11'),(73,'sound/grunts/grunt2'),(74,'sound/grunts/grunt3'),(75,'sound/grunts/grunt4'),(76,'sound/grunts/grunt5'),(77,'sound/grunts/grunt6'),(78,'sound/grunts/grunt7'),(79,'sound/grunts/grunt8'),(80,'sound/grunts/grunt9'),(81,'sound/interface/interface1'),(82,'sound/interface/interface2'),(83,'sound/interface/interface3'),(84,'sound/interface/interface4'),(85,'sound/interface/interface5'),(86,'sound/interface/interface6'),(87,'sound/inventory/armor-ligh'),(88,'sound/inventory/beads'),(89,'sound/inventory/bottle'),(90,'sound/inventory/bubble'),(91,'sound/inventory/bubble2'),(92,'sound/inventory/bubble3'),(93,'sound/inventory/chainmail1'),(94,'sound/inventory/chainmail2'),(95,'sound/inventory/cloth-heav'),(96,'sound/inventory/cloth'),(97,'sound/inventory/coin'),(98,'sound/inventory/coin2'),(99,'sound/inventory/coin3'),(100,'sound/inventory/metal-ring'),(101,'sound/inventory/metal-smal'),(104,'sound/inventory/wood-small'),(105,'sound/misc/burp'),(106,'sound/misc/random1'),(107,'sound/misc/random2'),(108,'sound/misc/random3'),(109,'sound/misc/random4'),(110,'sound/misc/random5'),(111,'sound/misc/random6'),(2,'sound/NPC/beetle/bite-smal'),(5,'sound/NPC/giant/giant1'),(6,'sound/NPC/giant/giant2'),(7,'sound/NPC/giant/giant3'),(8,'sound/NPC/giant/giant4'),(9,'sound/NPC/giant/giant5'),(10,'sound/NPC/gutteral beast/m'),(25,'sound/NPC/misc/wolfman'),(26,'sound/NPC/ogre/ogre1'),(27,'sound/NPC/ogre/ogre2'),(28,'sound/NPC/ogre/ogre3'),(29,'sound/NPC/ogre/ogre4'),(30,'sound/NPC/ogre/ogre5'),(31,'sound/NPC/shade/shade1'),(32,'sound/NPC/shade/shade10'),(33,'sound/NPC/shade/shade11'),(34,'sound/NPC/shade/shade12'),(35,'sound/NPC/shade/shade13'),(36,'sound/NPC/shade/shade14'),(37,'sound/NPC/shade/shade15'),(38,'sound/NPC/shade/shade2'),(39,'sound/NPC/shade/shade3'),(40,'sound/NPC/shade/shade4'),(41,'sound/NPC/shade/shade5'),(42,'sound/NPC/shade/shade6'),(43,'sound/NPC/shade/shade7'),(44,'sound/NPC/shade/shade8'),(45,'sound/NPC/shade/shade9'),(46,'sound/NPC/slime/slime1'),(47,'sound/NPC/slime/slime10'),(48,'sound/NPC/slime/slime2'),(49,'sound/NPC/slime/slime3'),(50,'sound/NPC/slime/slime4'),(51,'sound/NPC/slime/slime5'),(52,'sound/NPC/slime/slime6'),(53,'sound/NPC/slime/slime7'),(54,'sound/NPC/slime/slime8'),(55,'sound/NPC/slime/slime9'),(112,'sound/scream/scream1'),(113,'sound/scream/scream1'),(114,'sound/scream/scream2'),(115,'sound/scream/scream2'),(116,'sound/scream/scream3'),(117,'sound/scream/scream3'),(118,'sound/scream/scream4'),(119,'sound/scream/scream4'),(120,'sound/scream/scream5'),(121,'sound/scream/scream5'),(122,'sound/walk/stepdirt_1'),(123,'sound/walk/stepdirt_2'),(124,'sound/walk/stepdirt_3'),(125,'sound/walk/stepdirt_4'),(126,'sound/walk/stepdirt_5'),(127,'sound/walk/stepdirt_6'),(128,'sound/walk/stepdirt_7'),(129,'sound/walk/stepdirt_8'),(130,'sound/walk/stepsnow_1'),(131,'sound/walk/stepsnow_2'),(132,'sound/walk/stepstone_1'),(133,'sound/walk/stepstone_2'),(134,'sound/walk/stepstone_3'),(135,'sound/walk/stepstone_4'),(136,'sound/walk/stepstone_5'),(137,'sound/walk/stepstone_6'),(138,'sound/walk/stepstone_7'),(139,'sound/walk/stepstone_8'),(140,'sound/walk/stepwater_1'),(141,'sound/walk/stepwater_2'),(142,'sound/walk/stepwood_1'),(143,'sound/walk/stepwood_2'),(144,'sound/world/door');
+INSERT INTO `audio` VALUES (1,'music/dungeon'),(56,'sound/battle/magic1'),(57,'sound/battle/spell'),(58,'sound/battle/swing1'),(59,'sound/battle/swing2'),(60,'sound/battle/swing3'),(61,'sound/battle/sword-unsheat'),(66,'sound/blood/blood1'),(67,'sound/blood/blood2'),(68,'sound/blood/blood3'),(69,'sound/blood/blood4'),(70,'sound/grunts/grunt1'),(71,'sound/grunts/grunt10'),(72,'sound/grunts/grunt11'),(73,'sound/grunts/grunt2'),(74,'sound/grunts/grunt3'),(75,'sound/grunts/grunt4'),(76,'sound/grunts/grunt5'),(77,'sound/grunts/grunt6'),(78,'sound/grunts/grunt7'),(79,'sound/grunts/grunt8'),(80,'sound/grunts/grunt9'),(81,'sound/interface/interface1'),(82,'sound/interface/interface2'),(83,'sound/interface/interface3'),(84,'sound/interface/interface4'),(85,'sound/interface/interface5'),(86,'sound/interface/interface6'),(87,'sound/inventory/armor-light'),(88,'sound/inventory/beads'),(89,'sound/inventory/bottle'),(90,'sound/inventory/bubble'),(91,'sound/inventory/bubble2'),(92,'sound/inventory/bubble3'),(93,'sound/inventory/chainmail1'),(94,'sound/inventory/chainmail2'),(95,'sound/inventory/cloth-heavy'),(96,'sound/inventory/cloth'),(97,'sound/inventory/coin'),(98,'sound/inventory/coin2'),(99,'sound/inventory/coin3'),(100,'sound/inventory/metal-ring'),(101,'sound/inventory/metal-small'),(104,'sound/inventory/wood-small'),(105,'sound/misc/burp'),(106,'sound/misc/random1'),(107,'sound/misc/random2'),(108,'sound/misc/random3'),(109,'sound/misc/random4'),(110,'sound/misc/random5'),(111,'sound/misc/random6'),(2,'sound/NPC/beetle/bite-small'),(5,'sound/NPC/giant/giant1'),(6,'sound/NPC/giant/giant2'),(7,'sound/NPC/giant/giant3'),(8,'sound/NPC/giant/giant4'),(9,'sound/NPC/giant/giant5'),(10,'sound/NPC/gutteral beast/mnstr1'),(25,'sound/NPC/misc/wolfman'),(26,'sound/NPC/ogre/ogre1'),(27,'sound/NPC/ogre/ogre2'),(28,'sound/NPC/ogre/ogre3'),(29,'sound/NPC/ogre/ogre4'),(30,'sound/NPC/ogre/ogre5'),(31,'sound/NPC/shade/shade1'),(32,'sound/NPC/shade/shade10'),(33,'sound/NPC/shade/shade11'),(34,'sound/NPC/shade/shade12'),(35,'sound/NPC/shade/shade13'),(36,'sound/NPC/shade/shade14'),(37,'sound/NPC/shade/shade15'),(38,'sound/NPC/shade/shade2'),(39,'sound/NPC/shade/shade3'),(40,'sound/NPC/shade/shade4'),(41,'sound/NPC/shade/shade5'),(42,'sound/NPC/shade/shade6'),(43,'sound/NPC/shade/shade7'),(44,'sound/NPC/shade/shade8'),(45,'sound/NPC/shade/shade9'),(46,'sound/NPC/slime/slime1'),(47,'sound/NPC/slime/slime10'),(48,'sound/NPC/slime/slime2'),(49,'sound/NPC/slime/slime3'),(50,'sound/NPC/slime/slime4'),(51,'sound/NPC/slime/slime5'),(52,'sound/NPC/slime/slime6'),(53,'sound/NPC/slime/slime7'),(54,'sound/NPC/slime/slime8'),(55,'sound/NPC/slime/slime9'),(112,'sound/scream/scream1'),(114,'sound/scream/scream2'),(116,'sound/scream/scream3'),(118,'sound/scream/scream4'),(120,'sound/scream/scream5'),(122,'sound/walk/stepdirt_1'),(123,'sound/walk/stepdirt_2'),(124,'sound/walk/stepdirt_3'),(125,'sound/walk/stepdirt_4'),(126,'sound/walk/stepdirt_5'),(127,'sound/walk/stepdirt_6'),(128,'sound/walk/stepdirt_7'),(129,'sound/walk/stepdirt_8'),(130,'sound/walk/stepsnow_1'),(131,'sound/walk/stepsnow_2'),(132,'sound/walk/stepstone_1'),(133,'sound/walk/stepstone_2'),(134,'sound/walk/stepstone_3'),(135,'sound/walk/stepstone_4'),(136,'sound/walk/stepstone_5'),(137,'sound/walk/stepstone_6'),(138,'sound/walk/stepstone_7'),(139,'sound/walk/stepstone_8'),(140,'sound/walk/stepwater_1'),(141,'sound/walk/stepwater_2'),(142,'sound/walk/stepwood_1'),(143,'sound/walk/stepwood_2'),(144,'sound/world/door');
 /*!40000 ALTER TABLE `audio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -441,6 +441,7 @@ CREATE TABLE `enemyinroom` (
   `EnemyInRoomColumn` bigint(20) NOT NULL,
   `EnemyInRoomRow` bigint(20) NOT NULL,
   `EnemyInRoomDirection` bigint(20) NOT NULL,
+	`EnemyInRoomCanUse` TIMESTAMP NOT NULL,
   PRIMARY KEY (`EnemyInRoomID`),
   KEY `fk_EnemyInRoom_Room1_idx` (`RoomID`),
   KEY `fk_EnemyInRoom_Enemy1_idx` (`EnemyID`),
@@ -939,7 +940,7 @@ CREATE TABLE `statistic` (
   `StatisticSpeed` bigint(20) NOT NULL,
   `StatisticExperience` bigint(20) NOT NULL,
   PRIMARY KEY (`StatisticID`)
-) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -948,7 +949,7 @@ CREATE TABLE `statistic` (
 
 LOCK TABLES `statistic` WRITE;
 /*!40000 ALTER TABLE `statistic` DISABLE KEYS */;
-INSERT INTO `statistic` VALUES (1,5,0,100,100,0,0,20,0),(2,5,0,100,100,0,0,20,0),(3,20,20,20,0,20,20,10,0),(4,5,0,0,0,0,0,1,0),(5,0,0,50,0,0,0,1,0),(6,20,20,20,0,20,20,1,0),(7,20,20,20,0,20,20,1,0),(8,20,20,20,0,20,20,1,0),(9,20,20,20,0,20,20,1,0),(10,20,20,20,0,20,20,1,0),(11,20,20,20,0,20,20,1,0),(12,20,20,20,0,20,20,1,0),(13,20,20,20,0,20,20,1,0),(14,20,20,20,0,20,20,1,0),(15,20,20,20,0,20,20,1,0),(16,20,20,20,0,20,20,1,0),(17,20,20,20,0,20,20,1,0),(18,20,20,20,0,20,20,1,0),(19,20,20,20,0,20,20,1,0),(20,20,20,20,0,20,20,1,0),(21,20,20,20,0,20,20,1,0),(22,20,20,20,0,20,20,1,0),(23,20,20,20,0,20,20,1,0),(24,20,20,20,0,20,20,1,0),(25,20,20,20,0,20,20,1,0),(26,20,20,20,0,20,20,1,0),(27,20,20,20,0,20,20,1,0),(28,20,20,20,0,20,20,1,0),(29,20,20,20,0,20,20,1,0),(30,20,20,20,0,20,20,1,0),(31,20,20,20,0,20,20,1,0),(32,20,20,20,0,20,20,1,0),(33,20,20,20,0,20,20,1,0),(34,20,20,20,0,20,20,1,0),(35,20,20,20,0,20,20,1,0),(36,20,20,20,0,20,20,1,0),(37,20,20,20,0,20,20,1,0),(38,20,20,20,0,20,20,1,0),(39,20,20,20,0,20,20,1,0),(40,20,20,20,0,20,20,1,0),(41,20,20,20,0,20,20,1,0),(42,20,20,20,0,20,20,1,0),(43,20,20,20,0,20,20,1,0),(44,20,20,20,0,20,20,1,0),(45,20,20,20,0,20,20,1,0),(46,20,20,20,0,20,20,1,0),(47,20,20,20,0,20,20,1,0),(48,20,20,20,0,20,20,1,0),(49,20,20,20,0,20,20,1,0),(50,20,20,20,0,20,20,1,0),(51,20,20,-5,0,20,20,1,0),(52,20,20,20,0,20,20,1,0),(53,20,20,20,0,20,20,1,0),(54,20,20,20,0,20,20,1,0),(55,20,20,20,0,20,20,1,0),(56,20,20,20,0,20,20,1,0),(57,20,20,20,0,20,20,1,0),(58,20,20,20,0,20,20,1,0),(59,20,20,20,0,20,20,1,0),(60,20,20,20,0,20,20,1,0),(61,20,20,20,0,20,20,1,0),(62,20,20,0,0,20,20,1,0),(63,20,20,0,0,20,20,1,0),(64,20,20,20,0,20,20,1,0),(65,20,20,20,0,20,20,1,0),(66,20,20,20,0,20,20,1,0),(67,20,20,20,0,20,20,1,0),(68,20,20,20,0,20,20,1,0),(69,20,20,20,0,20,20,1,0),(70,20,20,20,0,20,20,1,0),(71,20,20,20,0,20,20,1,0),(72,20,20,0,0,20,20,1,0),(73,20,20,0,0,20,20,1,0),(74,20,20,0,0,20,20,1,0),(75,20,20,0,0,20,20,1,0),(76,20,20,0,0,20,20,1,0),(77,20,20,0,0,20,20,1,0),(78,20,20,16,0,20,20,1,0),(79,20,20,20,0,20,20,1,0),(80,20,20,20,0,20,20,1,0),(81,20,20,20,0,20,20,1,0),(82,20,20,20,0,20,20,1,0),(83,20,20,20,0,20,20,1,0),(84,20,20,20,0,20,20,1,0),(85,20,20,20,0,20,20,1,0),(86,20,20,20,0,20,20,1,0),(87,20,20,20,0,20,20,1,0),(88,20,20,20,0,20,20,1,0),(89,20,20,20,0,20,20,1,0),(90,20,20,20,0,20,20,1,0),(91,20,20,20,0,20,20,1,0),(92,20,20,20,0,20,20,1,0),(93,20,20,20,0,20,20,1,0),(94,20,20,20,0,20,20,1,0),(95,20,20,20,0,20,20,1,0),(96,20,20,20,0,20,20,1,0),(97,20,20,20,0,20,20,1,0),(98,20,20,20,0,20,20,1,0),(99,20,20,20,0,20,20,1,0),(100,20,20,20,0,20,20,1,0),(101,20,20,20,0,20,20,1,0);
+INSERT INTO `statistic` VALUES (1,5,0,100,100,0,0,20,0),(2,5,0,100,100,0,0,20,0),(3,1,1,1,1,1,1,1,1),(4,5,0,0,0,0,0,1,0),(5,0,0,50,0,0,0,1,0);
 /*!40000 ALTER TABLE `statistic` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1077,8 +1078,26 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
+
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER ;;
+
 CREATE DEFINER=`root`@`localhost` FUNCTION `moveCharacter`(c BIGINT, r BIGINT, cid BIGINT, uid BIGINT) RETURNS bigint(20)
 BEGIN
+	DECLARE act TIMESTAMP DEFAULT NOW();
+	DECLARE room BIGINT DEFAULT 0;
+	DECLARE aff BIGINT;
+	SELECT 
+		RoomID 
+	FROM 
+		`Character` as c
+	WHERE
+		c.CharacterID=cid AND c.UserID=uid
+	INTO 
+		room;
 	UPDATE
 		Statistic as s
 	INNER JOIN
@@ -1161,7 +1180,7 @@ BEGIN
 		c.CharacterCanUse = 
 		(
 			CASE 
-				WHEN c.RoomID=r.RoomID THEN timeToMove(NOW(), s.StatisticSpeed)
+				WHEN c.RoomID=r.RoomID THEN timeToMove(act, s.StatisticSpeed)
 				ELSE c.CharacterCanUse
 			END
 		)
@@ -1184,9 +1203,23 @@ BEGIN
 			(c = FLOOR(@ROOM_COLUMNS / 2) AND r = @ROOM_ROWS  AND r.RoomWalls & @WALL_DOWN = 0) -- going to the bottom room
 	)
 	AND
-		c.CharacterCanUse<= NOW();
-	RETURN ROW_COUNT();
-END ;;
+		c.CharacterCanUse <= act;
+	SET aff = ROW_COUNT();
+	if aff > 0 then
+		UPDATE
+			`Character` as c
+		INNER JOIN
+			EnemyInRoom as eir
+		ON
+			eir.RoomID=c.RoomID
+		SET
+			eir.EnemyInRoomCanUse = act
+		WHERE
+			c.RoomID<>room;
+	end if;
+	RETURN aff;
+END;;
+
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1547,7 +1580,7 @@ BEGIN
 	ON
 		eir.EnemyInRoomStatistics=eStat.StatisticID
 	WHERE
-		(it.ItemTypeName='mainhand' OR it.ItemTypeName IS NULL) AND c.CharacterID=cid AND c.UserID=uid;
+		(it.ItemTypeName='mainhand' OR it.ItemTypeName IS NULL) AND c.CharacterID=cid AND c.UserID=uid AND eStat.StatisticHealth > 0;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1598,3 +1631,48 @@ DELIMITER ;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2013-06-23 18:42:57
+
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS getEnemyAssultInfo
+
+$$
+
+CREATE PROCEDURE getEnemyAssultInfo(cid BIGINT, uid BIGINT)
+BEGIN
+SELECT
+	cStat.StatisticHealth,
+	cStat.StatisticDefense,
+	cStat.StatisticResistance,
+	UNIX_TIMESTAMP(timeToMove("1970-01-01 00:00:00", eStat.StatisticSpeed)) - UNIX_TIMESTAMP("1970-01-01 00:00:00") as timeToMove,
+	eStat.StatisticStrength,
+	eStat.StatisticIntelligence,
+	eir.EnemyInRoomID,
+	eir.EnemyInRoomRow,
+	eir.EnemyInRoomColumn,
+	UNIX_TIMESTAMP(eir.EnemyInRoomCanUse) as EnemyInRoomCanUse,
+	UNIX_TIMESTAMP(NOW()) as cts,
+	c.CharacterRow,
+	c.CharacterColumn
+FROM
+	EnemyInRoom as eir
+INNER JOIN
+	Statistic as eStat
+ON
+	eStat.StatisticID=eir.EnemyInRoomStatistics
+INNER JOIN
+	`Character` as c
+ON
+	c.RoomID=eir.RoomID
+INNER JOIN
+	Statistic as cStat
+ON
+	c.CharacterCurrentStatisticID=cStat.StatisticID
+WHERE
+	eir.EnemyInRoomCanUse < NOW() AND c.CharacterID=cid AND c.UserID=uid AND eStat.StatisticHealth > 0
+ORDER BY
+	ABS(c.CharacterRow - eir.EnemyInRoomRow) + ABS(c.CharacterColumn - eir.EnemyInRoomColumn);
+END
+
+$$
