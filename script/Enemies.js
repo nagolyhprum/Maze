@@ -7,11 +7,10 @@ $(function() {
 				enemies[i].draw(context);
 			}
 		});
-		
+						
 		room.events.attach("change", function() {
 			Server.getRoomEnemies(function(e) {
 				enemies = e;
-				moveEnemies();
 			});
 		});
 		
@@ -24,74 +23,34 @@ $(function() {
 			}
 		});
 		
-		function moveEnemies() {
-			for(var i = enemies.length - 1; i >= 0; i--) {
-				var e = enemies[i];
-				move(e);
-			}
-		}
-		
-		function move(e) {
-			if(enemies.indexOf(e) != -1) {
-				var action, moves = e.moves();
-				if(moves === 0) {
-					action = function() {
-						e.wait(function() {
-							move(e);
-						});
-					};
-				}
-				while(moves > 0 && character.statistics.getCurrent("health") > 0) {
-					moves--;
-					var map = [], mg = new MazeGenerator(CONSTANTS.TILE.COLUMNS, CONSTANTS.TILE.ROWS), i;
-					map.columns = CONSTANTS.TILE.COLUMNS;
-					map.rows = CONSTANTS.TILE.ROWS;
-					for(i = 0; i < CONSTANTS.TILE.ROWS * CONSTANTS.TILE.COLUMNS; i++) {
-						map[i] = 0;
-					}
-					for(i = 0; i < enemies.length; i++) {
-						if(e !== enemies[i]) {
-							if(enemies[i].statistics.getCurrent("health") > 0) {
-								var obs = enemies[i].location;
-								map[obs.column + obs.row * CONSTANTS.TILE.COLUMNS] = CONSTANTS.WALL.ALL;
+		function move() {
+			Server.moveEnemies(function(movement) {
+				var seconds = 1.0 / 0, mes = movement.enemies;
+				if(mes) {
+					for(var i = 0; i < mes.length; i++) {
+						var me = mes[i];
+						for(var j = 0; j < enemies.length; j++) {
+							var e = enemies[j];
+							if(e.id === me.id) {
+								e.tween.clear();
+								if(me.column === me.lastColumn && me.row === me.lastRow) {
+									e.attack();
+								} else {
+									var h = CONSTANTS.TILE.WIDTH * (me.column - me.lastColumn), 
+										v = CONSTANTS.TILE.HEIGHT * (me.row - me.lastRow);
+									e.location.row = me.row;
+									e.location.column = me.column;
+									e.moveBy(h, v);
+								}
 							}
 						}
 					}
-					if(e.statistics.getCurrent("health") > 0) {
-						var path = mg.getPath(map, e.location.column, e.location.row, character.location.column, character.location.row);
-						if(path.length > 2) {
-							var p = path[path.length - 2];
-							var h = (p.column - e.location.column) * CONSTANTS.TILE.WIDTH, 
-								v = (p.row - e.location.row) * CONSTANTS.TILE.HEIGHT;
-							e.face(p.column, p.row);
-							e.location.column = p.column;
-							e.location.row = p.row;
-							action = function() {
-								e.moveBy(h, v, function() {
-									e.face(character.location.column, character.location.row);
-									move(e);
-								});
-							};
-						} else if(Math.abs(character.location.column - e.location.column) + 
-								  Math.abs(character.location.row - e.location.row) === 1) {
-							character.damage(Math.max(e.statistics.getCurrent("strength") - character.statistics.getCurrent("defense"), 0));
-							e.face(character.location.column, character.location.row);
-							action = function() {
-								e.attack(function() {
-									move(e);
-								});
-							};
-						} else {
-							action = function() {
-								e.wait(function() {
-									move(e);
-								});
-							};
-						}
-					}
+					console.log(mes);
+					character.damage(character.statistics.getCurrent("health") - movement.character.health);
 				}
-				action && action();
-			}
+				setTimeout(move, 1000);
+			});
 		}
+		move();
 	});
 });

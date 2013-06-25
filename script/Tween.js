@@ -21,7 +21,7 @@ var Tween = (function() {
 		if(!me.locked && me.queue.length) {
 			me.locked = 1;
 			var current = me.queue[0],
-				interval = myInterval(function() {
+				interval = setCatchup(function() {
 				if(current.isCleared || current.change() === false) {
 					if(interval) {
 						clearInterval(interval);
@@ -38,10 +38,6 @@ var Tween = (function() {
 		}
 		return me;
 	};
-
-	function myInterval(f, t) {
-		return setCatchup(f, t);
-	}
 
 	Tween.prototype.isTweening = function() {
 		return this.locked;

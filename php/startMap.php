@@ -147,7 +147,26 @@
 			}
 			mysqli_stmt_close($stmt);
 			//place the character in 0, 0
-			$stmt = mysqli_prepare($c, "UPDATE `character` SET CharacterColumn=" . floor(ROOM_COLUMNS / 2) . ", CharacterRow=" . floor(ROOM_ROWS / 2) . ", RoomID=?, CharacterDirection=" . DIRECTION_DOWN . ", CharacterDirection=2 WHERE CharacterID=?");
+			$stmt = mysqli_prepare($c, "
+				UPDATE 
+					`character` as c
+				INNER JOIN
+					Statistic as maxs
+				ON
+					maxs.StatisticID=c.CharacterMaxStatisticID
+				INNER JOIN
+					Statistic as curs
+				ON
+					curs.StatisticID=c.CharacterCurrentStatisticID
+				SET 
+					c.CharacterColumn=" . floor(ROOM_COLUMNS / 2) . ", 
+					c.CharacterRow=" . floor(ROOM_ROWS / 2) . ", 
+					c.RoomID=?, 
+					c.CharacterDirection=" . DIRECTION_DOWN . ", 
+					c.CharacterDirection=2,
+					curs.StatisticHealth = maxs.StatisticHealth
+				WHERE 
+					c.CharacterID=?");
 			mysqli_stmt_bind_param($stmt, "ii", $rooms[0][0]["id"], $character);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);

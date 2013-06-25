@@ -463,10 +463,10 @@ Character.prototype.draw = function(ctx) {
 	}		
 };
 
-var SPEED = 600, SLEEP = 500;
+var SPEED = 500, PUSH_SPEED = 1;
 
 Character.prototype.timeToMove = function() {
-	return Math.ceil(SPEED / this.statistics.speed.current * CONSTANTS.TILE.WIDTH) + SLEEP;
+	return Math.ceil(SPEED / this.statistics.speed.current * CONSTANTS.TILE.WIDTH);
 };
 
 Character.prototype.moves = function() {
@@ -491,9 +491,9 @@ var WALK = [
 
 Character.prototype.moveBy = function(horizontal, vertical, complete) {
 	var me = this;
-	Sound.effect(WALK[Math.floor(WALK.length * Math.random())]);
 	this.tween.push({
 		init : function() {
+			Sound.effect(WALK[Math.floor(WALK.length * Math.random())]);
 			me.location.x = -horizontal;
 			me.location.y = -vertical;
 		},
@@ -503,10 +503,10 @@ Character.prototype.moveBy = function(horizontal, vertical, complete) {
 			me.display.column = Math.max((me.display.column + 1) % me.active[0].columns, 1);
 			return Math.abs(me.location.x) + Math.abs(me.location.y) !== 0;
 		},
-		interval : SPEED / this.statistics.speed.current,
+		interval : SPEED / (this.statistics.speed.current + PUSH_SPEED),
 		complete : function() {
 			me.display.column = me.location.x = me.location.y = 0;
-			setTimeout(complete, SLEEP);
+			setTimeout(complete);
 		}
 	});
 };
@@ -524,11 +524,11 @@ Character.prototype.attack = function(complete) {
 			me.display.column = Math.floor(column / CONSTANTS.TILE.WIDTH * me.active[0].columns);
 			return column !== CONSTANTS.TILE.WIDTH;
 		},
-		interval : SPEED / this.statistics.speed.current,
+		interval : SPEED / (this.statistics.speed.current + PUSH_SPEED),
 		complete : function() {
 			me.active = me.walk;
 			me.display.column = 0;
-			setTimeout(complete, SLEEP);
+			complete && complete();
 		}
 	});
 };

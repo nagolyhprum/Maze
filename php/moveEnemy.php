@@ -39,13 +39,11 @@
 							if(abs($e["row"] - $character["row"]) + abs($e["column"] - $character["column"]) === 1) {
 								$sDamage = $e["strength"] - ($e["strength"] * $character["defense"] / 100.0);
 								$iDamage = $e["intelligence"] - ($e["intelligence"] * $character["resistance"] / 100.0);
-								echo $character["health"] . " => ";
 								if($sDamage < $iDamage) {
 									$character["health"] -= $sDamage;
 								} else {
 									$character["health"] -= $iDamage;
 								}
-								echo $character["health"] . "<br/>";
 							} else {
 								$next = getNextMove($tiles, $e, $character);
 								unset($tiles[$e["row"]][$e["column"]]);

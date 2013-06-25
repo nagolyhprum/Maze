@@ -1203,7 +1203,7 @@ BEGIN
 			(c = FLOOR(@ROOM_COLUMNS / 2) AND r = @ROOM_ROWS  AND r.RoomWalls & @WALL_DOWN = 0) -- going to the bottom room
 	)
 	AND
-		c.CharacterCanUse <= act;
+		c.CharacterCanUse <= act AND s.StatisticHealth > 0;
 	SET aff = ROW_COUNT();
 	if aff > 0 then
 		UPDATE
@@ -1351,7 +1351,7 @@ BEGIN
 	INNER JOIN
 		Statistic as maxs
 	ON
-		maxs.StatisticID=c.CharacterCurrentStatisticID
+		maxs.StatisticID=c.CharacterMaxStatisticID
 	WHERE 
 		c.CharacterID=cid AND c.UserID=uid;
 

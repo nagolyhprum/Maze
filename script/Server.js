@@ -3,6 +3,10 @@ var cid = 1;
 var Server = (function() {
 	var Server = {};
 
+	Server.moveEnemies = function(complete) {
+		ajax("php/moveEnemy.php", {cid:cid}, complete);
+	};
+	
 	Server.sendDamage = function() {
 		ajax("php/sendDamage.php", {cid:cid, direction:character.display.row}, function(result) {
 			for(var i = 0; i < result.length; i++) {
