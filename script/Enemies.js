@@ -31,21 +31,26 @@ $(function() {
 						var me = mes[i];
 						for(var j = 0; j < enemies.length; j++) {
 							var e = enemies[j];
-							if(e.id === me.id) {
-								e.tween.clear();
-								if(me.column === me.lastColumn && me.row === me.lastRow) {
-									e.attack();
-								} else {
-									var h = CONSTANTS.TILE.WIDTH * (me.column - me.lastColumn), 
-										v = CONSTANTS.TILE.HEIGHT * (me.row - me.lastRow);
-									e.location.row = me.row;
-									e.location.column = me.column;
-									e.moveBy(h, v);
+							if(e.statistics.getCurrent("health") > 0) {
+								if(e.id === me.id) {								
+									e.tween.clear();
+									if(me.column === me.lastColumn && me.row === me.lastRow) {
+										e.face(character.location.column, character.location.row);
+										e.attack();
+									} else {
+										var h = CONSTANTS.TILE.WIDTH * (me.column - me.lastColumn), 
+											v = CONSTANTS.TILE.HEIGHT * (me.row - me.lastRow);									
+										e.face(me.column, me.row);
+										e.location.row = me.row;
+										e.location.column = me.column;
+										e.moveBy(h, v, function() {
+											e.face(character.location.column, character.location.row);
+										});
+									}
 								}
 							}
 						}
 					}
-					console.log(mes);
 					character.damage(character.statistics.getCurrent("health") - movement.character.health);
 				}
 				setTimeout(move, 1000);

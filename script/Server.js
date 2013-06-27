@@ -8,12 +8,21 @@ var Server = (function() {
 	};
 	
 	Server.sendDamage = function() {
+		var i, j, thisRoom = room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column;
 		ajax("php/sendDamage.php", {cid:cid, direction:character.display.row}, function(result) {
-			for(var i = 0; i < result.length; i++) {
-				for(var j = 0; j < enemies.length; j++) {
-					if(result[i].id === enemies[j].id) {
-						enemies[j].damage(result[i].damage);
+			for(i = 0; i < result.enemies.length; i++) {
+				for(j = 0; j < enemies.length; j++) {
+					if(result.enemies[i].id === enemies[j].id) {
+						enemies[j].damage(result.enemies[i].damage);
 					}
+				}
+			}
+			if(result.items) {
+				for(i = 0; i < result.items.length; i++) {		
+					Server.getRoomItems(result.items[i], function(item) {
+						(roomItems[thisRoom] = roomItems[thisRoom] || []).push(item);
+						items.events.invoke("drop");
+					});
 				}
 			}
 		});
@@ -64,12 +73,18 @@ var Server = (function() {
 	};
 
 	Server.moveCharacter = function(l, success) {
+		var current = {column : character.location.column, row : character.location.row};
 		ajax("php/moveCharacter.php", {cid:cid,row:l.row,column:l.column}, function(data) {
-			console.log(data);
+			if(!data) {
+				character.tween.clear();
+				character.location.row = current.row;
+				character.location.column = current.column;
+			}
 			success();
 		});
 	};
 
+	//@DEPRECATED
 	Server.attack = function(enemies, index, physical) {
 		var thisRoom = room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column,
 			e = enemies[index],
@@ -194,24 +209,17 @@ var Server = (function() {
 		return new Item({
 			attack : item.attack,
 			name : item.name,
-			sounds : {
-				move : ["sound/inventory/coin"]
-			},
 			area : item.area,
+			weight : item.weight,
+			type : "mainhand",
+			portrait : "items/" + item.portrait + ".png",
+			id : 1,
+			//require relationships
 			slash : item.slash,
 			walk : item.walk,
 			thrust : item.thrust,
 			bow : item.bow,
 			spellcast : item.spellcast,
-
-			weight : item.weight,
-			type : "mainhand",
-			portrait : "items/" + item.portrait + ".png",
-			id : 1,
-			location : {
-				column : column,
-				row : row
-			},
 			statistics : {
 				strength : {
 					current : item.strength,
@@ -233,6 +241,13 @@ var Server = (function() {
 					current : item.energy,
 					max : item.energy
 				}
+			},
+			sounds : {
+				move : ["sound/inventory/coin"]
+			},
+			location : {
+				column : column,
+				row : row
 			}
 		});
 	}
@@ -301,8 +316,15 @@ var Server = (function() {
 
 	var roomItems = [];
 
-	Server.getRoomItems = function() {
-		return roomItems[room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column] || [];
+	Server.getRoomItems = function(iirid, success) {
+		ajax("php/getItemsInRoom.php", {iirid:iirid, cid:cid}, function(items) {
+			if(items) {
+				for(var i = 0; i < items.length; i++) {
+					items[i] = new Item(items[i]);
+				}
+			}
+			success(items || []);
+		});
 	};
 
 	Server.getSkills = function() {
@@ -540,7 +562,7 @@ room = {
 	events : new EventHandler()
 },
 items = {
-	list : Server.getRoomItems(),
+	list : [],
 	events : new EventHandler()
 },
 inventory_items = [],

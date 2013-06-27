@@ -1,16 +1,20 @@
 $(function() {
 	var count = 0;
 	items.events.attach("drop", function() {
-		items.list = Server.getRoomItems();
-		while(count < items.list.length) {
-			var move = items.list[count].sounds.move;
-			Sound.effect(move[Math.floor(Math.random() * move.length)]);
-			count++;
-		}
+		Server.getRoomItems(-1, function(list) {
+			items.list = list;			
+			while(count < list.length) {
+				var move = list[count].sounds.move;
+				Sound.effect(move[Math.floor(Math.random() * move.length)]);
+				count++;
+			}
+		});
 	});
 	room.events.attach("change", function() {
-		items.list = Server.getRoomItems();
-		count = items.list.length;
+		Server.getRoomItems(-1, function(list) {
+			items.list = list;
+			count = list.length;
+		});
 	});
 	canvas.events.attach("draw", function() {
 		for(var i = items.list.length - 1; i >= 0; i--) {

@@ -515,6 +515,7 @@ DROP TABLE IF EXISTS `item`;
 CREATE TABLE `item` (
   `ItemID` bigint(20) NOT NULL AUTO_INCREMENT,
   `ItemModelID` bigint(20) NOT NULL,
+	`ItemCreated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`ItemID`),
   KEY `fk_Item_ItemModel1_idx` (`ItemModelID`),
   CONSTRAINT `fk_Item_ItemModel1` FOREIGN KEY (`ItemModelID`) REFERENCES `itemmodel` (`ItemModelID`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -949,7 +950,7 @@ CREATE TABLE `statistic` (
 
 LOCK TABLES `statistic` WRITE;
 /*!40000 ALTER TABLE `statistic` DISABLE KEYS */;
-INSERT INTO `statistic` VALUES (1,5,0,100,100,0,0,20,0),(2,5,0,100,100,0,0,20,0),(3,1,1,1,1,1,1,1,1),(4,5,0,0,0,0,0,1,0),(5,0,0,50,0,0,0,1,0);
+INSERT INTO `statistic` VALUES (1,5,0,100,100,0,0,20,0),(2,5,0,100,100,0,0,20,0),(3,10,10,10,10,10,10,10,10),(4,5,0,0,0,0,0,1,0),(5,0,0,50,0,0,0,1,0);
 /*!40000 ALTER TABLE `statistic` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1033,6 +1034,20 @@ LOCK TABLES `userbehavior` WRITE;
 /*!40000 ALTER TABLE `userbehavior` DISABLE KEYS */;
 /*!40000 ALTER TABLE `userbehavior` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+DROP TABLE IF EXISTS EnemyItem;
+
+CREATE TABLE EnemyItem (
+	EnemyItemID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	EnemyID BIGINT NOT NULL,
+	EnemyItemChance BIGINT NOT NULL,
+	ItemModelID BIGINT NOT NULL,
+	FOREIGN KEY (EnemyID) REFERENCES Enemy(EnemyID),
+	FOREIGN KEY (ItemModelID) REFERENCES ItemModel(ItemModelID)
+);
+
+INSERT INTO EnemyItem VALUES (1, 1, 50, 1);
 
 --
 -- Dumping routines for database 'worldtactics'
@@ -1544,6 +1559,7 @@ BEGIN
 		), 0) as StatisticIntelligence,
 		eStat.StatisticDefense,
 		eStat.StatisticResistance,
+		eStat.StatisticHealth,
 		IFNULL(im.ItemModelArea, 1) as ItemModelArea
 	FROM
 		ItemType as it
@@ -1673,6 +1689,139 @@ WHERE
 	eir.EnemyInRoomCanUse < NOW() AND c.CharacterID=cid AND c.UserID=uid AND eStat.StatisticHealth > 0
 ORDER BY
 	ABS(c.CharacterRow - eir.EnemyInRoomRow) + ABS(c.CharacterColumn - eir.EnemyInRoomColumn);
+END
+
+$$
+
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS dropItem 
+
+$$
+
+CREATE FUNCTION dropItem(eir BIGINT) RETURNS BIGINT
+BEGIN
+	INSERT INTO 
+		Item (ItemModelID)
+	SELECT
+		ei.ItemModelID
+	FROM
+		EnemyInRoom as eir
+	INNER JOIN
+		EnemyItem as ei
+	ON
+		eir.EnemyID=ei.EnemyID
+	WHERE
+		ei.EnemyItemChance > FLOOR(RAND() * 100) AND eir.EnemyInRoomID=eir
+	ORDER BY 
+		ei.EnemyItemChance DESC
+	LIMIT 
+		1;
+
+	if ROW_COUNT() > 0 then
+		INSERT INTO
+			ItemInRoom (ItemInRoomRow, ItemInRoomColumn, RoomID, ItemID)
+		SELECT
+			eir.EnemyInRoomRow,
+			eir.EnemyInRoomColumn,
+			eir.RoomID,
+			LAST_INSERT_ID()
+		FROM
+			EnemyInRoom as eir
+		WHERE
+			eir.EnemyInRoomID=eir;
+
+		RETURN LAST_INSERT_ID();
+	end if;
+END
+
+$$
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS getItem
+
+$$
+
+CREATE PROCEDURE getItem(iid BIGINT)
+BEGIN
+	SELECT
+		at.AttackTypeName,
+		im.ItemModelName,
+		im.ItemModelArea,
+		im.ItemModelWeight,
+		it.ItemTypeName,
+		portrait.ImageName,
+		i.ItemID,
+		s.StatisticHealth,
+		s.StatisticEnergy,
+		s.StatisticStrength,
+		s.StatisticDefense,
+		s.StatisticIntelligence,
+		s.StatisticResistance,
+		s.StatisticSpeed,
+		s.StatisticExperience
+	FROM
+		Item as i
+	INNER JOIN
+		ItemModel as im
+	ON
+		im.ItemModelID=i.ItemModelID
+	INNER JOIN
+		AttackType as at
+	ON
+		at.AttackTypeID=im.AttackTypeID
+	INNER JOIN
+		ItemType as it
+	ON
+		it.ItemTypeID=im.ItemTypeID
+	INNER JOIN
+		Image as portrait
+	ON
+		portrait.ImageID=im.ItemModelPortrait
+	INNER JOIN
+		Statistic as s
+	ON
+		s.StatisticID=im.StatisticID
+	WHERE
+		i.ItemID=iid;
+
+	SELECT
+		Image.ImageName,
+		at.AttackTypeName,
+		imi.ItemModelImageRows,
+		imi.ItemModelImageColumns
+	FROM
+		Item as i
+	INNER JOIN
+		ItemModelImage as imi
+	ON
+		imi.ItemModelID=i.ItemModelID
+	INNER JOIN
+		AttackType as at
+	ON
+		at.AttackTypeID=imi.AttackTypeID
+	INNER JOIN
+		Image
+	ON
+		imi.ImageID=Image.ImageID
+	WHERE i.ItemID = iid;
+
+	SELECT
+		a.AudioName
+	FROM
+		Audio as a
+	INNER JOIN
+		ItemModelAudio as ia
+	ON
+		ia.AudioID=a.AudioID
+	INNER JOIN
+		Item as i
+	ON
+		i.ItemModelID=ia.ItemModelID
+	WHERE
+		i.ItemID=iid;
+		
 END
 
 $$

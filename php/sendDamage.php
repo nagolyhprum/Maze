@@ -41,6 +41,7 @@
 						);
 						do {
 							$tiles[$r["EnemyInRoomRow"]][$r["EnemyInRoomColumn"]] = array(
+								"health" => (int)$r["StatisticHealth"],
 								"row" => (int)$r["EnemyInRoomRow"],
 								"column" => (int)$r["EnemyInRoomColumn"],
 								"defense" => (int)$r["StatisticDefense"],
@@ -58,39 +59,55 @@
 						if($character["area"] > 0) { //straight
 							switch($character["direction"]) {
 								case DIRECTION_UP : 
-									getAssultedEnemy($enemies, $tiles, $character["row"] - 1, $character["column"], -1, 0, $character["area"]);
+									getAssultedEnemy($enemies["enemies"], $tiles, $character["row"] - 1, $character["column"], -1, 0, $character["area"]);
 									break;
 								case DIRECTION_LEFT : 
-									getAssultedEnemy($enemies, $tiles, $character["row"], $character["column"] - 1, 0, -1, $character["area"]);
+									getAssultedEnemy($enemies["enemies"], $tiles, $character["row"], $character["column"] - 1, 0, -1, $character["area"]);
 									break;
 								case DIRECTION_DOWN : 
-									getAssultedEnemy($enemies, $tiles, $character["row"] + 1, $character["column"], 1, 0, $character["area"]);
+									getAssultedEnemy($enemies["enemies"], $tiles, $character["row"] + 1, $character["column"], 1, 0, $character["area"]);
 									break;
 								case DIRECTION_RIGHT : 
-									getAssultedEnemy($enemies, $tiles, $character["row"], $character["column"] + 1, 0, 1, $character["area"]);
+									getAssultedEnemy($enemies["enemies"], $tiles, $character["row"], $character["column"] + 1, 0, 1, $character["area"]);
 									break;
 							}
 						} else if($character["area"] < 0) { //around							
-							getAssultedEnemy($enemies, $tiles, $character["row"] + 1, $character["column"], 1, 0, $character["area"]);
-							getAssultedEnemy($enemies, $tiles, $character["row"] - 1, $character["column"], -1, 0, $character["area"]);
-							getAssultedEnemy($enemies, $tiles, $character["row"], $character["column"] + 1, 0, 1, $character["area"]);
-							getAssultedEnemy($enemies, $tiles, $character["row"], $character["column"] - 1, 0, -1, $character["area"]);
+							getAssultedEnemy($enemies["enemies"], $tiles, $character["row"] + 1, $character["column"], 1, 0, $character["area"]);
+							getAssultedEnemy($enemies["enemies"], $tiles, $character["row"] - 1, $character["column"], -1, 0, $character["area"]);
+							getAssultedEnemy($enemies["enemies"], $tiles, $character["row"], $character["column"] + 1, 0, 1, $character["area"]);
+							getAssultedEnemy($enemies["enemies"], $tiles, $character["row"], $character["column"] - 1, 0, -1, $character["area"]);
 						}
-						if(count($enemies)) {
+						if(count($enemies["enemies"])) {
 							$stmt = mysqli_prepare($c, "call damageEnemy(?, ?)");
 							mysqli_stmt_bind_param($stmt, "ii", $eid, $damage);
-							for($i = 0; $i < count($enemies); $i++) {
-								$e = $enemies[$i];
+							for($i = 0; $i < count($enemies["enemies"]); $i++) {
+								$e = $enemies["enemies"][$i];
 								$eid = $e["id"];
 								if($character["attack"] === "spellcast") {
 									$damage = max(0, ceil($character["intelligence"] - $character["intelligence"] * ($e["resistance"] / 100)));
 								} else {		
 									$damage = max(0, ceil($character["strength"] - $character["strength"] * ($e["defense"] / 100)));						
 								}
-								$enemies[$i]["damage"] = $damage;
+								$enemies["enemies"][$i]["damage"] = $damage;
+								if($enemies["enemies"][$i]["health"] <= $damage) {
+									$dead[] = $enemies["enemies"][$i];
+								}
 								mysqli_stmt_execute($stmt);
 							}
 							mysqli_stmt_close($stmt);
+						}
+						if(count($dead)) {
+							$stmt = mysqli_prepare($c, "SELECT dropItem(?);");
+							mysqli_stmt_bind_param($stmt, "i", $eid);
+							mysqli_stmt_bind_result($stmt, $iid);
+							for($i = 0; $i < count($dead); $i++) {
+								$eid = $dead[$i]["id"];								
+								mysqli_stmt_execute($stmt);
+								if(mysqli_stmt_fetch($stmt)) {
+									$enemies["items"][] = $iid;
+								}
+							}
+							mysqli_stmt_close($stmt);						
 						}
 					}
 					$return = $enemies;
