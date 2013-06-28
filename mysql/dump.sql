@@ -515,7 +515,6 @@ DROP TABLE IF EXISTS `item`;
 CREATE TABLE `item` (
   `ItemID` bigint(20) NOT NULL AUTO_INCREMENT,
   `ItemModelID` bigint(20) NOT NULL,
-	`ItemCreated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`ItemID`),
   KEY `fk_Item_ItemModel1_idx` (`ItemModelID`),
   CONSTRAINT `fk_Item_ItemModel1` FOREIGN KEY (`ItemModelID`) REFERENCES `itemmodel` (`ItemModelID`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -541,10 +540,12 @@ DROP TABLE IF EXISTS `iteminequipment`;
 CREATE TABLE `iteminequipment` (
   `ItemInEquipmentID` bigint(20) NOT NULL AUTO_INCREMENT,
   `CharacterID` bigint(20) NOT NULL,
-  `ItemID` bigint(20) NOT NULL,
+  `ItemID` bigint(20),
+	`ItemTypeID` BIGINT NOT NULL,
   PRIMARY KEY (`ItemInEquipmentID`),
   KEY `fk_ItemInEquipment_Item1_idx` (`ItemID`),
   KEY `fk_ItemInEquipment_Character1_idx` (`CharacterID`),
+	FOREIGN KEY (`ItemTypeID`) REFERENCES `ItemType`(`ItemTypeID`),
   CONSTRAINT `fk_ItemInEquipment_Character1` FOREIGN KEY (`CharacterID`) REFERENCES `character` (`CharacterID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ItemInEquipment_Item1` FOREIGN KEY (`ItemID`) REFERENCES `item` (`ItemID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -556,6 +557,7 @@ CREATE TABLE `iteminequipment` (
 
 LOCK TABLES `iteminequipment` WRITE;
 /*!40000 ALTER TABLE `iteminequipment` DISABLE KEYS */;
+INSERT INTO ItemInEquipment VALUES (1, 7, NULL), (1, 8, NULL), (1, 9, NULL), (1, 10, NULL), (1, 11, NULL), (1, 12, NULL), (1, 12, NULL);
 /*!40000 ALTER TABLE `iteminequipment` ENABLE KEYS */;
 UNLOCK TABLES;
 
