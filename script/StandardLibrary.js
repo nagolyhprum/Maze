@@ -462,7 +462,7 @@ Character.prototype.draw = function(ctx) {
 		}
 	}		
 };
-var SPEED = 500, PUSH_SPEED = 5;
+var SPEED = 500, PUSH_SPEED = 0;
 
 Character.prototype.timeToMove = function() {
 	return Math.ceil(SPEED / this.statistics.speed.current * CONSTANTS.TILE.WIDTH);

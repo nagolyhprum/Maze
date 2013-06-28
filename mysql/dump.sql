@@ -1416,7 +1416,7 @@ BEGIN
 	INNER JOIN
 		`Character` as c
 	ON
-		c.CharacterCurrentStatistic=sa.StatisticID
+		c.CharacterCurrentStatisticID=sa.StatisticID
 	WHERE
 		c.CharacterID=cid AND c.UserID=uid;
 				
@@ -1432,7 +1432,7 @@ BEGIN
 	INNER JOIN
 		`Character` as c
 	ON
-		c.CharacterMaxStatistic=sa.StatisticID
+		c.CharacterMaxStatisticID=sa.StatisticID
 	WHERE
 		c.CharacterID=cid AND c.UserID=uid;
 		
@@ -1508,9 +1508,9 @@ BEGIN
 		c.CharacterDirection,
 		c.CharacterColumn,
 		c.CharacterRow,
-		getCharacterCurrentStatistic(c.CharacterID, "strength") as StatisticStrength
+		getCharacterCurrentStatistic(c.CharacterID, "strength") as StatisticStrength,
 		getCharacterCurrentStatistic(c.CharacterID, "intelligence") as StatisticIntelligence,
-		getStatistic(eir.EnemyInRoomStatistic, "defense") as eStat.StatisticDefense,
+		getStatistic(eir.EnemyInRoomStatistic, "defense") as StatisticDefense,
 		getStatistic(eir.EnemyInRoomStatistic, "resistance") as StatisticResistance,
 		getStatistic(eir.EnemyInRoomStatistic, "health") as StatisticHealth,
 		IFNULL(im.ItemModelArea, 1) as ItemModelArea
@@ -1613,7 +1613,7 @@ SELECT
 	c.CharacterColumn,
 	getStatistic(eir.EnemyInRoomStatistic, "strength") as StatisticStrength,
 	getStatistic(eir.EnemyInRoomStatistic, "intelligence") as StatisticIntelligence,
-	getCharacterCurrentStatistic(c.CharacterID, "defense") as eStat.StatisticDefense,
+	getCharacterCurrentStatistic(c.CharacterID, "defense") as StatisticDefense,
 	getCharacterCurrentStatistic(c.CharacterID, "resistance") as StatisticResistance,
 	getCharacterCurrentStatistic(c.CharacterID, "health") as StatisticHealth
 FROM
@@ -1769,6 +1769,8 @@ BEGIN
 		
 END
 
+$$
+
 DELIMITER $$
 
 DROP FUNCTION IF EXISTS getStatistic
@@ -1797,7 +1799,7 @@ $$
 
 DELIMITER $$
 
-DROP FUNCTION IF EXISTS getStatistic
+DROP FUNCTION IF EXISTS getCharacterCurrentStatistic
 
 $$
 
@@ -1817,9 +1819,9 @@ BEGIN
 	INNER JOIN
 		`Character` as c
 	ON
-		c.CharacterCurrentStatistic=sa.StatisticID
+		c.CharacterCurrentStatisticID=sa.StatisticID
 	WHERE
-		sn.StatisticNameValue=name AND c.CharacterID=id
+		sn.StatisticNameValue=name AND c.CharacterID=cid
 	INTO
 		val;
 	RETURN IFNULL(val, 0);

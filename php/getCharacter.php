@@ -9,12 +9,20 @@
 			$character["portrait"] = $r["ImageName"];			
 			$character["display"]["row"] = (int) $r["CharacterDirection"];
 			$character["location"] = array("row" => (int) $r["CharacterRow"], "column" => (int) $r["CharacterColumn"]);
-			foreach(array("Health", "Energy", "Strength", "Defense", "Intelligence", "Resistance", "Speed", "Experience") as $s) {
-				$statistics[strtolower($s)]["current"] = (int) $r["c$s"]; 
-				$statistics[strtolower($s)]["max"] = (int) $r["m$s"]; 
-			}
 			$character["statistics"] = $statistics;
 			mysqli_free_result($result);
+		}
+		mysqli_next_result($c);
+		if($result = mysqli_store_result($c)) {
+			while($r = mysqli_fetch_assoc($result)) {
+				$character["statistics"][$r["StatisticNameValue"]]["current"] = $r["StatisticAttributeValue"];
+			}
+		}
+		mysqli_next_result($c);
+		if($result = mysqli_store_result($c)) {
+			while($r = mysqli_fetch_assoc($result)) {
+				$character["statistics"][$r["StatisticNameValue"]]["max"] = $r["StatisticAttributeValue"];
+			}
 		}
 		mysqli_next_result($c);
 		if($result = mysqli_store_result($c)) {
