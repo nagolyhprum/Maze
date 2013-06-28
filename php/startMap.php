@@ -151,11 +151,11 @@
 				UPDATE 
 					`character` as c
 				INNER JOIN
-					Statistic as maxs
+					StatisticAttribute as maxs
 				ON
 					maxs.StatisticID=c.CharacterMaxStatisticID
 				INNER JOIN
-					Statistic as curs
+					StatisticAttribute as curs
 				ON
 					curs.StatisticID=c.CharacterCurrentStatisticID
 				SET 
@@ -164,9 +164,9 @@
 					c.RoomID=?, 
 					c.CharacterDirection=" . DIRECTION_DOWN . ", 
 					c.CharacterDirection=2,
-					curs.StatisticHealth = maxs.StatisticHealth
+					curs.StatisticAttributeValue = maxs.StatisticAttributeValue
 				WHERE 
-					c.CharacterID=?");
+					c.CharacterID=? AND curs.StatisticNameID=maxs.StatisticNameID");
 			mysqli_stmt_bind_param($stmt, "ii", $rooms[0][0]["id"], $character);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
@@ -193,37 +193,29 @@
 		}
 	}
 	
-	function cloneStatistics($c, $id) {
+	function cloneStatistics($c, $id) {	
+		mysqli_query($c, "INSERT INTO Statistic(StatisticIsActive) VALUES (1)");
+		$newID = mysqli_insert_id($c);
 		$stmt = mysqli_prepare($c, "
 			INSERT INTO 
-				Statistic 
-				(
-					StatisticStrength, 
-					StatisticDefense, 
-					StatisticHealth, 
-					StatisticEnergy, 
-					StatisticIntelligence, 
-					StatisticResistance,
-					StatisticSpeed,
-					StatisticExperience
+				StatisticAttribute
+				(					
+					StatisticNameID,
+					StatisticAttributeValue,
+					StatisticID
 				) 
-			SELECT 
-				StatisticStrength, 
-				StatisticDefense, 
-				StatisticHealth, 
-				StatisticEnergy, 
-				StatisticIntelligence, 
-				StatisticResistance ,
-				StatisticSpeed,
-				StatisticExperience
+			SELECT 				
+				StatisticNameID,
+				StatisticAttributeValue,
+				?
 			FROM 
-				Statistic 
+				StatisticAttribute
 			WHERE 
 				StatisticID=?");
-		mysqli_stmt_bind_param($stmt, "i", $id);
+		mysqli_stmt_bind_param($stmt, "ii", $newID, $id);
 		mysqli_stmt_execute($stmt);
 		mysqli_stmt_close($stmt);
-		return mysqli_insert_id($c);
+		return $newID;
 	}
 	
 	function oppositeDirection($direction) {

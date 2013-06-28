@@ -929,9 +929,7 @@ UNLOCK TABLES;
 -- Table structure for table `statistic`
 --
 
-DROP TABLE IF EXISTS `statistic`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*
 CREATE TABLE `statistic` (
   `StatisticID` bigint(20) NOT NULL AUTO_INCREMENT,
   `StatisticStrength` bigint(20) NOT NULL,
@@ -943,18 +941,74 @@ CREATE TABLE `statistic` (
   `StatisticSpeed` bigint(20) NOT NULL,
   `StatisticExperience` bigint(20) NOT NULL,
   PRIMARY KEY (`StatisticID`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+);
+*/
 
 --
 -- Dumping data for table `statistic`
 --
-
+/*
 LOCK TABLES `statistic` WRITE;
-/*!40000 ALTER TABLE `statistic` DISABLE KEYS */;
 INSERT INTO `statistic` VALUES (1,5,0,100,100,0,0,20,0),(2,5,0,100,100,0,0,20,0),(3,10,10,10,10,10,10,10,10),(4,5,0,0,0,0,0,1,0),(5,0,0,50,0,0,0,1,0);
-/*!40000 ALTER TABLE `statistic` ENABLE KEYS */;
 UNLOCK TABLES;
+*/
+
+DROP TABLE IF EXISTS Statistic;
+
+CREATE TABLE Statistic (
+	StatisticID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	StatisticIsActive BOOLEAN NOT NULL
+);
+
+INSERT INTO Statistic VALUES (1, 1), (2, 1), (3, 1);
+
+DROP TABLE IF EXISTS StatisticAttribute;
+
+CREATE TABLE StatisticAttribute (
+	StatisticAttributeID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	StatisticID BIGINT NOT NULL,
+	StatisticNameID BIGINT NOT NULL,
+	StatisticAttributeValue BIGINT NOT NULL,
+	FOREIGN KEY (StatisticID) REFERENCES Statistic(StatisticID),
+	FOREIGN KEY (StatisticNameID) REFERENCES StatisticName(StatisticNameID)
+);
+
+INSERT INTO StatisticAttribute VALUES
+--  id, s, sn, v 
+	-- current
+	(1, 1, 1, 10),
+	(2, 1, 2, 20),
+	(3, 1, 5, 20),
+	(4, 1, 7, 100),
+	(5, 1, 8, 100),
+	-- max
+	(6, 2, 1, 10),
+	(7, 2, 2, 20),
+	(8, 2, 5, 20),
+	(9, 2, 7, 100),
+	(10, 2, 8, 100),
+	-- enemy
+	(11, 3, 7, 100),
+	(12, 3, 8, 100),
+	(13, 3, 1, 10),
+	(14, 3, 2, 20);
+
+DROP TABLE IF EXISTS StatisticName;
+
+CREATE TABLE StatisticName (
+	StatisticNameID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	StatisticNameValue VARCHAR(32) NOT NULL
+);
+
+INSERT INTO StatisticName VALUES 
+	(1, "strength"), 
+	(2, "defense"), 
+	(3, "intelligence"), 
+	(4, "resistance"), 
+	(5, "speed"), 
+	(6, "experience"), 
+	(7, "health"), 
+	(8, "energy");
 
 --
 -- Table structure for table `subcategory`
@@ -1116,11 +1170,7 @@ BEGIN
 	INTO 
 		room;
 	UPDATE
-		Statistic as s
-	INNER JOIN
 		`Character` as c
-	ON
-		s.StatisticID=c.CharacterCurrentStatisticID
 	INNER JOIN
 		Room as r
 	ON
@@ -1133,7 +1183,7 @@ BEGIN
 	LEFT JOIN
 		Statistic as eirs
 	ON
-		eir.EnemyInRoomStatistics=eirs.StatisticID AND eirs.StatisticHealth > 0
+		eir.EnemyInRoomStatistics=eirs.StatisticID AND getStatistic(eirs.StatisticID, "health") > 0
 
 	-- top
 	LEFT JOIN
@@ -1197,7 +1247,7 @@ BEGIN
 		c.CharacterCanUse = 
 		(
 			CASE 
-				WHEN c.RoomID=r.RoomID THEN timeToMove(act, s.StatisticSpeed)
+				WHEN c.RoomID=r.RoomID THEN timeToMove(act, getCharacterCurrentStatistic(c.CharacterID, "speed"))
 				ELSE c.CharacterCanUse
 			END
 		)
@@ -1206,7 +1256,7 @@ BEGIN
 	AND 
 		(ABS(c.CharacterColumn - c) + ABS(c.CharacterRow - r) = 1) -- can only move one cell
 	AND 
-		(eir.EnemyInRoomID IS NULL OR eirs.StatisticHealth IS NULL) -- there are no enemies
+		(eir.EnemyInRoomID IS NULL OR eirs.StatisticID IS NULL) -- there are no enemies
 	AND -- make sure they are still in the room
 	(
 			(c >= 0 AND r >= 0 AND c < @ROOM_COLUMNS  AND r < @ROOM_ROWS) -- in the room
@@ -1220,7 +1270,7 @@ BEGIN
 			(c = FLOOR(@ROOM_COLUMNS / 2) AND r = @ROOM_ROWS  AND r.RoomWalls & @WALL_DOWN = 0) -- going to the bottom room
 	)
 	AND
-		c.CharacterCanUse <= act AND s.StatisticHealth > 0;
+		c.CharacterCanUse <= act AND getCharacterCurrentStatistic(c.CharacterID, "health") > 0;
 	SET aff = ROW_COUNT();
 	if aff > 0 then
 		UPDATE
@@ -1268,18 +1318,23 @@ DELIMITER ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `damageEnemy`(eid BIGINT, damage BIGINT)
 UPDATE
 	EnemyInRoom as eir
 INNER JOIN
-	Statistic as s
-ON 
-	eir.EnemyInRoomStatistics=s.StatisticID
+	StatisticAttribute as sa
+ON
+	sa.StatisticID=eir.EnemyInRoomStatistics
+INNER JOIN
+	StatisticName as sn
+ON
+	sa.StatisticNameID=sn.StatisticNameID
 SET
-	s.StatisticHealth=s.StatisticHealth - damage
+	sa.StatisticAttributeValue=sa.StatisticAttributeValue - damage
 WHERE
-	eir.EnemyInRoomID = eid ;;
+	eir.EnemyInRoomID = eid AND sn.StatisticNameValue="health";
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1330,6 +1385,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = '' */ ;
 DELIMITER ;;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getCharacter`(cid BIGINT, uid BIGINT)
 BEGIN
 	SELECT
@@ -1338,40 +1394,48 @@ BEGIN
 		c.CharacterIsMale,
 		c.CharacterDirection,
 		c.CharacterRow,
-		c.CharacterColumn,
-		currs.StatisticHealth as cHealth,
-		currs.StatisticEnergy as cEnergy,
-		currs.StatisticStrength as cStrength,
-		currs.StatisticDefense as cDefense,
-		currs.StatisticIntelligence as cIntelligence,
-		currs.StatisticResistance as cResistance,
-		currs.StatisticSpeed as cSpeed,
-		currs.StatisticExperience as cExperience,
-		maxs.StatisticHealth as mHealth,
-		maxs.StatisticEnergy as mEnergy,
-		maxs.StatisticStrength as mStrength,
-		maxs.StatisticDefense as mDefense,
-		maxs.StatisticIntelligence as mIntelligence,
-		maxs.StatisticResistance as mResistance,
-		maxs.StatisticSpeed as mSpeed,
-		maxs.StatisticExperience as mExperience
+		c.CharacterColumn
 	FROM
 		`Character` as c
 	INNER JOIN
 		Image as i
 	ON
 		c.CharacterPortrait=i.ImageID
-	INNER JOIN
-		Statistic as currs
-	ON
-		currs.StatisticID=c.CharacterCurrentStatisticID
-	INNER JOIN
-		Statistic as maxs
-	ON
-		maxs.StatisticID=c.CharacterMaxStatisticID
 	WHERE 
 		c.CharacterID=cid AND c.UserID=uid;
 
+	SELECT
+		sa.StatisticAttributeValue,
+		sn.StatisticNameValue
+	FROM
+		StatisticAttribute as sa
+	INNER JOIN
+		StatisticName as sn
+	ON
+		sa.StatisticNameID=sn.StatisticNameID
+	INNER JOIN
+		`Character` as c
+	ON
+		c.CharacterCurrentStatistic=sa.StatisticID
+	WHERE
+		c.CharacterID=cid AND c.UserID=uid;
+				
+	SELECT
+		sa.StatisticAttributeValue,
+		sn.StatisticNameValue
+	FROM
+		StatisticAttribute as sa
+	INNER JOIN
+		StatisticName as sn
+	ON
+		sa.StatisticNameID=sn.StatisticNameID
+	INNER JOIN
+		`Character` as c
+	ON
+		c.CharacterMaxStatistic=sa.StatisticID
+	WHERE
+		c.CharacterID=cid AND c.UserID=uid;
+		
 	SELECT
 		a.AudioName,
 		at.AttackTypeName
@@ -1433,6 +1497,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getCharacterAssultInfo`(cid BIGINT, uid BIGINT, skill BIGINT)
 BEGIN
 	SELECT
@@ -1443,125 +1508,11 @@ BEGIN
 		c.CharacterDirection,
 		c.CharacterColumn,
 		c.CharacterRow,
-		cStat.StatisticStrength + IFNULL(
-			(
-				SELECT 
-					sum(s.StatisticStrength)
-				FROM 
-					ItemInEquipment as iie
-				INNER JOIN
-					Item as i
-				ON
-					i.ItemID=iie.ItemID
-				INNER JOIN
-					ItemModel as im
-				ON
-					im.ItemModelID=i.ItemModelID
-				INNER JOIN 
-					Statistic as s
-				ON 
-					im.StatisticID=s.StatisticID 
-				WHERE 
-					CharacterID=cid
-			), 0
-		) + IFNULL(
-		(
-			SELECT 
-				sum(s.StatisticStrength)
-			FROM
-				`Character` as c
-			INNER JOIN
-				CharacterSkill as cs
-			ON
-				cs.CharacterID=c.CharacterID
-			INNER JOIN
-				Skill
-			ON
-				cs.SkillID=Skill.SkillID
-			INNER JOIN
-				SkillStatistic as ss
-			ON
-				Skill.SkillID=ss.SkillID
-			INNER JOIN
-				Statistic as s
-			ON
-				ss.StatisticID=s.StatisticID
-			WHERE					
-				cs.CharacterSkillIndex IS NOT NULL
-			AND
-			(
-					NOT SkillIsActive
-				OR 
-					(SkillIsActive AND (cs.CharacterSkillIndex=skill AND skill IS NOT NULL))
-				OR
-				(
-						SkillIsActive 
-					AND 
-						ADDTIME(SUBTIME(cs.CharacterSkillCanUse, UNIX_TIMESTAMP(Skill.SkillCoolDown)), UNIX_TIMESTAMP(ss.SkillStatisticDuration)) >= NOW()
-				)
-			)
-		), 0) as StatisticStrength,
-		cStat.StatisticIntelligence + IFNULL(
-			(
-				SELECT 
-					sum(s.StatisticIntelligence)
-				FROM 
-					ItemInEquipment as iie
-				INNER JOIN
-					Item as i
-				ON
-					i.ItemID=iie.ItemID
-				INNER JOIN
-					ItemModel as im
-				ON
-					im.ItemModelID=i.ItemModelID
-				INNER JOIN 
-					Statistic as s
-				ON 
-					im.StatisticID=s.StatisticID 
-				WHERE 
-					CharacterID=cid
-			), 0
-		) + IFNULL(
-		(
-			SELECT 
-				sum(s.StatisticIntelligence)
-			FROM
-				`Character` as c
-			INNER JOIN
-				CharacterSkill as cs
-			ON
-				cs.CharacterID=c.CharacterID
-			INNER JOIN
-				Skill
-			ON
-				cs.SkillID=Skill.SkillID
-			INNER JOIN
-				SkillStatistic as ss
-			ON
-				Skill.SkillID=ss.SkillID
-			INNER JOIN
-				Statistic as s
-			ON
-				ss.StatisticID=s.StatisticID
-			WHERE							
-				cs.CharacterSkillIndex IS NOT NULL
-			AND
-			(
-					NOT SkillIsActive
-				OR 
-					(SkillIsActive AND (cs.CharacterSkillIndex=skill AND skill IS NOT NULL))
-				OR
-				(
-						SkillIsActive 
-					AND 
-						ADDTIME(SUBTIME(cs.CharacterSkillCanUse, Skill.SkillCoolDown / 1000.0), ss.SkillStatisticDuration / 1000.0) >= NOW()
-				)
-			)
-		), 0) as StatisticIntelligence,
-		eStat.StatisticDefense,
-		eStat.StatisticResistance,
-		eStat.StatisticHealth,
+		getCharacterCurrentStatistic(c.CharacterID, "strength") as StatisticStrength
+		getCharacterCurrentStatistic(c.CharacterID, "intelligence") as StatisticIntelligence,
+		getStatistic(eir.EnemyInRoomStatistic, "defense") as eStat.StatisticDefense,
+		getStatistic(eir.EnemyInRoomStatistic, "resistance") as StatisticResistance,
+		getStatistic(eir.EnemyInRoomStatistic, "health") as StatisticHealth,
 		IFNULL(im.ItemModelArea, 1) as ItemModelArea
 	FROM
 		ItemType as it
@@ -1586,19 +1537,11 @@ BEGIN
 	ON
 		c.CharacterID=iie.CharacterID
 	INNER JOIN
-		Statistic as cStat
-	ON 
-		cStat.StatisticID=c.CharacterCurrentStatisticID
-	INNER JOIN
 		EnemyInRoom as eir
 	ON
 		eir.RoomID=c.RoomID
-	INNER JOIN
-		Statistic as eStat
-	ON
-		eir.EnemyInRoomStatistics=eStat.StatisticID
 	WHERE
-		(it.ItemTypeName='mainhand' OR it.ItemTypeName IS NULL) AND c.CharacterID=cid AND c.UserID=uid AND eStat.StatisticHealth > 0;
+		(it.ItemTypeName='mainhand' OR it.ItemTypeName IS NULL) AND c.CharacterID=cid AND c.UserID=uid AND getStatistic(eir.EnemyInRoomStatistics, "health") > 0;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1660,35 +1603,27 @@ $$
 CREATE PROCEDURE getEnemyAssultInfo(cid BIGINT, uid BIGINT)
 BEGIN
 SELECT
-	cStat.StatisticHealth,
-	cStat.StatisticDefense,
-	cStat.StatisticResistance,
 	UNIX_TIMESTAMP(timeToMove("1970-01-01 00:00:00", eStat.StatisticSpeed)) - UNIX_TIMESTAMP("1970-01-01 00:00:00") as timeToMove,
-	eStat.StatisticStrength,
-	eStat.StatisticIntelligence,
 	eir.EnemyInRoomID,
 	eir.EnemyInRoomRow,
 	eir.EnemyInRoomColumn,
 	UNIX_TIMESTAMP(eir.EnemyInRoomCanUse) as EnemyInRoomCanUse,
 	UNIX_TIMESTAMP(NOW()) as cts,
 	c.CharacterRow,
-	c.CharacterColumn
+	c.CharacterColumn,
+	getStatistic(eir.EnemyInRoomStatistic, "strength") as StatisticStrength,
+	getStatistic(eir.EnemyInRoomStatistic, "intelligence") as StatisticIntelligence,
+	getCharacterCurrentStatistic(c.CharacterID, "defense") as eStat.StatisticDefense,
+	getCharacterCurrentStatistic(c.CharacterID, "resistance") as StatisticResistance,
+	getCharacterCurrentStatistic(c.CharacterID, "health") as StatisticHealth
 FROM
 	EnemyInRoom as eir
-INNER JOIN
-	Statistic as eStat
-ON
-	eStat.StatisticID=eir.EnemyInRoomStatistics
 INNER JOIN
 	`Character` as c
 ON
 	c.RoomID=eir.RoomID
-INNER JOIN
-	Statistic as cStat
-ON
-	c.CharacterCurrentStatisticID=cStat.StatisticID
 WHERE
-	eir.EnemyInRoomCanUse < NOW() AND c.CharacterID=cid AND c.UserID=uid AND eStat.StatisticHealth > 0
+	eir.EnemyInRoomCanUse < NOW() AND c.CharacterID=cid AND c.UserID=uid AND getStatistic(eir.EnemyInRoomStatistics, "health") > 0
 ORDER BY
 	ABS(c.CharacterRow - eir.EnemyInRoomRow) + ABS(c.CharacterColumn - eir.EnemyInRoomColumn);
 END
@@ -1754,15 +1689,7 @@ BEGIN
 		im.ItemModelWeight,
 		it.ItemTypeName,
 		portrait.ImageName,
-		i.ItemID,
-		s.StatisticHealth,
-		s.StatisticEnergy,
-		s.StatisticStrength,
-		s.StatisticDefense,
-		s.StatisticIntelligence,
-		s.StatisticResistance,
-		s.StatisticSpeed,
-		s.StatisticExperience
+		i.ItemID
 	FROM
 		Item as i
 	INNER JOIN
@@ -1781,13 +1708,29 @@ BEGIN
 		Image as portrait
 	ON
 		portrait.ImageID=im.ItemModelPortrait
-	INNER JOIN
-		Statistic as s
-	ON
-		s.StatisticID=im.StatisticID
 	WHERE
 		i.ItemID=iid;
 
+	SELECT
+		sa.StatisticAttributeValue,
+		sn.StatisticNameValue
+	FROM
+		StatisticAttribute as sa
+	INNER JOIN
+		StatisticName as sn
+	ON
+		sa.StatisticNameID=sn.StatisticNameID
+	INNER JOIN
+		ItemModel as im
+	ON 
+		im.StatisticID=sa.StatisticID
+	INNER JOIN
+		Item as i
+	ON
+		im.ItemModelID=i.ItemModelID
+	WHERE
+		i.ItemID=iid;
+		
 	SELECT
 		Image.ImageName,
 		at.AttackTypeName,
@@ -1826,4 +1769,134 @@ BEGIN
 		
 END
 
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS getStatistic
+
 $$
+
+CREATE FUNCTION getStatistic(id BIGINT, name VARCHAR(32)) RETURNS BIGINT
+BEGIN
+	DECLARE val BIGINT;
+	SELECT
+		sum(StatisticAttributeValue)
+	FROM
+		StatisticAttribute as sa
+	INNER JOIN
+		StatisticName as sn
+	ON
+		sn.StatisticNameID=sa.StatisticNameID
+	WHERE
+		sn.StatisticNameValue=name AND sa.StatisticID=id
+	INTO
+		val;
+	RETURN IFNULL(val, 0);
+END
+
+$$
+
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS getStatistic
+
+$$
+
+-- need to include all aspects of statistics
+
+CREATE FUNCTION getCharacterCurrentStatistic(cid BIGINT, name VARCHAR(32)) RETURNS BIGINT
+BEGIN
+	DECLARE val BIGINT;
+	SELECT
+		sum(StatisticAttributeValue)
+	FROM
+		StatisticAttribute as sa
+	INNER JOIN
+		StatisticName as sn
+	ON
+		sn.StatisticNameID=sa.StatisticNameID
+	INNER JOIN
+		`Character` as c
+	ON
+		c.CharacterCurrentStatistic=sa.StatisticID
+	WHERE
+		sn.StatisticNameValue=name AND c.CharacterID=id
+	INTO
+		val;
+	RETURN IFNULL(val, 0);
+END
+
+$$
+
+-- TODO FOR moveCharacter - COMPLETE
+
+-- TODO FOR damageEnemy - COMPLETE
+
+-- TODO FOR getCharacter - COMPLETE
+
+-- TODO FOR getCharacterAssultInfo - COMPLETE
+
+-- TODO FOR getEnemyAssultInfo -- COMPLETE
+
+-- TODO FOR getItem - COMPLETE
+
+/*
+cStat.StatisticStrength + IFNULL(
+(
+	SELECT 
+		sum(s.StatisticStrength)
+	FROM 
+		ItemInEquipment as iie
+	INNER JOIN
+		Item as i
+	ON
+		i.ItemID=iie.ItemID
+	INNER JOIN
+		ItemModel as im
+	ON
+		im.ItemModelID=i.ItemModelID
+	INNER JOIN 
+		Statistic as s
+	ON 
+		im.StatisticID=s.StatisticID 
+	WHERE 
+		CharacterID=cid
+), 0
+) + IFNULL(
+(
+SELECT 
+	sum(s.StatisticStrength)
+FROM
+	`Character` as c
+INNER JOIN
+	CharacterSkill as cs
+ON
+	cs.CharacterID=c.CharacterID
+INNER JOIN
+	Skill
+ON
+	cs.SkillID=Skill.SkillID
+INNER JOIN
+	SkillStatistic as ss
+ON
+	Skill.SkillID=ss.SkillID
+INNER JOIN
+	Statistic as s
+ON
+	ss.StatisticID=s.StatisticID
+WHERE					
+	cs.CharacterSkillIndex IS NOT NULL
+AND
+(
+		NOT SkillIsActive
+	OR 
+		(SkillIsActive AND (cs.CharacterSkillIndex=skill AND skill IS NOT NULL))
+	OR
+	(
+			SkillIsActive 
+		AND 
+			ADDTIME(SUBTIME(cs.CharacterSkillCanUse, UNIX_TIMESTAMP(Skill.SkillCoolDown)), UNIX_TIMESTAMP(ss.SkillStatisticDuration)) >= NOW()
+	)
+)
+), 0) as StatisticStrength,
+
+*/
