@@ -3,6 +3,10 @@ var cid = 1;
 var Server = (function() {
 	var Server = {};
 
+	Server.pickupItem = function(success) {
+		ajax("php/pickupItem.php", {cid:cid}, success);
+	};
+	
 	Server.moveEnemies = function(complete) {
 		ajax("php/moveEnemy.php", {cid:cid}, complete);
 	};

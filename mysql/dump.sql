@@ -572,7 +572,7 @@ CREATE TABLE `itemininventory` (
   `ItemInInventoryID` bigint(20) NOT NULL AUTO_INCREMENT,
   `ItemInInventoryColumn` bigint(20) NOT NULL,
   `ItemInInventoryRow` bigint(20) NOT NULL,
-  `ItemID` bigint(20) NOT NULL,
+  `ItemID` bigint(20),
   `CharacterID` bigint(20) NOT NULL,
   PRIMARY KEY (`ItemInInventoryID`),
   KEY `fk_ItemInInventory_Item1_idx` (`ItemID`),
@@ -588,6 +588,47 @@ CREATE TABLE `itemininventory` (
 
 LOCK TABLES `itemininventory` WRITE;
 /*!40000 ALTER TABLE `itemininventory` DISABLE KEYS */;
+INSERT INTO ItemInInventory VALUES
+	(1, 0, 0, NULL, 1),
+	(2, 1, 0, NULL, 1),
+	(3, 2, 0, NULL, 1),
+	(4, 3, 0, NULL, 1),
+	(5, 4, 0, NULL, 1),
+	(6, 5, 0, NULL, 1),
+	(7, 6, 0, NULL, 1),
+	(8, 7, 0, NULL, 1),
+	(9, 8, 0, NULL, 1),
+	(10, 9, 0, NULL, 1),
+	(11, 0, 1, NULL, 1),
+	(12, 1, 1, NULL, 1),
+	(13, 2, 1, NULL, 1),
+	(14, 3, 1, NULL, 1),
+	(15, 4, 1, NULL, 1),
+	(16, 5, 1, NULL, 1),
+	(17, 6, 1, NULL, 1),
+	(18, 7, 1, NULL, 1),
+	(19, 8, 1, NULL, 1),
+	(20, 9, 1, NULL, 1),
+	(21, 0, 2, NULL, 1),
+	(22, 1, 2, NULL, 1),
+	(23, 2, 2, NULL, 1),
+	(24, 3, 2, NULL, 1),
+	(25, 4, 2, NULL, 1),
+	(26, 5, 2, NULL, 1),
+	(27, 6, 2, NULL, 1),
+	(28, 7, 2, NULL, 1),
+	(29, 8, 2, NULL, 1),
+	(30, 9, 2, NULL, 1),
+	(31, 0, 3, NULL, 1),
+	(32, 1, 3, NULL, 1),
+	(33, 2, 3, NULL, 1),
+	(34, 3, 3, NULL, 1),
+	(35, 4, 3, NULL, 1),
+	(36, 5, 3, NULL, 1),
+	(37, 6, 3, NULL, 1),
+	(38, 7, 3, NULL, 1),
+	(39, 8, 3, NULL, 1),
+	(40, 9, 3, NULL, 1);
 /*!40000 ALTER TABLE `itemininventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -604,6 +645,7 @@ CREATE TABLE `iteminroom` (
   `ItemInRoomRow` bigint(20) NOT NULL,
   `RoomID` bigint(20) NOT NULL,
   `ItemID` bigint(20) NOT NULL,
+	`ItemInRoomIsActive` BOOLEAN NOT NULL DEFAULT 1,
   PRIMARY KEY (`ItemInRoomID`),
   KEY `fk_ItemInRoom_Room1_idx` (`RoomID`),
   KEY `fk_ItemInRoom_Item1_idx` (`ItemID`),
@@ -988,11 +1030,11 @@ INSERT INTO StatisticAttribute VALUES
 	(9, 2, 7, 100),
 	(10, 2, 8, 100),
 	-- enemy
-	(11, 3, 7, 100),
-	(12, 3, 8, 100),
-	(13, 3, 1, 10),
-	(14, 3, 2, 10),
-	(15, 3, 5, 10);
+	(11, 3, 7, 20),
+	(12, 3, 8, 20),
+	(13, 3, 1, 5),
+	(14, 3, 2, 5),
+	(15, 3, 5, 5);
 
 DROP TABLE IF EXISTS StatisticName;
 
@@ -1104,7 +1146,7 @@ CREATE TABLE EnemyItem (
 	FOREIGN KEY (ItemModelID) REFERENCES ItemModel(ItemModelID)
 );
 
-INSERT INTO EnemyItem VALUES (1, 1, 50, 1);
+INSERT INTO EnemyItem VALUES (1, 1, 100, 1);
 
 --
 -- Dumping routines for database 'worldtactics'
@@ -1902,3 +1944,59 @@ AND
 ), 0) as StatisticStrength,
 
 */
+
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS pickupItem
+
+$$
+
+CREATE FUNCTION pickupItem(cid BIGINT, uid BIGINT) RETURNS BOOLEAN
+BEGIN
+	DECLARE iiiid, iirid BIGINT;
+	SELECT
+		iii.ItemInInventoryID
+	FROM
+		ItemInInventory as iii
+	INNER JOIN
+		`Character` as c
+	ON
+		iii.CharacterID=c.CharacterID
+	WHERE
+		c.CharacterID=cid AND c.UserID=uid AND iii.ItemID IS NULL
+	LIMIT 
+		1
+	INTO
+		iiiid;
+
+	SELECT 
+		iir.ItemInRoomID
+	FROM
+		ItemInRoom as iir
+	INNER JOIN
+		`Character` as c
+	ON
+		c.CharacterID=cid AND c.UserID=uid AND c.RoomID=iir.RoomID AND c.CharacterColumn=iir.ItemInRoomColumn AND c.CharacterRow=iir.ItemInRoomRow AND iir.ItemInRoomIsActive
+	ORDER BY
+		iir.ItemInRoomRow, 
+		iir.ItemInRoomColumn ASC
+	LIMIT 
+		1
+	INTO
+		iirid;
+
+	IF iirid AND iiiid THEN
+		UPDATE
+			ItemInRoom as iir,
+			ItemInInventory as iii
+		SET
+			iir.ItemInRoomIsActive=0,
+			iii.ItemID=iir.ItemID
+		WHERE
+			iir.ItemInRoomID=iirid AND iii.ItemInInventoryID=iiiid;
+		RETURN 1;
+	END IF;
+	RETURN 0;
+END
+
+$$

@@ -1,15 +1,19 @@
 $(function() {	
 	canvas.events.attach("keydown", function(key) {
 		if(key === 17) {
-			var index = inventory_items.indexOf(undefined);
+			var index = inventory_items.indexOf(null);
 			for(var i = 0; i < items.list.length; i++) {
 				var item = items.list[i];
 				if(item.location.column === character.location.column && item.location.row === character.location.row) {						
 					if(index !== -1) {
-						inventory_items[index] = item;		
-						Sound.effect(item.sounds.move);
-						items.list.splice(i, 1);
-						break;
+						Server.pickupItem(function(result) {
+							if(result) {
+								inventory_items[index] = item;		
+								Sound.effect(item.sounds.move);
+								items.list.splice(i, 1);
+							}
+						});
+						break;						
 					} else {
 						alert("You have no room in your inventory for that item.");
 					}
@@ -40,7 +44,7 @@ $(function() {
 	var menu = {
 		"Equip / Use" : function(c) {
 			var index = inventory_items.indexOf(c), //get the index of the item to equip
-				free = inventory_items.indexOf(undefined),
+				free = inventory_items.indexOf(null),
 				i, 
 				type = c.type; 
 			if(c.type === "mainhand") {
@@ -72,14 +76,14 @@ $(function() {
 			equip(c, type);
 		},
 		"Drop" : function(c) {
-			inventory_items[inventory_items.indexOf(c)] = undefined;
+			inventory_items[inventory_items.indexOf(c)] = null;
 			c.location.row = character.location.row;
 			c.location.column = character.location.column;
 			items.list.push(c);
 			Sound.effect(c.sounds.move);
 		},
 		"Destroy" : function(c) {
-			inventory_items[inventory_items.indexOf(c)] = undefined;
+			inventory_items[inventory_items.indexOf(c)] = null;
 			Sound.effect(c.sounds.move);
 		}
 	};
@@ -87,7 +91,7 @@ $(function() {
 		for(var j = 0; j < columns; j++) {
 			var x = canvas.padding + (canvas.padding * 2 + cellwidth) * j, 
 				y = canvas.padding * 3 + canvas.padding * 2 + canvas.fontSize() + (canvas.padding * 2 + cellheight) * i;
-			inventory_items.push(undefined);
+			inventory_items.push(null);
 			contexts.push({
 				column : j,
 				row : i,

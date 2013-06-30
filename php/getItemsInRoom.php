@@ -19,7 +19,7 @@
 			ON
 				c.RoomID=iir.RoomID
 			WHERE
-				c.CharacterID=? AND c.UserID=? AND (iir.ItemInRoomID=? OR ?=-1)");
+				c.CharacterID=? AND c.UserID=? AND iir.ItemInRoomIsActive AND (iir.ItemInRoomID=? OR ?=-1)");
 		mysqli_stmt_bind_param($stmt, "iiii", $cid, $uid, $iirid, $iirid);
 		mysqli_stmt_bind_result($stmt, $column, $row, $iid);
 		mysqli_stmt_execute($stmt);
