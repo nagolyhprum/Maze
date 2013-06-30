@@ -20,8 +20,7 @@ var Tween = (function() {
 		var me = this;
 		if(!me.locked && me.queue.length) {
 			me.locked = 1;
-			var current = me.queue[0],
-				interval = setCatchup(function() {
+			var current = me.queue[0], interval = setCatchup(function() {
 				if(current.isCleared || current.change() === false) {
 					if(interval) {
 						clearInterval(interval);

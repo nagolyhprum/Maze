@@ -4,7 +4,6 @@
 		mysqli_stmt_bind_param($stmt, "i", $iid);
 		mysqli_stmt_execute($stmt);
 		mysqli_stmt_close($stmt);
-		echo mysqli_error($c);
 		
 		mysqli_multi_query($c, "CALL getItem(@iid);");
 		if($result = mysqli_store_result($c)) {
@@ -15,13 +14,19 @@
 				$item["weight"] = (int)$r["ItemModelWeight"];				
 				$item["type"] = $r["ItemTypeName"];
 				$item["portrait"] = $r["ImageName"];
-				$item["id"] = (int)$r["ItemID"];
-				//statistics
-				foreach(array("Health", "Energy", "Strength", "Defense", "Intelligence", "Resistance", "Speed", "Experience") as $s) {
-					$item["statistic"][strtolower($s)] = (int)$r["Statistic" . $s];
-				}				
+				$item["id"] = (int)$r["ItemID"];			
 			}
 			mysqli_free_result($result);
+		}
+		mysqli_next_result($c);
+		//STATISTICS
+		if($result = mysqli_store_result($c)) {
+			while($r = mysqli_fetch_assoc($result)) {
+				$item["statistics"][$r["StatisticsNameValue"]] = array(
+					"current" => $r["StatisticsAttributeValue"],
+					"max" => $r["StatisticsAttributeValue"]
+				);
+			}
 		}
 		mysqli_next_result($c);
 		if($result = mysqli_store_result($c)) {

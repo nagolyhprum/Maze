@@ -6,16 +6,12 @@
 		$return = null;
 		$stmt = mysqli_prepare($c, "
 			UPDATE 
-				`Character` as c
-			INNER JOIN
-				Statistic as s
-			ON
-				s.StatisticID=c.CharacterCurrentStatisticID
+				`Character`
 			SET
-				c.CharacterCanUse=timeToMove(NOW(), s.StatisticSpeed),
-				c.CharacterDirection = ?
+				CharacterCanUse=timeToMove(NOW(), getCharacterCurrentStatistic(CharacterID, 'speed')),
+				CharacterDirection = ?
 			WHERE
-				c.CharacterCanUse <= NOW() AND c.CharacterID=? AND c.UserID=?
+				CharacterCanUse <= NOW() AND CharacterID=? AND UserID=?
 		");
 		$direction = max(min((int)$direction, 3), 0);
 		mysqli_stmt_bind_param($stmt, "iii", $direction, $cid, $uid);
@@ -114,7 +110,7 @@
 				}
 			}
 		}
-		return $return ? $return : array();
+		return $return ? $return : array("enemies" => array(), "items" => array());
 	}
 	
 	function getAssultedEnemy(&$enemies, $tiles, $row, $column, $moveRow, $moveColumn, $area) {	

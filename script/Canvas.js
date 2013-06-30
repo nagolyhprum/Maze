@@ -82,9 +82,9 @@ $(function() {
 		window.clearInterval = function(id) {
 			delete r[id];
 		};
-		var time = new Date().getTime(), r = {}, index = 0;		
+		var time = new Date(), r = {}, index = 0;		
 		return function() {
-			var now = new Date().getTime(), passed = now - time;
+			var now = new Date(), passed = now - time;
 			time = now;
 			for(var i in r) {
 				if(r.hasOwnProperty(i)) {
@@ -108,7 +108,7 @@ $(function() {
 				}
 			}
 		};		
-	}());
+	}());		
 	
 	context.font = "16px Sans-Serif";
 	canvas.padding = 5;	

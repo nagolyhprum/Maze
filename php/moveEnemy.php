@@ -27,7 +27,7 @@
 						"timeToMove" => (int)$r["timeToMove"],
 						"canUse" => $r["EnemyInRoomCanUse"],
 						"id" => (int)$r["EnemyInRoomID"],
-						"started" => $r["EnemyInRoomCanUse"]
+						"started" => (int)$r["EnemyInRoomCanUse"]
 					);					
 				} while($r = mysqli_fetch_assoc($result));
 				do {
@@ -39,11 +39,7 @@
 							if(abs($e["row"] - $character["row"]) + abs($e["column"] - $character["column"]) === 1) {
 								$sDamage = $e["strength"] - ($e["strength"] * $character["defense"] / 100.0);
 								$iDamage = $e["intelligence"] - ($e["intelligence"] * $character["resistance"] / 100.0);
-								if($sDamage < $iDamage) {
-									$character["health"] -= $sDamage;
-								} else {
-									$character["health"] -= $iDamage;
-								}
+								$character["health"] -= max($sDamage, $iDamage);
 							} else {
 								$next = getNextMove($tiles, $e, $character);
 								unset($tiles[$e["row"]][$e["column"]]);
@@ -88,20 +84,24 @@
 					UPDATE
 						`Character` as c
 					INNER JOIN
-						Statistic as s
+						StatisticAttribute as sa
 					ON
-						s.StatisticID=c.CharacterCurrentStatisticID
+						sa.StatisticID=c.CharacterCurrentStatisticID						
+					INNER JOIN
+						StatisticName as sn
+					ON
+						sa.StatisticNameID=sn.StatisticNameID
 					SET
-						s.StatisticHealth = ?,
+						sa.StatisticAttributeValue = ?,
 						c.RoomID = 
 						(
 							CASE
-								WHEN s.StatisticHealth > 0 THEN c.RoomID
+								WHEN sa.StatisticAttributeValue > 0 THEN c.RoomID
 								ELSE NULL
 							END
 						)
 					WHERE
-						c.CharacterID=? AND c.UserID=?
+						c.CharacterID=? AND c.UserID=? AND sn.StatisticNameValue='health'
 				");
 				mysqli_stmt_bind_param($stmt, "iii", $character["health"], $cid, $uid);
 				mysqli_stmt_execute($stmt);

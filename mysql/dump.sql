@@ -991,7 +991,8 @@ INSERT INTO StatisticAttribute VALUES
 	(11, 3, 7, 100),
 	(12, 3, 8, 100),
 	(13, 3, 1, 10),
-	(14, 3, 2, 20);
+	(14, 3, 2, 10),
+	(15, 3, 5, 10);
 
 DROP TABLE IF EXISTS StatisticName;
 
@@ -1178,12 +1179,7 @@ BEGIN
 	LEFT JOIN	
 		EnemyInRoom as eir
 	ON
-		eir.RoomID=c.RoomID	AND eir.EnemyInRoomColumn=c AND eir.EnemyInRoomRow=r
-
-	LEFT JOIN
-		Statistic as eirs
-	ON
-		eir.EnemyInRoomStatistics=eirs.StatisticID AND getStatistic(eirs.StatisticID, "health") > 0
+		eir.RoomID=c.RoomID	AND eir.EnemyInRoomColumn=c AND eir.EnemyInRoomRow=r AND getStatistic(eir.EnemyInRoomStatistics, "health") > 0
 
 	-- top
 	LEFT JOIN
@@ -1256,7 +1252,7 @@ BEGIN
 	AND 
 		(ABS(c.CharacterColumn - c) + ABS(c.CharacterRow - r) = 1) -- can only move one cell
 	AND 
-		(eir.EnemyInRoomID IS NULL OR eirs.StatisticID IS NULL) -- there are no enemies
+		(eir.EnemyInRoomID IS NULL) -- there are no enemies
 	AND -- make sure they are still in the room
 	(
 			(c >= 0 AND r >= 0 AND c < @ROOM_COLUMNS  AND r < @ROOM_ROWS) -- in the room
@@ -1321,6 +1317,7 @@ DELIMITER ;
 
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `damageEnemy`(eid BIGINT, damage BIGINT)
+BEGIN
 UPDATE
 	EnemyInRoom as eir
 INNER JOIN
@@ -1335,6 +1332,8 @@ SET
 	sa.StatisticAttributeValue=sa.StatisticAttributeValue - damage
 WHERE
 	eir.EnemyInRoomID = eid AND sn.StatisticNameValue="health";
+END
+;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1510,9 +1509,9 @@ BEGIN
 		c.CharacterRow,
 		getCharacterCurrentStatistic(c.CharacterID, "strength") as StatisticStrength,
 		getCharacterCurrentStatistic(c.CharacterID, "intelligence") as StatisticIntelligence,
-		getStatistic(eir.EnemyInRoomStatistic, "defense") as StatisticDefense,
-		getStatistic(eir.EnemyInRoomStatistic, "resistance") as StatisticResistance,
-		getStatistic(eir.EnemyInRoomStatistic, "health") as StatisticHealth,
+		getStatistic(eir.EnemyInRoomStatistics, "defense") as StatisticDefense,
+		getStatistic(eir.EnemyInRoomStatistics, "resistance") as StatisticResistance,
+		getStatistic(eir.EnemyInRoomStatistics, "health") as StatisticHealth,
 		IFNULL(im.ItemModelArea, 1) as ItemModelArea
 	FROM
 		ItemType as it
@@ -1603,7 +1602,7 @@ $$
 CREATE PROCEDURE getEnemyAssultInfo(cid BIGINT, uid BIGINT)
 BEGIN
 SELECT
-	UNIX_TIMESTAMP(timeToMove("1970-01-01 00:00:00", eStat.StatisticSpeed)) - UNIX_TIMESTAMP("1970-01-01 00:00:00") as timeToMove,
+	UNIX_TIMESTAMP(timeToMove("1970-01-01 00:00:00", getStatistic(eir.EnemyInRoomStatistics, "speed"))) - UNIX_TIMESTAMP("1970-01-01 00:00:00") as timeToMove,
 	eir.EnemyInRoomID,
 	eir.EnemyInRoomRow,
 	eir.EnemyInRoomColumn,
@@ -1611,8 +1610,8 @@ SELECT
 	UNIX_TIMESTAMP(NOW()) as cts,
 	c.CharacterRow,
 	c.CharacterColumn,
-	getStatistic(eir.EnemyInRoomStatistic, "strength") as StatisticStrength,
-	getStatistic(eir.EnemyInRoomStatistic, "intelligence") as StatisticIntelligence,
+	getStatistic(eir.EnemyInRoomStatistics, "strength") as StatisticStrength,
+	getStatistic(eir.EnemyInRoomStatistics, "intelligence") as StatisticIntelligence,
 	getCharacterCurrentStatistic(c.CharacterID, "defense") as StatisticDefense,
 	getCharacterCurrentStatistic(c.CharacterID, "resistance") as StatisticResistance,
 	getCharacterCurrentStatistic(c.CharacterID, "health") as StatisticHealth
@@ -1629,6 +1628,7 @@ ORDER BY
 END
 
 $$
+
 
 DELIMITER $$
 
@@ -1712,12 +1712,12 @@ BEGIN
 		i.ItemID=iid;
 
 	SELECT
-		sa.StatisticAttributeValue,
+		IFNULL(sa.StatisticAttributeValue, 0),
 		sn.StatisticNameValue
 	FROM
-		StatisticAttribute as sa
-	INNER JOIN
 		StatisticName as sn
+	LEFT JOIN
+		StatisticAttribute as sa
 	ON
 		sa.StatisticNameID=sn.StatisticNameID
 	INNER JOIN

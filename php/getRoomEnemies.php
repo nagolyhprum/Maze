@@ -10,23 +10,7 @@
 				EnemyInRoomRow,
 				EnemyInRoomDirection,
 				EnemyName,
-				AttackTypeName,
-				currs.StatisticHealth,
-				currs.StatisticEnergy,
-				currs.StatisticStrength,
-				currs.StatisticDefense,
-				currs.StatisticIntelligence,
-				currs.StatisticResistance,
-				currs.StatisticSpeed,
-				currs.StatisticExperience,
-				maxs.StatisticHealth,
-				maxs.StatisticEnergy,
-				maxs.StatisticStrength,
-				maxs.StatisticDefense,
-				maxs.StatisticIntelligence,
-				maxs.StatisticResistance,
-				maxs.StatisticSpeed,
-				maxs.StatisticExperience
+				AttackTypeName
 			FROM
 				EnemyInRoom as eir
 			INNER JOIN
@@ -41,39 +25,9 @@
 				AttackType as at
 			ON
 				e.AttackTypeID=at.AttackTypeID
-			INNER JOIN
-				Statistic as currs
-			ON
-				eir.EnemyInRoomStatistics=currs.StatisticID
-			INNER JOIN
-				Statistic as maxs
-			ON
-				e.StatisticID=maxs.StatisticID
 			WHERE
-				c.UserID=? AND c.CharacterID=? AND currs.StatisticHealth>0");		
-		mysqli_stmt_bind_result($stmt, 
-			$id, 
-			$column, 
-			$row, 
-			$direction, 
-			$name, 
-			$attackstyle,
-			$current["health"], 
-			$current["energy"], 
-			$current["strength"], 
-			$current["defense"], 
-			$current["intelligence"], 
-			$current["resistance"], 
-			$current["speed"], 
-			$current["experience"], 
-			$max["health"], 
-			$max["energy"], 
-			$max["strength"], 
-			$max["defense"], 
-			$max["intelligence"], 
-			$max["resistance"], 
-			$max["speed"], 
-			$max["experience"]);
+				c.UserID=? AND c.CharacterID=? AND getStatistic(eir.EnemyInRoomStatistics, 'health') > 0");		
+		mysqli_stmt_bind_result($stmt, $id, $column, $row, $direction, $name, $attackstyle);
 		mysqli_stmt_bind_param($stmt, "ii", $uid, $cid);
 		mysqli_stmt_execute($stmt);
 		while(mysqli_stmt_fetch($stmt)) {
@@ -87,42 +41,71 @@
 				),
 				"display" => array(
 					"row" => $direction
-				),
-				"statistics" => array(
-					"strength" => array(
-						"current" => $current["strength"],
-						"max" => $max["strength"]
-					),
-					"defense" => array(
-						"current" => $current["defense"],
-						"max" => $max["defense"]
-					),
-					"intelligence" => array(
-						"current" => $current["intelligence"],
-						"max" => $max["intelligence"]
-					),
-					"resistance" => array(
-						"current" => $current["resistance"],
-						"max" => $max["resistance"]
-					),
-					"health" => array(
-						"current" => $current["health"],
-						"max" => $max["health"]
-					),
-					"energy" => array(
-						"current" => $current["energy"],
-						"max" => $max["energy"]
-					),
-					"speed" => array(
-						"current" => $current["speed"],
-						"max" => $max["speed"]
-					),
-					"experience" => array(
-						"current" => $current["experience"],
-						"max" => $max["experience"]
-					)
 				)
 			);
+		}
+		mysqli_stmt_close($stmt);
+		//get current statistics
+		$stmt = mysqli_prepare($c, "
+			SELECT
+				sn.StatisticNameValue,
+				IFNULL(sa.StatisticAttributeValue, 0)
+			FROM
+				StatisticAttribute as sa
+			INNER JOIN
+				EnemyInRoom as eir
+			ON
+				eir.EnemyInRoomStatistics=sa.StatisticID				
+			RIGHT JOIN			
+				StatisticName as sn
+			ON
+				sn.StatisticNameID=sa.StatisticNameID
+			WHERE 
+				eir.EnemyInRoomID=? OR eir.EnemyInRoomID IS NULL
+		");
+		mysqli_stmt_bind_param($stmt, "i", $eirid);
+		mysqli_stmt_bind_result($stmt, $name, $attr);
+		for($i = 0; $i < count($enemies); $i++) {
+			$eirid = $enemies[$i]["id"];
+			mysqli_stmt_execute($stmt);
+			while(mysqli_stmt_fetch($stmt)) {	
+				$statistics[$name]["current"] = $attr;
+			}
+			$enemies[$i]["statistics"] = $statistics;
+		}
+		mysqli_stmt_close($stmt);
+		//get max statistics
+		$stmt = mysqli_prepare($c, "
+			SELECT
+				sn.StatisticNameValue,
+				IFNULL(sa.StatisticAttributeValue, 0)
+			FROM
+				EnemyInRoom as eir
+			INNER JOIN
+				Enemy as e
+			ON
+				eir.EnemyID=e.EnemyID
+			INNER JOIN
+				StatisticAttribute as sa
+			ON
+				sa.StatisticID=e.StatisticID
+			RIGHT JOIN
+				StatisticName as sn
+			ON
+				sn.StatisticNameID=sa.StatisticNameID
+			WHERE 
+				eir.EnemyInRoomID=? OR eir.EnemyInRoomID IS NULL
+		");
+		mysqli_stmt_bind_param($stmt, "i", $eirid);
+		mysqli_stmt_bind_result($stmt, $name, $attr);
+		for($i = 0; $i < count($enemies); $i++) {
+			$eirid = $enemies[$i]["id"];
+			mysqli_stmt_execute($stmt);
+			$statistics = $enemies[$i]["statistics"];
+			while(mysqli_stmt_fetch($stmt)) {	
+				$statistics[$name]["max"] = $attr;
+			}
+			$enemies[$i]["statistics"] = $statistics;
 		}
 		mysqli_stmt_close($stmt);
 		//get images
