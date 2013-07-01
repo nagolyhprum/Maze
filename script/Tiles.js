@@ -4,6 +4,7 @@ $(function() {
 		tiles = Server.getTiles();
 	});
 	canvas.events.attach("draw", function() {
+		canvas.drawWith(2);
 		context.strokeStyle = "black";
 		for(var i = 0; i < CONSTANTS.TILE.ROWS; i++) {
 			for(var j = 0; j < CONSTANTS.TILE.COLUMNS; j++) {

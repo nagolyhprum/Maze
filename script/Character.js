@@ -1,6 +1,7 @@
 $(function() {
 	lock("character", function() {	
 		canvas.events.attach("draw", function() {
+			canvas.drawWith(8);
 			character.draw(context);
 		});
 		

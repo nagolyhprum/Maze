@@ -3,6 +3,10 @@ var cid = 1;
 var Server = (function() {
 	var Server = {};
 
+	Server.getItemsInInventory = function(complete) {
+		ajax("php/getItemsInInventory.php", {cid:cid}, complete);
+	};
+	
 	Server.pickupItem = function(success) {
 		ajax("php/pickupItem.php", {cid:cid}, success);
 	};
@@ -577,6 +581,16 @@ badges = Server.getBadges();
 
 Server.getCharacterRoomLocation(function(l) {
 	room.location = l;
+});
+
+Server.getItemsInInventory(function(iii) {
+	inventory_items = iii;
+	for(var i = 0; i < iii.length; i++) {
+		if(inventory_items[i]) {
+			inventory_items[i] = new Item(inventory_items[i]);
+		}
+	}
+	unlock("inventory", 1);
 });
 
 Server.getCharacter(function(c) {

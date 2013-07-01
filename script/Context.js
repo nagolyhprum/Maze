@@ -29,6 +29,7 @@ $(function() {
 		
 	});
 	canvas.events.attach("draw", function() {
+		canvas.drawWith(14);
 		if(contextmenu) {
 			var options = Object.keys(contextmenu.menu), max = 0, i; 
 			for(i = 0; i < options.length; i++) {

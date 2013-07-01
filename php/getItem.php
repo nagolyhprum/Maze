@@ -22,9 +22,9 @@
 		//STATISTICS
 		if($result = mysqli_store_result($c)) {
 			while($r = mysqli_fetch_assoc($result)) {
-				$item["statistics"][$r["StatisticsNameValue"]] = array(
-					"current" => $r["StatisticsAttributeValue"],
-					"max" => $r["StatisticsAttributeValue"]
+				$item["statistics"][$r["StatisticNameValue"]] = array(
+					"current" => $r["StatisticAttributeValue"],
+					"max" => $r["StatisticAttributeValue"]
 				);
 			}
 		}

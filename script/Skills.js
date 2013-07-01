@@ -89,6 +89,7 @@ $(function() {
 		start = {x : canvas.width / 2 - width / 2, y : canvas.height / 2 - height / 2};
 		inventory_items.visible = 0;
 	canvas.events.attach("draw", function() {
+		canvas.drawWith(12);
 		context.fillStyle = "gray";
 		if(background) {
 			context.fillStyle = background;

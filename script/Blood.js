@@ -28,6 +28,7 @@ var Blood = (function() {
 	var stains = [], stains_canvas, stains_context, particles = [];
 	$(function() {
 		canvas.events.attach("draw", function() {			
+			canvas.drawWith(3);
 			for(var i = particles.length - 1; i >= 0; i--) {
 				var p = particles[i], l = p.location, v = p.velocity;			
 				if(Math.abs(v.x) + Math.abs(v.y) < 1 || l.x <= CONSTANTS.START.X() || l.y <= CONSTANTS.START.Y() || l.x >= CONSTANTS.START.X() + stains_canvas.width || l.y >= CONSTANTS.START.Y() + stains_canvas.height) {

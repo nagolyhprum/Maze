@@ -5,6 +5,7 @@ $(function() {
 		var foreground = loadImage("health/foreground_gray.png"),
 			background = loadImage("health/background.png");
 		canvas.events.attach("draw", function() {
+			canvas.drawWith(9);
 			var h_rat = character.statistics.getCurrent("health") / character.statistics.getMax("health"),
 				e_rat = character.statistics.getCurrent("energy") / character.statistics.getMax("energy"),
 				exp = character.statistics.getCurrent("experience") / character.statistics.getMax("experience");

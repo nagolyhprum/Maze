@@ -27,6 +27,7 @@ $(function() {
 	});
 
 	canvas.events.attach("draw", function() {
+		canvas.drawWith(13);
 		context.save();
 		context.globalAlpha = 0.8;
 		if(visible) {

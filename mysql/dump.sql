@@ -4,6 +4,9 @@
 -- ------------------------------------------------------
 -- Server version	5.6.12
 
+
+UNLOCK TABLES;
+
 DROP SCHEMA IF EXISTS worldtactics;
 
 CREATE SCHEMA IF NOT EXISTS worldtactics;
@@ -557,7 +560,14 @@ CREATE TABLE `iteminequipment` (
 
 LOCK TABLES `iteminequipment` WRITE;
 /*!40000 ALTER TABLE `iteminequipment` DISABLE KEYS */;
-INSERT INTO ItemInEquipment VALUES (1, 7, NULL), (1, 8, NULL), (1, 9, NULL), (1, 10, NULL), (1, 11, NULL), (1, 12, NULL), (1, 12, NULL);
+INSERT INTO ItemInEquipment VALUES 
+	(1, 1, 7, NULL), 
+	(2, 1, 8, NULL), 
+	(3, 1, 9, NULL), 
+	(4, 1, 10, NULL), 
+	(5, 1, 11, NULL), 
+	(6, 1, 12, NULL), 
+	(7, 1, 12, NULL);
 /*!40000 ALTER TABLE `iteminequipment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -595,40 +605,24 @@ INSERT INTO ItemInInventory VALUES
 	(4, 3, 0, NULL, 1),
 	(5, 4, 0, NULL, 1),
 	(6, 5, 0, NULL, 1),
-	(7, 6, 0, NULL, 1),
-	(8, 7, 0, NULL, 1),
-	(9, 8, 0, NULL, 1),
-	(10, 9, 0, NULL, 1),
-	(11, 0, 1, NULL, 1),
-	(12, 1, 1, NULL, 1),
-	(13, 2, 1, NULL, 1),
-	(14, 3, 1, NULL, 1),
-	(15, 4, 1, NULL, 1),
-	(16, 5, 1, NULL, 1),
-	(17, 6, 1, NULL, 1),
-	(18, 7, 1, NULL, 1),
-	(19, 8, 1, NULL, 1),
-	(20, 9, 1, NULL, 1),
-	(21, 0, 2, NULL, 1),
-	(22, 1, 2, NULL, 1),
-	(23, 2, 2, NULL, 1),
-	(24, 3, 2, NULL, 1),
-	(25, 4, 2, NULL, 1),
-	(26, 5, 2, NULL, 1),
-	(27, 6, 2, NULL, 1),
-	(28, 7, 2, NULL, 1),
-	(29, 8, 2, NULL, 1),
-	(30, 9, 2, NULL, 1),
-	(31, 0, 3, NULL, 1),
-	(32, 1, 3, NULL, 1),
-	(33, 2, 3, NULL, 1),
-	(34, 3, 3, NULL, 1),
-	(35, 4, 3, NULL, 1),
-	(36, 5, 3, NULL, 1),
-	(37, 6, 3, NULL, 1),
-	(38, 7, 3, NULL, 1),
-	(39, 8, 3, NULL, 1),
-	(40, 9, 3, NULL, 1);
+	(7, 0, 1, NULL, 1),
+	(8, 1, 1, NULL, 1),
+	(9, 2, 1, NULL, 1),
+	(10, 3, 1, NULL, 1),
+	(11, 4, 1, NULL, 1),
+	(12, 5, 1, NULL, 1),
+	(13, 0, 2, NULL, 1),
+	(14, 1, 2, NULL, 1),
+	(15, 2, 2, NULL, 1),
+	(16, 3, 2, NULL, 1),
+	(17, 4, 2, NULL, 1),
+	(18, 5, 2, NULL, 1),
+	(19, 0, 3, NULL, 1),
+	(20, 1, 3, NULL, 1),
+	(21, 2, 3, NULL, 1),
+	(22, 3, 3, NULL, 1),
+	(23, 4, 3, NULL, 1),
+	(24, 5, 3, NULL, 1);
 /*!40000 ALTER TABLE `itemininventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -967,33 +961,6 @@ INSERT INTO `skillstatistic` VALUES (1,5,1,1,-1);
 /*!40000 ALTER TABLE `skillstatistic` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Table structure for table `statistic`
---
-
-/*
-CREATE TABLE `statistic` (
-  `StatisticID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `StatisticStrength` bigint(20) NOT NULL,
-  `StatisticDefense` bigint(20) NOT NULL,
-  `StatisticHealth` bigint(20) NOT NULL,
-  `StatisticEnergy` bigint(20) NOT NULL,
-  `StatisticIntelligence` bigint(20) NOT NULL,
-  `StatisticResistance` bigint(20) NOT NULL,
-  `StatisticSpeed` bigint(20) NOT NULL,
-  `StatisticExperience` bigint(20) NOT NULL,
-  PRIMARY KEY (`StatisticID`)
-);
-*/
-
---
--- Dumping data for table `statistic`
---
-/*
-LOCK TABLES `statistic` WRITE;
-INSERT INTO `statistic` VALUES (1,5,0,100,100,0,0,20,0),(2,5,0,100,100,0,0,20,0),(3,10,10,10,10,10,10,10,10),(4,5,0,0,0,0,0,1,0),(5,0,0,50,0,0,0,1,0);
-UNLOCK TABLES;
-*/
 
 DROP TABLE IF EXISTS Statistic;
 
@@ -1001,6 +968,7 @@ CREATE TABLE Statistic (
 	StatisticID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	StatisticIsActive BOOLEAN NOT NULL
 );
+
 
 INSERT INTO Statistic VALUES (1, 1), (2, 1), (3, 1);
 
@@ -1754,7 +1722,7 @@ BEGIN
 		i.ItemID=iid;
 
 	SELECT
-		IFNULL(sa.StatisticAttributeValue, 0),
+		IFNULL(sa.StatisticAttributeValue, 0) as StatisticAttributeValue,
 		sn.StatisticNameValue
 	FROM
 		StatisticName as sn

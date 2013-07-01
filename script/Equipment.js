@@ -145,6 +145,7 @@ $(function() {
 	});
 	
 	canvas.events.attach("draw", function() {
+		canvas.drawWith(11);
 		if(equipment_items.visible) {
 			start.x = canvas.width / 2 - width / 2;
 			start.y = canvas.height / 2 - height / 2;

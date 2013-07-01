@@ -1,32 +1,43 @@
-$(function() {
-	canvas = $("#screen")[0];
+$(function() {	
+	canvas = {width : 800, height : 600};
 	canvas.events = new EventHandler();
-	context = canvas.getContext("2d");
-	context.font = "12px Times New Roman";
-	attachEvent(canvas, "click", function(e) {
-		var bb = canvas.getBoundingClientRect();
+	canvas.drawWith = function(index) {
+		if(!contexts[index]) {
+			var newCanvas = document.createElement("canvas");
+			newCanvas.width = canvas.width;
+			newCanvas.height = canvas.height;
+			newCanvas.style.zIndex = index;
+			document.body.appendChild(newCanvas);
+			contexts[index] = newCanvas.getContext("2d");
+		}
+		context = contexts[index];
+		context.font = "16px Sans-Serif";
+	};
+	var contexts = [];
+	attachEvent(document, "click", function(e) {
+		var bb = document.body.getBoundingClientRect();
 		canvas.events.invoke("click", [{ 
-			x : (e.pageX - bb.left) * (canvas.width / canvas.clientWidth), 
-			y : (e.pageY - bb.top) * (canvas.height / canvas.clientHeight)
+			x : (e.pageX - bb.left) * (canvas.width / document.body.clientWidth), 
+			y : (e.pageY - bb.top) * (canvas.height / document.body.clientHeight)
 		}]);
 	});
-	attachEvent(canvas, "mousemove", function(e) {
-		var bb = canvas.getBoundingClientRect();
+	attachEvent(document, "mousemove", function(e) {
+		var bb = document.body.getBoundingClientRect();
 		canvas.events.invoke("mousemove", [{ 
-			x : (e.pageX - bb.left) * (canvas.width / canvas.clientWidth), 
-			y : (e.pageY - bb.top) * (canvas.height / canvas.clientHeight)
+			x : (e.pageX - bb.left) * (canvas.width / document.body.clientWidth), 
+			y : (e.pageY - bb.top) * (canvas.height / document.body.clientHeight)
 		}]);
 	});
 	
 	var down = [];
-	attachEvent(canvas, "keydown", function(e) {
+	attachEvent(document, "keydown", function(e) {
 		if(!down[e.which]) {
 			canvas.events.invoke("keydown", e.which);
 			down[e.which] = 1;
 		}
 		e.preventDefault();
 	});
-	attachEvent(canvas, "keyup", function(e) {
+	attachEvent(document, "keyup", function(e) {
 		canvas.events.invoke("keyup", e.which);
 		down[e.which] = 0;
 		e.preventDefault();
@@ -110,7 +121,6 @@ $(function() {
 		};		
 	}());		
 	
-	context.font = "16px Sans-Serif";
 	canvas.padding = 5;	
 	canvas.fontSize = function() {
 		return parseInt(context.font, 10);
@@ -119,6 +129,11 @@ $(function() {
 	function frame() {
 		requestAnimFrame(frame);
 		tick();
+		for(var i in contexts) {
+			var toClear = contexts[i];
+			toClear.clearRect(0, 0, toClear.canvas.width, toClear.canvas.height);
+		}
+		canvas.drawWith(0);
 		if(background && background.complete) {
 			context.drawImage(background, 0, 0, canvas.width, canvas.height);
 		}

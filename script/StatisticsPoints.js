@@ -16,6 +16,7 @@ $(function() {
 	});
 	
 	canvas.events.attach("draw", function() {
+		canvas.drawWith(15);
 		if(statisticsPoints > 0) {
 			context.fillStyle = "gray";
 			context.strokeStyle = "black";

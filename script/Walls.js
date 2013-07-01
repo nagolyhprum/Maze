@@ -90,6 +90,7 @@ $(function() {
 	}
 	
 	canvas.events.attach("draw", function() {
+		canvas.drawWith(6);
 		drawHorizontalWalls();
 		drawVerticalWalls();
 	});

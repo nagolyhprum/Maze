@@ -9,6 +9,7 @@ $(function() {
 	};
 	
 	canvas.events.attach("draw", function() {
+		canvas.drawWith(1);
 		context.fillStyle = "white";
 		context.textAlign = "right";
 		context.textBaseline = "bottom";

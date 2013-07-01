@@ -36,6 +36,7 @@ $(function() {
 		}
 	});
 	canvas.events.attach("draw", function() {
+		canvas.drawWith(16);
 		if(behaviors.visible) {
 			context.globalAlpha = 0.8;
 			context.strokeStyle = "black";

@@ -3,6 +3,7 @@ $(function() {
 		var sx = canvas.width / 2 - CONSTANTS.WIDTH() / 2,
 			sy = canvas.height / 2 - CONSTANTS.HEIGHT() / 2;
 		canvas.events.attach("draw", function() {
+			canvas.drawWith(5);
 			for(var i = 0; i < enemies.length; i++) {
 				enemies[i].draw(context);
 			}

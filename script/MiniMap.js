@@ -9,6 +9,7 @@ $(function() {
 		alpha %= (2 * Math.PI);
 	}, 100);
 	canvas.events.attach("draw", function() {
+		canvas.drawWith(7);
 		context.save();
 		context.translate(canvas.width - CONSTANTS.INBETWEEN() - 10, 10);
 		context.strokeStyle = "black";
