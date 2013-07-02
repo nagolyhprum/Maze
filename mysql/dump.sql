@@ -543,8 +543,8 @@ DROP TABLE IF EXISTS `iteminequipment`;
 CREATE TABLE `iteminequipment` (
   `ItemInEquipmentID` bigint(20) NOT NULL AUTO_INCREMENT,
   `CharacterID` bigint(20) NOT NULL,
-  `ItemID` bigint(20),
 	`ItemTypeID` BIGINT NOT NULL,
+  `ItemID` bigint(20),
   PRIMARY KEY (`ItemInEquipmentID`),
   KEY `fk_ItemInEquipment_Item1_idx` (`ItemID`),
   KEY `fk_ItemInEquipment_Character1_idx` (`CharacterID`),
@@ -668,10 +668,10 @@ DROP TABLE IF EXISTS `itemmodel`;
 CREATE TABLE `itemmodel` (
   `ItemModelID` bigint(20) NOT NULL AUTO_INCREMENT,
   `ItemModelName` varchar(32) NOT NULL,
-  `ItemModelArea` bigint(20) NOT NULL,
+  `ItemModelArea` bigint(20),
   `StatisticID` bigint(20) NOT NULL,
-  `AttackTypeID` bigint(20) DEFAULT NULL,
-  `ItemModelWeight` bigint(20) NOT NULL,
+  `AttackTypeID` bigint(20),
+  `ItemModelWeight` bigint(20),
   `ItemTypeID` bigint(20) NOT NULL,
   `ItemModelPortrait` bigint(20) NOT NULL,
   PRIMARY KEY (`ItemModelID`),
@@ -1964,6 +1964,120 @@ BEGIN
 			iir.ItemInRoomID=iirid AND iii.ItemInInventoryID=iiiid;
 		RETURN 1;
 	END IF;
+	RETURN 0;
+END
+
+$$
+
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS equipItem
+
+$$
+
+-- should unequip if necessary
+
+CREATE FUNCTION equipItem(uid BIGINT, cid BIGINT, iid BIGINT) RETURNS BOOLEAN
+BEGIN
+	DECLARE iieid, weight, temp, otherWeight BIGINT;
+	DECLARE itemtype VARCHAR(32);
+	SELECT
+		iie.ItemInEquipmentID,
+		it.ItemTypeName,
+		IFNULL(im.ItemModelWeight, 0)
+	FROM
+		`Character` as c
+	INNER JOIN
+		ItemInEquipment as iie
+	ON
+		c.CharacterID=iie.CharacterID
+	INNER JOIN
+		ItemModel as im
+	ON
+		im.ItemTypeID=iie.ItemTypeID
+	INNER JOIN
+		Item as i
+	ON
+		i.ItemModelID=im.ItemModelID
+	INNER JOIN
+		ItemType as it
+	ON
+		it.ItemTypeID=im.ItemTypeID
+	INNER JOIN
+		ItemInInventory as iii
+	ON
+		iii.CharacterID=c.CharacterID
+	WHERE
+		iii.ItemID=iid AND i.ItemID=iid AND c.CharacterID=cid AND c.UserID=uid AND iie.ItemID IS NULL
+	LIMIT
+		1
+	INTO
+		iieid,
+		itemtype,
+		weight;
+	if iieid then
+		if itemtype = "mainhand" then
+			SELECT 
+				IFNULL(sum(im.ItemModelWeight), 0)
+			FROM 
+				ItemModel as im 
+			INNER JOIN
+				Item as i
+			ON
+				i.ItemModelID=im.ItemModelID
+			INNER JOIN
+				ItemInEquipment as iie
+			ON
+				iie.ItemID=i.ItemID
+			INNER JOIN
+				`Character` as c
+			ON
+				c.CharacterID=iie.CharacterID
+			INNER JOIN
+				ItemType as it
+			ON
+				it.ItemTypeID=im.ItemTypeID
+			WHERE
+				it.ItemTypeName="mainhand" AND c.CharacterID=cid AND c.UserID=uid
+			INTO
+				otherWeight;
+			if weight + otherWeight <= 3 THEN
+				UPDATE
+					`Character` as c
+				INNER JOIN
+					ItemInInventory as iii
+				ON 
+					c.CharacterID=iii.CharacterID
+				INNER JOIN
+					ItemInEquipment as iie
+				ON
+					c.CharacterID=iie.CharacterID
+				SET
+					iie.ItemID=iii.ItemID,
+					iii.ItemID=NULL
+				WHERE
+					iie.ItemInEquipmentID=iieid AND iii.ItemID=iid AND c.CharacterID=cid AND c.UserID=uid;		
+				RETURN 1;
+			end if;
+		else		
+			UPDATE
+				`Character` as c
+			INNER JOIN
+				ItemInInventory as iii
+			ON 
+				c.CharacterID=iii.CharacterID
+			INNER JOIN
+				ItemInEquipment as iie
+			ON
+				c.CharacterID=iie.CharacterID
+			SET
+				iie.ItemID=iii.ItemID,
+				iii.ItemID=NULL
+			WHERE
+				iie.ItemInEquipmentID=iieid AND iii.ItemID=iid AND c.CharacterID=cid AND c.UserID=uid;
+			RETURN 1;
+		end if;		
+	end if;
 	RETURN 0;
 END
 

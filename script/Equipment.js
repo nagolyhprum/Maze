@@ -179,4 +179,14 @@ $(function() {
 			context.restore();
 		}
 	});
+	
+	Server.getEquipment(function(equipment) {
+		for(var i = 0; i < equipment.length; i++) {
+			var e = new Item(equipment[i]), type = e.type;
+			if(e.type === "mainhand" && e.weight === 1 && !equipment_items.offhand) {
+				type = "offhand";
+			}
+			equip(e, type);
+		}
+	});
 });

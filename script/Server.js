@@ -2,7 +2,15 @@ var cid = 1;
 
 var Server = (function() {
 	var Server = {};
+	
+	Server.getEquipment = function(success) {
+		ajax("php/getEquipment.php", {cid:cid}, success);
+	};
 
+	Server.equipItem = function(iiiid, success) {
+		ajax("php/equipItem.php", {iiiid:iiiid, cid:cid}, success);
+	};
+	
 	Server.getItemsInInventory = function(complete) {
 		ajax("php/getItemsInInventory.php", {cid:cid}, complete);
 	};
