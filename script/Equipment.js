@@ -110,11 +110,15 @@ $(function() {
 	
 	var menu = {
 		"Unequip" : function(c) {
-			var type = c.item.type;
-			if(c === equipment_items.offhand) {
-				type = "offhand";
-			}
-			unequip(type, inventory_items.indexOf(undefined));
+			Server.equipItem(c.item.id, function(result) {
+				if(result) {
+					var type = c.item.type;
+					if(c === equipment_items.offhand) {
+						type = "offhand";
+					}
+					unequip(type, inventory_items.indexOf(null));
+				}
+			});
 		}
 	};
 	
@@ -183,7 +187,7 @@ $(function() {
 	Server.getEquipment(function(equipment) {
 		for(var i = 0; i < equipment.length; i++) {
 			var e = new Item(equipment[i]), type = e.type;
-			if(e.type === "mainhand" && e.weight === 1 && !equipment_items.offhand) {
+			if(e.type === "mainhand" && e.weight === 1) {
 				type = "offhand";
 			}
 			equip(e, type);

@@ -1132,6 +1132,16 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `getWalls`(uid BIGINT, cid BIGINT) RETURNS bigint(20)
 BEGIN
 	DECLARE walls BIGINT;
+	UPDATE
+		`Character` as c
+	INNER JOIN
+		Room as r
+	ON
+		c.RoomID=r.RoomID
+	SET
+		r.RoomIsDiscovered=1
+	WHERE
+		c.UserID=uid AND c.CharacterID=cid;
 	SELECT 
 		r.RoomWalls
 	FROM
@@ -1969,116 +1979,159 @@ END
 
 $$
 
+
 DELIMITER $$
 
-DROP FUNCTION IF EXISTS equipItem
+DROP PROCEDURE IF EXISTS equipItem
 
 $$
 
 -- should unequip if necessary
 
-CREATE FUNCTION equipItem(uid BIGINT, cid BIGINT, iid BIGINT) RETURNS BOOLEAN
-BEGIN
-	DECLARE iieid, weight, temp, otherWeight BIGINT;
-	DECLARE itemtype VARCHAR(32);
+CREATE PROCEDURE equipItem(uid BIGINT, cid BIGINT, iid BIGINT)
+BEGIN	
+	DECLARE 
+		freeSlot, 
+		toEquipSlot, toEquipWeight, toEquipType,
+		leftEquipSlot, leftEquipWeight, leftEquipItem,
+		rightEquipSlot, rightEquipWeight, rightEquipItem
+	BIGINT DEFAULT NULL;
+	-- get one free slot
 	SELECT
+		iii.ItemInInventoryID
+	FROM
+		`Character` as c
+	INNER JOIN
+		ItemInInventory as iii
+	ON
+		c.CharacterID=iii.CharacterID
+	WHERE
+		c.CharacterID=cid AND c.UserID=uid AND iii.ItemID IS NULL
+	LIMIT 
+		1 
+	INTO
+		freeSlot;
+	-- get item info
+	SELECT
+		iii.ItemInInventoryID,
+		im.ItemModelWeight,
+		im.ItemTypeID
+	FROM
+		`Character` as c
+	INNER JOIN
+		ItemInInventory as iii
+	ON
+		c.CharacterID=iii.CharacterID
+	INNER JOIN
+		Item as i
+	ON
+		i.ItemID=iii.ItemID
+	INNER JOIN
+		ItemModel as im
+	ON
+		im.ItemModelID=i.ItemModelID
+	WHERE
+		i.ItemID=iid AND c.CharacterID=cid AND c.UserID=uid
+	INTO
+		toEquipSlot,
+		toEquipWeight,
+		toEquipType;
+	-- get left equipped item info
+	SELECT
+		im.ItemModelWeight,
 		iie.ItemInEquipmentID,
-		it.ItemTypeName,
-		IFNULL(im.ItemModelWeight, 0)
+		i.ItemID
 	FROM
 		`Character` as c
 	INNER JOIN
 		ItemInEquipment as iie
 	ON
 		c.CharacterID=iie.CharacterID
-	INNER JOIN
-		ItemModel as im
-	ON
-		im.ItemTypeID=iie.ItemTypeID
-	INNER JOIN
+	LEFT JOIN
 		Item as i
 	ON
-		i.ItemModelID=im.ItemModelID
-	INNER JOIN
-		ItemType as it
+		i.ItemID=iie.ItemID
+	LEFT JOIN
+		ItemModel as im
 	ON
-		it.ItemTypeID=im.ItemTypeID
-	INNER JOIN
-		ItemInInventory as iii
-	ON
-		iii.CharacterID=c.CharacterID
+		im.ItemModelID=i.ItemModelID
 	WHERE
-		iii.ItemID=iid AND i.ItemID=iid AND c.CharacterID=cid AND c.UserID=uid AND iie.ItemID IS NULL
+		iie.ItemTypeID=toEquipType AND c.CharacterID=cid AND c.UserID=uid
+	ORDER BY
+		im.ItemModelWeight DESC
 	LIMIT
-		1
+		0, 1
 	INTO
-		iieid,
-		itemtype,
-		weight;
-	if iieid then
-		if itemtype = "mainhand" then
-			SELECT 
-				IFNULL(sum(im.ItemModelWeight), 0)
-			FROM 
-				ItemModel as im 
-			INNER JOIN
-				Item as i
-			ON
-				i.ItemModelID=im.ItemModelID
-			INNER JOIN
-				ItemInEquipment as iie
-			ON
-				iie.ItemID=i.ItemID
-			INNER JOIN
-				`Character` as c
-			ON
-				c.CharacterID=iie.CharacterID
-			INNER JOIN
-				ItemType as it
-			ON
-				it.ItemTypeID=im.ItemTypeID
-			WHERE
-				it.ItemTypeName="mainhand" AND c.CharacterID=cid AND c.UserID=uid
-			INTO
-				otherWeight;
-			if weight + otherWeight <= 3 THEN
-				UPDATE
-					`Character` as c
-				INNER JOIN
-					ItemInInventory as iii
-				ON 
-					c.CharacterID=iii.CharacterID
-				INNER JOIN
-					ItemInEquipment as iie
-				ON
-					c.CharacterID=iie.CharacterID
-				SET
-					iie.ItemID=iii.ItemID,
-					iii.ItemID=NULL
-				WHERE
-					iie.ItemInEquipmentID=iieid AND iii.ItemID=iid AND c.CharacterID=cid AND c.UserID=uid;		
-				RETURN 1;
-			end if;
-		else		
-			UPDATE
-				`Character` as c
-			INNER JOIN
-				ItemInInventory as iii
-			ON 
-				c.CharacterID=iii.CharacterID
-			INNER JOIN
-				ItemInEquipment as iie
-			ON
-				c.CharacterID=iie.CharacterID
-			SET
-				iie.ItemID=iii.ItemID,
-				iii.ItemID=NULL
-			WHERE
-				iie.ItemInEquipmentID=iieid AND iii.ItemID=iid AND c.CharacterID=cid AND c.UserID=uid;
-			RETURN 1;
-		end if;		
-	end if;
-	RETURN 0;
+		leftEquipWeight,
+		leftEquipSlot,
+		leftEquipItem;
+	-- get right equipped item info
+	SELECT
+		im.ItemModelWeight,
+		iie.ItemInEquipmentID,
+		i.ItemID
+	FROM
+		`Character` as c
+	INNER JOIN
+		ItemInEquipment as iie
+	ON
+		c.CharacterID=iie.CharacterID
+	LEFT JOIN
+		Item as i
+	ON
+		i.ItemID=iie.ItemID
+	LEFT JOIN
+		ItemModel as im
+	ON
+		im.ItemModelID=i.ItemModelID
+	WHERE
+		iie.ItemTypeID=toEquipType AND c.CharacterID=cid AND c.UserID=uid
+	ORDER BY
+		im.ItemModelWeight DESC
+	LIMIT
+		1, 1
+	INTO
+		rightEquipWeight,
+		rightEquipSlot,
+		rightEquipItem;
+	
+	-- if this is really an unequip query - this will unequip anything
+	IF toEquipSlot IS NULL AND freeSlot IS NOT NULL AND (SELECT COUNT(*) FROM `Character` WHERE CharacterID=cid AND UserID=uid) > 0 THEN
+		UPDATE ItemInInventory SET ItemID=iid WHERE ItemInInventoryID=freeSlot;
+		UPDATE ItemInEquipment SET ItemID=NULL WHERE ItemID=iid;
+		SELECT "Unequipped";
+	ELSE 
+		IF (toEquipSlot IS NOT NULL) THEN -- this is not an unequip query		
+			IF toEquipWeight = 3 AND (rightEquipItem IS NULL OR freeSlot IS NOT NULL) THEN -- equiping weight 3
+				UPDATE ItemInEquipment SET ItemID=iid WHERE ItemInEquipmentID=leftEquipSlot;
+				UPDATE ItemInEquipment SET ItemID=NULL WHERE ItemInEquipmentID=rightEquipSlot;
+				UPDATE ItemInInventory SET ItemID=leftEquipItem WHERE ItemInInventoryID=toEquipSlot;
+				UPDATE ItemInInventory SET ItemID=rightEquipItem WHERE ItemInInventoryID=freeSlot;		
+				SELECT "Did weight 3";
+			ELSE
+				IF toEquipWeight = leftEquipWeight THEN -- other weights
+					UPDATE ItemInEquipment SET ItemID=iid WHERE ItemInEquipmentID=leftEquipSlot;
+					UPDATE ItemInInventory SET ItemID=leftEquipItem WHERE ItemInInventoryID=toEquipSlot;
+					SELECT "Switched left";
+				ELSE
+					if toEquipWeight = rightEquipWeight THEN						
+						UPDATE ItemInEquipment SET ItemID=iid WHERE ItemInEquipmentID=rightEquipSlot;
+						UPDATE ItemInInventory SET ItemID=rightEquipItem WHERE ItemInInventoryID=toEquipSlot;	
+						SELECT "Switched right";
+					ELSE
+						IF leftEquipItem IS NULL OR rightEquipSlot IS NULL THEN
+							UPDATE ItemInEquipment SET ItemID=iid WHERE ItemInEquipmentID=leftEquipSlot;
+							UPDATE ItemInInventory SET ItemID=NULL WHERE ItemInInventoryID=toEquipSlot;	
+							SELECT "Used left";
+						ELSE
+							UPDATE ItemInEquipment SET ItemID=iid WHERE ItemInEquipmentID=rightEquipSlot;
+							UPDATE ItemInInventory SET ItemID=NULL WHERE ItemInInventoryID=toEquipSlot;	
+							SELECT "Used right";
+						END IF;
+					END IF;
+				END IF;
+			END IF;
+		END IF;
+	END IF;
 END
-
 $$

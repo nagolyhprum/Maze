@@ -95,7 +95,7 @@
 			$return = $id === NULL;
 		}
 		mysqli_stmt_close($stmt);
-		return $return || TRUE;
+		return $return;
 	}
 	
 	function createMapWithMapModel($c, $user, $character, $mapmodel) {
@@ -136,7 +136,7 @@
 			mysqli_stmt_close($stmt);
 			$map = mysqli_insert_id($c);
 			//insert into the room in map
-			$stmt = mysqli_prepare($c, "INSERT INTO Room (RoomWalls, MapID, RoomColumn, RoomRow, RoomIsDiscovered) VALUES (?, ?, ?, ?, 1)");
+			$stmt = mysqli_prepare($c, "INSERT INTO Room (RoomWalls, MapID, RoomColumn, RoomRow, RoomIsDiscovered) VALUES (?, ?, ?, ?, 0)");
 			mysqli_stmt_bind_param($stmt, "iiii", $walls, $map, $column, $row);
 			for($row = 0; $row < $mapmodel["rows"]; $row++) {			
 				for($column = 0; $column < $mapmodel["columns"]; $column++) {

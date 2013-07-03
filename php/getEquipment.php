@@ -25,7 +25,7 @@
 		for($i = 0; $i < count($equipment); $i++) {
 			$equipment[$i] = getItem($c, $equipment[$i]);
 		}
-		return $equipment;
+		return $equipment ? $equipment : array();
 	}
 	
 	$cid = $_GET["cid"];
