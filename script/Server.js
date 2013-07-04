@@ -3,6 +3,10 @@ var cid = 1;
 var Server = (function() {
 	var Server = {};
 	
+	Server.setSkillIndex = function(sid, index, success) {
+		ajax("php/setSkillIndex.php", {sid:sid,index:index,cid:cid}, success);
+	};
+	
 	Server.getEquipment = function(success) {
 		ajax("php/getEquipment.php", {cid:cid}, success);
 	};
@@ -345,6 +349,7 @@ var Server = (function() {
 
 	Server.getSkills = function() {
 		return [{
+			id : 1,
 			name : "Power Thrust",
 			description : "A powerful thrusting attack that causes significantly more damage than usual.",
 			action : "thrust",
@@ -366,6 +371,7 @@ var Server = (function() {
 			})],
 			multiply : []
 		}, {
+			id : 2,
 			name : "Heal",
 			description : "A spell that grants new life to the caster and a resistance to fire magic.",
 			action : "spellcast",
@@ -385,6 +391,7 @@ var Server = (function() {
 			})],
 			multiply : []
 		}, {
+			id : 3,
 			name : "Fire Arrow",
 			description : "The player's arrows cause fire damage.",
 			action : "bow",
@@ -405,6 +412,7 @@ var Server = (function() {
 			})],
 			multiply : []
 		}, {
+			id : 4,
 			name : "Fire Wave",
 			description : "Summons a wave of fire around the caster.",
 			action : "spellcast",

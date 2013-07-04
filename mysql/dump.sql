@@ -2109,7 +2109,7 @@ BEGIN
 				UPDATE ItemInInventory SET ItemID=rightEquipItem WHERE ItemInInventoryID=freeSlot;		
 				SELECT "Did weight 3";
 			ELSE
-				IF toEquipWeight = leftEquipWeight THEN -- other weights
+				IF toEquipWeight = leftEquipWeight OR leftEquipWeight = 3 THEN -- other weights
 					UPDATE ItemInEquipment SET ItemID=iid WHERE ItemInEquipmentID=leftEquipSlot;
 					UPDATE ItemInInventory SET ItemID=leftEquipItem WHERE ItemInInventoryID=toEquipSlot;
 					SELECT "Switched left";
@@ -2134,4 +2134,40 @@ BEGIN
 		END IF;
 	END IF;
 END
+$$
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS setSkillIndex
+
+$$
+
+CREATE PROCEDURE setSkillIndex(cid BIGINT, uid BIGINT, sid BIGINT, ind BIGINT)
+BEGIN
+	IF ind >= 0 AND ind <= 9 THEN
+		-- remove skill
+		UPDATE
+			CharacterSkill as cs
+		INNER JOIN
+			`Character` as c
+		ON
+			c.CharacterID=cs.CharacterID
+		SET
+			cs.CharacterSkillIndex=NULL
+		WHERE
+			cs.CharacterSkillIndex=ind AND c.CharacterID=cid AND c.UserID=uid;
+		-- add skill
+		UPDATE
+			CharacterSkill as cs
+		INNER JOIN
+			`Character` as c
+		ON
+			c.CharacterID=cs.CharacterID
+		SET
+			cs.CharacterSkillIndex=ind
+		WHERE
+			cs.CharacterSkillID=sid AND c.CharacterID=cid AND c.UserID=uid;
+	END IF;
+END
+
 $$

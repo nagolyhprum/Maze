@@ -10,7 +10,16 @@ $(function() {
 			performSkill(key);
 		}
 		if(skills.visible && active && !isNaN(key) && active.type === "active") {
-			skillMapping[(key + 9) % 10] = active;
+			Server.setSkillIndex(active.id, key, function() {
+				for(var i in skillMapping) {
+					var s = skillMapping[i];
+					if(s.id === active.id) {
+						delete skillMapping[i];
+						break;
+					}
+				}
+				skillMapping[(key + 9) % 10] = active;
+			});
 		} else if(keycode === 82) { //r
 			skills.visible = !skills.visible;
 		} else {
