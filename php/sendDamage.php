@@ -8,10 +8,10 @@
 			UPDATE 
 				`Character`
 			SET
-				CharacterCanUse=timeToMove(NOW(), getCharacterCurrentStatistic(CharacterID, 'speed')),
+				CharacterCanUse=getCurrentTimeMillis()+timeToMove(getCharacterCurrentStatistic(CharacterID, 'speed')),
 				CharacterDirection = ?
 			WHERE
-				CharacterCanUse <= NOW() AND CharacterID=? AND UserID=?
+				CharacterCanUse <= getCurrentTimeMillis() AND CharacterID=? AND UserID=?
 		");
 		$direction = max(min((int)$direction, 3), 0);
 		mysqli_stmt_bind_param($stmt, "iii", $direction, $cid, $uid);

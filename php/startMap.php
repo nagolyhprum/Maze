@@ -173,7 +173,7 @@
 			//update the character statistics and skills
 			//TODO
 			//insert into the enemy in room
-			$stmt = mysqli_prepare($c, "INSERT INTO EnemyInRoom (EnemyInRoomStatistics, EnemyID, RoomID, EnemyInRoomColumn, EnemyInRoomRow, EnemyInRoomDirection, EnemyInRoomCanUse) VALUES (?, ?, ?, ?, ?, ?, NOW())");	
+			$stmt = mysqli_prepare($c, "INSERT INTO EnemyInRoom (EnemyInRoomStatistics, EnemyID, RoomID, EnemyInRoomColumn, EnemyInRoomRow, EnemyInRoomDirection) VALUES (?, ?, ?, ?, ?, ?)");	
 			mysqli_stmt_bind_param($stmt, "iiiiii", $statistics, $enemy, $room, $column, $row, $direction);
 			for($r = 0; $r < $mapmodel["rows"]; $r++) {
 				for($col = 0; $col < $mapmodel["columns"]; $col++) {

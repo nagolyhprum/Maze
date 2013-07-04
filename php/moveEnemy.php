@@ -2,6 +2,13 @@
 	require_once("../admin/db.php");
 	
 	function moveEnemy($c, $cid, $uid) {
+		//get the current time millis
+		$stmt = mysqli_prepare($c, "SELECT getCurrentTimeMillis();");
+		mysqli_stmt_bind_result($stmt, $cts);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+		//get the enemy assult info
 		$stmt = mysqli_prepare($c, "SET @cid=?, @uid=?");
 		mysqli_stmt_bind_param($stmt, "ii", $cid, $uid);
 		mysqli_stmt_execute($stmt);
@@ -15,7 +22,6 @@
 					"defense" => (int)$r["StatisticDefense"],
 					"resistance" => (int)$r["StatisticResistance"]					
 				);
-				$cts = (int) $r["cts"];
 				do {
 					$tiles[$r["EnemyInRoomRow"]][$r["EnemyInRoomColumn"]] = $enemies[] = array(
 						"row" => (int)$r["EnemyInRoomRow"],
@@ -66,7 +72,8 @@
 					SET
 						EnemyInRoomRow=?,
 						EnemyInRoomColumn=?,
-						EnemyInRoomCanUse=FROM_UNIXTIME(?)
+						EnemyInRoomCanUse=?,
+						EnemyInRoomUsedAt=getCurrentTimeMillis()
 					WHERE
 						EnemyInRoomID=?					
 				");

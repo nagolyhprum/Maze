@@ -150,7 +150,8 @@ CREATE TABLE `character` (
   `CharacterRow` bigint(20) DEFAULT NULL,
   `CharacterDirection` bigint(20) DEFAULT NULL,
   `CharacterIsMale` tinyint(1) NOT NULL,
-  `CharacterCanUse` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `CharacterCanUse` BIGINT NOT NULL DEFAULT 0,
+	`CharacterUsedAt` BIGINT DEFAULT NULL,
   PRIMARY KEY (`CharacterID`),
   KEY `fk_Character_Image1_idx` (`CharacterPortrait`),
   KEY `fk_Character_Statistic1_idx` (`CharacterCurrentStatisticID`),
@@ -171,7 +172,7 @@ CREATE TABLE `character` (
 
 LOCK TABLES `character` WRITE;
 /*!40000 ALTER TABLE `character` DISABLE KEYS */;
-INSERT INTO `character` VALUES (1,'nagolyhprum',50,1,2,1,null,null,null,null,1, "0000-00-00");
+INSERT INTO `character` VALUES (1,'nagolyhprum',50,1,2,1,null,null,null,null,1, 0, NULL);
 /*!40000 ALTER TABLE `character` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -307,7 +308,7 @@ CREATE TABLE `characterskill` (
   `CharacterID` bigint(20) NOT NULL,
   `SkillID` bigint(20) NOT NULL,
   `CharacterSkillIndex` bigint(20) DEFAULT NULL,
-  `CharacterSkillCanUse` timestamp NULL DEFAULT NULL,
+  `CharacterSkillCanUse` BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`CharacterSkillID`),
   KEY `fk_CharacterSkill_Skill2_idx` (`SkillID`),
   KEY `fk_CharacterSkill_Character2_idx` (`CharacterID`),
@@ -448,7 +449,8 @@ CREATE TABLE `enemyinroom` (
   `EnemyInRoomColumn` bigint(20) NOT NULL,
   `EnemyInRoomRow` bigint(20) NOT NULL,
   `EnemyInRoomDirection` bigint(20) NOT NULL,
-	`EnemyInRoomCanUse` TIMESTAMP NOT NULL,
+	`EnemyInRoomCanUse` BIGINT NOT NULL DEFAULT 0,
+	`EnemyInRoomUsedAt` BIGINT DEFAULT NULL,
   PRIMARY KEY (`EnemyInRoomID`),
   KEY `fk_EnemyInRoom_Room1_idx` (`RoomID`),
   KEY `fk_EnemyInRoom_Enemy1_idx` (`EnemyID`),
@@ -1185,9 +1187,10 @@ DELIMITER ;;
 
 CREATE DEFINER=`root`@`localhost` FUNCTION `moveCharacter`(c BIGINT, r BIGINT, cid BIGINT, uid BIGINT) RETURNS bigint(20)
 BEGIN
-	DECLARE act TIMESTAMP DEFAULT NOW();
+	DECLARE act BIGINT;
 	DECLARE room BIGINT DEFAULT 0;
 	DECLARE aff BIGINT;
+	SET act = getCurrentTimeMillis();
 	SELECT 
 		RoomID 
 	FROM 
@@ -1228,6 +1231,7 @@ BEGIN
 	ON
 		leftRoom.MapID=r.MapID AND leftRoom.RoomColumn=r.RoomColumn-1 AND leftRoom.RoomRow=r.RoomRow AND r.RoomWalls & @WALL_LEFT  = 0
 	SET
+		c.CharacterUsedAt=act,
 		c.CharacterDirection=
 		(
 			CASE 
@@ -1269,7 +1273,7 @@ BEGIN
 		c.CharacterCanUse = 
 		(
 			CASE 
-				WHEN c.RoomID=r.RoomID THEN timeToMove(act, getCharacterCurrentStatistic(c.CharacterID, "speed"))
+				WHEN c.RoomID=r.RoomID THEN act + timeToMove(getCharacterCurrentStatistic(c.CharacterID, "speed"))
 				ELSE c.CharacterCanUse
 			END
 		)
@@ -1324,8 +1328,11 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = '' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `timeToMove`(curr TIMESTAMP, speed BIGINT) RETURNS timestamp
-RETURN ADDTIME(curr, (CEIL(500 / speed)  * 32) / 1000.0) ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `timeToMove`(speed BIGINT) RETURNS BIGINT
+BEGIN
+RETURN CEIL(500 / speed)  * 48;
+END
+;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1628,12 +1635,11 @@ $$
 CREATE PROCEDURE getEnemyAssultInfo(cid BIGINT, uid BIGINT)
 BEGIN
 SELECT
-	UNIX_TIMESTAMP(timeToMove("1970-01-01 00:00:00", getStatistic(eir.EnemyInRoomStatistics, "speed"))) - UNIX_TIMESTAMP("1970-01-01 00:00:00") as timeToMove,
+	timeToMove(getStatistic(eir.EnemyInRoomStatistics, "speed")) as timeToMove,
 	eir.EnemyInRoomID,
 	eir.EnemyInRoomRow,
 	eir.EnemyInRoomColumn,
-	UNIX_TIMESTAMP(eir.EnemyInRoomCanUse) as EnemyInRoomCanUse,
-	UNIX_TIMESTAMP(NOW()) as cts,
+	eir.EnemyInRoomCanUse as EnemyInRoomCanUse,
 	c.CharacterRow,
 	c.CharacterColumn,
 	getStatistic(eir.EnemyInRoomStatistics, "strength") as StatisticStrength,
@@ -1648,7 +1654,7 @@ INNER JOIN
 ON
 	c.RoomID=eir.RoomID
 WHERE
-	eir.EnemyInRoomCanUse < NOW() AND c.CharacterID=cid AND c.UserID=uid AND getStatistic(eir.EnemyInRoomStatistics, "health") > 0
+	eir.EnemyInRoomCanUse < getCurrentTimeMillis() AND c.CharacterID=cid AND c.UserID=uid AND getStatistic(eir.EnemyInRoomStatistics, "health") > 0
 ORDER BY
 	ABS(c.CharacterRow - eir.EnemyInRoomRow) + ABS(c.CharacterColumn - eir.EnemyInRoomColumn);
 END
@@ -1922,7 +1928,7 @@ AND
 	(
 			SkillIsActive 
 		AND 
-			ADDTIME(SUBTIME(cs.CharacterSkillCanUse, UNIX_TIMESTAMP(Skill.SkillCoolDown)), UNIX_TIMESTAMP(ss.SkillStatisticDuration)) >= NOW()
+			cs.CharacterSkillCanUse - Skill.SkillCoolDown + ss.SkillStatisticDuration >= getCurrentTimeMillis()
 	)
 )
 ), 0) as StatisticStrength,
@@ -2174,6 +2180,19 @@ BEGIN
 		WHERE
 			cs.CharacterSkillID=sid AND c.CharacterID=cid AND c.UserID=uid;
 	END IF;
+END
+
+$$
+
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS getCurrentTimeMillis
+
+$$
+
+CREATE FUNCTION getCurrentTimeMillis() RETURNS BIGINT
+BEGIN
+	RETURN UNIX_TIMESTAMP(sysdate(6)) * 1000;
 END
 
 $$
