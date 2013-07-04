@@ -13,7 +13,7 @@ $(function() {
 			Server.setSkillIndex(active.id, key, function() {
 				for(var i in skillMapping) {
 					var s = skillMapping[i];
-					if(s.id === active.id) {
+					if(s && s.id === active.id) {
 						delete skillMapping[i];
 						break;
 					}
@@ -80,6 +80,12 @@ $(function() {
 	}
 
 	var skillMapping = [];	
+	
+	lock("skills", function() {
+		Server.getSkillMapping(function(sm) {
+			skillMapping = sm;
+		});
+	});
 	
 	canvas.events.attach("mousemove", function(l) {
 		location = l;

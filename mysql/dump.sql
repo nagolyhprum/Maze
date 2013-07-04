@@ -322,7 +322,11 @@ CREATE TABLE `characterskill` (
 
 LOCK TABLES `characterskill` WRITE;
 /*!40000 ALTER TABLE `characterskill` DISABLE KEYS */;
-INSERT INTO `characterskill` VALUES (1,1,3,0,'0000-00-00 00:00:00'),(2,1,4,1,'0000-00-00 00:00:00'),(3,1,1,2,'0000-00-00 00:00:00'),(4,1,2,3,'0000-00-00 00:00:00');
+INSERT INTO `characterskill` VALUES 
+	(1,1,1,1,'0000-00-00 00:00:00'),
+	(2,1,2,2,'0000-00-00 00:00:00'),
+	(3,1,3,3,'0000-00-00 00:00:00'),
+	(4,1,4,4,'0000-00-00 00:00:00');
 /*!40000 ALTER TABLE `characterskill` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -942,7 +946,7 @@ CREATE TABLE `skillstatistic` (
   `StatisticID` bigint(20) NOT NULL,
   `SkillID` bigint(20) NOT NULL,
   `SkillStatisticIsAdd` tinyint(1) NOT NULL,
-  `SkillStatisticDuration` bigint(20) NOT NULL,
+  `SkillStatisticDuration` BIGINT(20) NOT NULL,
   PRIMARY KEY (`SkillStatisticID`),
   KEY `fk_SkillStatistics_Statistic1_idx` (`StatisticID`),
   KEY `fk_SkillStatistics_Skill1_idx` (`SkillID`),
@@ -957,7 +961,7 @@ CREATE TABLE `skillstatistic` (
 
 LOCK TABLES `skillstatistic` WRITE;
 /*!40000 ALTER TABLE `skillstatistic` DISABLE KEYS */;
-INSERT INTO `skillstatistic` VALUES (1,5,1,1,-1);
+INSERT INTO `skillstatistic` VALUES (1,4,1,1, -1);
 /*!40000 ALTER TABLE `skillstatistic` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -969,8 +973,7 @@ CREATE TABLE Statistic (
 	StatisticIsActive BOOLEAN NOT NULL
 );
 
-
-INSERT INTO Statistic VALUES (1, 1), (2, 1), (3, 1);
+INSERT INTO Statistic VALUES (1, 1), (2, 1), (3, 1), (4, 1);
 
 DROP TABLE IF EXISTS StatisticAttribute;
 
@@ -1002,7 +1005,10 @@ INSERT INTO StatisticAttribute VALUES
 	(12, 3, 8, 20),
 	(13, 3, 1, 5),
 	(14, 3, 2, 5),
-	(15, 3, 5, 5);
+	(15, 3, 5, 5),
+	-- skill
+	(16, 4, 1, 10)
+;
 
 DROP TABLE IF EXISTS StatisticName;
 

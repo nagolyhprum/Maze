@@ -3,6 +3,22 @@ var cid = 1;
 var Server = (function() {
 	var Server = {};
 	
+	Server.getSkillMapping = function(success) {
+		ajax("php/getSkillMapping.php", {cid:cid}, function(sm) {
+			for(var i = 0; i < sm.length; i++) {
+				if(sm[i]) {
+					for(var j = 0; j < skills.length; j++) {
+						if(sm[i] === skills[j].id) {
+							sm[i] = skills[j];
+							break;
+						}
+					}
+				}
+			}
+			success(sm);
+		});
+	};
+	
 	Server.setSkillIndex = function(sid, index, success) {
 		ajax("php/setSkillIndex.php", {sid:sid,index:index,cid:cid}, success);
 	};
@@ -347,92 +363,8 @@ var Server = (function() {
 		});
 	};
 
-	Server.getSkills = function() {
-		return [{
-			id : 1,
-			name : "Power Thrust",
-			description : "A powerful thrusting attack that causes significantly more damage than usual.",
-			action : "thrust",
-			image : {
-				icon : loadImage("skills/thrust/normal.png")
-			},
-			type : "active",
-			area : 1,
-			duration : 0,
-			isCool : true,
-			cooldown : 5000,
-			energy : 10,
-			add : [new Statistics({
-				strength : {
-					current : 10,
-					max : 10
-				},
-				duration : 5000
-			})],
-			multiply : []
-		}, {
-			id : 2,
-			name : "Heal",
-			description : "A spell that grants new life to the caster and a resistance to fire magic.",
-			action : "spellcast",
-			image : {
-				icon : loadImage("skills/resist/fire.png")
-			},
-			type : "active",
-			area : 0,
-			isCool : true,
-			cooldown : 10000,
-			energy : 10,
-			add : [new Statistics({
-				health : {
-					current : 10
-				},
-				duration : 1 / 0
-			})],
-			multiply : []
-		}, {
-			id : 3,
-			name : "Fire Arrow",
-			description : "The player's arrows cause fire damage.",
-			action : "bow",
-			image : {
-				icon : loadImage("skills/wave/fire.png")
-			},
-			type : "active",
-			area : 7,
-			isCool : true,
-			cooldown : 1000,
-			energy : 4,
-			add : [new Statistics({
-				strength : {
-					current : 10,
-					max : 10
-				},
-				duration : 0
-			})],
-			multiply : []
-		}, {
-			id : 4,
-			name : "Fire Wave",
-			description : "Summons a wave of fire around the caster.",
-			action : "spellcast",
-			image : {
-				icon : loadImage("skills/breath/fire.png")
-			},
-			type : "active",
-			area : -7,
-			isCool : true,
-			cooldown : 1000,
-			energy : 4,
-			add : [new Statistics({
-				intelligence : {
-					current : 10,
-					max : 10
-				},
-				duration : 0
-			})],
-			multiply : []
-		}];
+	Server.getSkills = function(success) {
+		ajax("php/getSkills.php", {cid:cid}, success);
 	};
 	
 	Server.getBehaviors = function() {
@@ -575,7 +507,7 @@ tileset = new TileSet({
 	src : "tiles.gif"
 }),
 statisticsPoints = 0,
-skills = Server.getSkills(),
+skills = [],
 canvas,
 context,
 background = loadImage("background.jpg"),
@@ -613,4 +545,21 @@ Server.getCharacter(function(c) {
 	character = c;
 	character.events = new EventHandler();
 	unlock("character", 4);
+});
+
+Server.getSkills(function(s) {
+	var i = 0, j, r;
+	for(; i < s.length; i++) {
+		s[i].image.icon = loadImage(s[i].image.icon);
+		r = s[i].add;
+		for(j = 0; j < r.length; j++) {
+			r[j] = new Statistics(r[j]);
+		}
+		r = s[i].multiply;
+		for(j = 0; j < r.length; j++) {
+			r[j] = new Statistics(r[j]);
+		}
+	}
+	skills = s;
+	unlock("skills", 1);
 });
