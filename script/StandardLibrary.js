@@ -76,7 +76,7 @@ function getDrawingOrder(type) {
 function unequip(type, index) {
 	var equipped = equipment_items[type].item;
 	if(index !== -1) {
-		if(equipped !== undefined) {
+		if(equipped) {
 			var sn = Statistics.getStatisticNames();
 			for(var i = 0; i < sn.length; i++) {
 				var name = sn[i];
@@ -218,6 +218,10 @@ Sound.music("music/dungeon");
 var loadImage = (function() {
 	var images = {}, events = {};
 	return function(src, complete) {
+		if(src === undefined) {
+			console.log("undefined?");
+			return;
+		}
 		src = loadImage.root + src;
 		var image = images[src], event = events[src];
 		if(!image) {

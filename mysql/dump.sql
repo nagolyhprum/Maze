@@ -761,7 +761,7 @@ CREATE TABLE `itemmodelimage` (
 
 LOCK TABLES `itemmodelimage` WRITE;
 /*!40000 ALTER TABLE `itemmodelimage` DISABLE KEYS */;
-INSERT INTO `itemmodelimage` VALUES (1,214,1,1,7,4);
+INSERT INTO `itemmodelimage` VALUES (1,214,1,1,6,4);
 /*!40000 ALTER TABLE `itemmodelimage` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1528,12 +1528,78 @@ DELIMITER ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+
 DELIMITER ;;
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getCharacterAssultInfo`(cid BIGINT, uid BIGINT, skill BIGINT)
-BEGIN
+DROP PROCEDURE IF EXISTS getCharacterAssultInfo
+
+;;
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getCharacterAssultInfo`(cid BIGINT, uid BIGINT, ind BIGINT)
+BEGIN	
+	DECLARE attack VARCHAR(32);
+	DECLARE area, sid BIGINT;
+	-- get skill
 	SELECT
-		IFNULL(`at`.AttackTypeName, "slash") as AttackTypeName,
+		s.SkillArea as Area,
+		cs.CharacterSkillID,
+		at.AttackTypeName
+	FROM
+		`Character` as c
+	INNER JOIN
+		CharacterSkill as cs
+	ON
+		cs.CharacterID=c.CharacterID
+	INNER JOIN
+		Skill as s
+	ON
+		s.SkillID=cs.SkillID 
+	LEFT JOIN
+		AttackType as at
+	ON
+		at.AttackTypeID=s.AttackTypeID
+	WHERE
+		c.CharacterID=cid AND c.UserID=uid AND cs.CharacterSkillIndex=ind AND ind IS NOT NULL
+	INTO
+		area, sid, attack;
+	if sid IS NULL THEN
+		SELECT 
+			IFNULL(at.AttackTypeName, "slash") as attack,
+			IFNULL(im.ItemModelArea, 1) as area
+		FROM 
+			`Character` as c
+		LEFT JOIN
+			ItemInEquipment as iie
+		ON
+			c.CharacterID=iie.CharacterID
+		LEFT JOIN
+			Item as i
+		ON
+			i.ItemID=iie.ItemID
+		LEFT JOIN
+			ItemModel as im
+		ON
+			im.ItemModelID=i.ItemModelID
+		LEFT JOIN
+			ItemType as it
+		ON
+			it.ItemTypeID=im.ItemTypeID
+		LEFT JOIN
+			AttackType as at
+		ON
+			im.AttackTypeID=at.AttackTypeID
+		WHERE
+			c.CharacterID=cid AND c.UserID=uid AND (at.AttackTypeName="slash" OR at.AttackTypeName IS NULL)
+		ORDER BY
+			im.ItemModelWeight
+		LIMIT
+			1
+		INTO
+			attack, area;
+	END IF;
+	SELECT area, attack;
+	-- get enemy and character info
+	SELECT
 		eir.EnemyInRoomRow,
 		eir.EnemyInRoomColumn,
 		eir.EnemyInRoomID,
@@ -1544,37 +1610,22 @@ BEGIN
 		getCharacterCurrentStatistic(c.CharacterID, "intelligence") as StatisticIntelligence,
 		getStatistic(eir.EnemyInRoomStatistics, "defense") as StatisticDefense,
 		getStatistic(eir.EnemyInRoomStatistics, "resistance") as StatisticResistance,
-		getStatistic(eir.EnemyInRoomStatistics, "health") as StatisticHealth,
-		IFNULL(im.ItemModelArea, 1) as ItemModelArea
+		getStatistic(eir.EnemyInRoomStatistics, "health") as StatisticHealth
 	FROM
-		ItemType as it
-	INNER JOIN
-		ItemModel as im
-	ON
-		it.ItemTypeID=im.ItemTypeID
-	INNER JOIN
-		AttackType as `at`
-	ON
-		at.AttackTypeID=im.ItemModelID
-	INNER JOIN
-		Item as i
-	ON
-		i.ItemModelID=im.ItemModelID
-	INNER JOIN
-		ItemInEquipment as iie
-	ON
-		iie.ItemID=i.ItemID
-	RIGHT JOIN
 		`Character` as c
-	ON
-		c.CharacterID=iie.CharacterID
 	INNER JOIN
 		EnemyInRoom as eir
 	ON
 		eir.RoomID=c.RoomID
 	WHERE
-		(it.ItemTypeName='mainhand' OR it.ItemTypeName IS NULL) AND c.CharacterID=cid AND c.UserID=uid AND getStatistic(eir.EnemyInRoomStatistics, "health") > 0;
+		c.CharacterID=cid 
+			AND 
+		c.UserID=uid 
+			AND
+		getStatistic(eir.EnemyInRoomStatistics, "health") > 0;
 END ;;
+
+
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;

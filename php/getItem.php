@@ -32,7 +32,7 @@
 		if($result = mysqli_store_result($c)) {
 			while($r = mysqli_fetch_assoc($result)) {
 				$item[$r["AttackTypeName"]] = array(
-					"name" => $r["ImageName"],
+					"src" => $r["ImageName"],
 					"rows" => (int)$r["ItemModelImageRows"],
 					"columns" => (int)$r["ItemModelImageColumns"]
 				);

@@ -15,13 +15,13 @@
 		mysqli_next_result($c);
 		if($result = mysqli_store_result($c)) {
 			while($r = mysqli_fetch_assoc($result)) {
-				$character["statistics"][$r["StatisticNameValue"]]["current"] = $r["StatisticAttributeValue"];
+				$character["statistics"][$r["StatisticNameValue"]]["current"] = (int)$r["StatisticAttributeValue"];
 			}
 		}
 		mysqli_next_result($c);
 		if($result = mysqli_store_result($c)) {
 			while($r = mysqli_fetch_assoc($result)) {
-				$character["statistics"][$r["StatisticNameValue"]]["max"] = $r["StatisticAttributeValue"];
+				$character["statistics"][$r["StatisticNameValue"]]["max"] = (int)$r["StatisticAttributeValue"];
 			}
 		}
 		mysqli_next_result($c);

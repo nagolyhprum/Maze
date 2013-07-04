@@ -25,6 +25,10 @@
 				$skill = $skill ? $skill : "null";
 				mysqli_multi_query($c, "CALL getCharacterAssultInfo(" . mysqli_real_escape_string($c, $cid) . ", " . mysqli_real_escape_string($c, $uid) . ", " . mysqli_real_escape_string($c, $skill) . ")");
 				if($result = mysqli_store_result($c)) {
+					$attackarea = mysqli_fetch_assoc($result);
+				}
+				mysqli_next_result($c);
+				if($result = mysqli_store_result($c)) {
 					if($r = mysqli_fetch_assoc($result)) {
 						$character = array(
 							"row" => (int)$r["CharacterRow"],
@@ -32,8 +36,8 @@
 							"direction" => (int)$r["CharacterDirection"],
 							"strength" => (int)$r["StatisticStrength"],
 							"intelligence" => (int)$r["StatisticIntelligence"],
-							"area" => (int)$r["ItemModelArea"],
-							"attack" => $r["AttackTypeName"]
+							"area" => (int)$attackarea["area"],
+							"attack" => $attackarea["attack"]
 						);
 						do {
 							$tiles[$r["EnemyInRoomRow"]][$r["EnemyInRoomColumn"]] = array(
