@@ -1531,14 +1531,14 @@ DELIMITER ;
 
 DELIMITER ;;
 
-DROP PROCEDURE IF EXISTS getCharacterAssultInfo
+DROP PROCEDURE IF EXISTS getItemSkillInfo
 
 ;;
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getCharacterAssultInfo`(cid BIGINT, uid BIGINT, ind BIGINT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getItemSkillInfo`(cid BIGINT, uid BIGINT, ind BIGINT)
 BEGIN	
-	DECLARE attack VARCHAR(32);
-	DECLARE area, sid BIGINT;
+	DECLARE itemAttack, skillAttack VARCHAR(32);
+	DECLARE itemArea, skillArea, sid BIGINT;
 	-- get skill
 	SELECT
 		s.SkillArea as Area,
@@ -1561,43 +1561,52 @@ BEGIN
 	WHERE
 		c.CharacterID=cid AND c.UserID=uid AND cs.CharacterSkillIndex=ind AND ind IS NOT NULL
 	INTO
-		area, sid, attack;
-	if sid IS NULL THEN
-		SELECT 
-			IFNULL(at.AttackTypeName, "slash") as attack,
-			IFNULL(im.ItemModelArea, 1) as area
-		FROM 
-			`Character` as c
-		LEFT JOIN
-			ItemInEquipment as iie
-		ON
-			c.CharacterID=iie.CharacterID
-		LEFT JOIN
-			Item as i
-		ON
-			i.ItemID=iie.ItemID
-		LEFT JOIN
-			ItemModel as im
-		ON
-			im.ItemModelID=i.ItemModelID
-		LEFT JOIN
-			ItemType as it
-		ON
-			it.ItemTypeID=im.ItemTypeID
-		LEFT JOIN
-			AttackType as at
-		ON
-			im.AttackTypeID=at.AttackTypeID
-		WHERE
-			c.CharacterID=cid AND c.UserID=uid AND (at.AttackTypeName="slash" OR at.AttackTypeName IS NULL)
-		ORDER BY
-			im.ItemModelWeight
-		LIMIT
-			1
-		INTO
-			attack, area;
-	END IF;
-	SELECT area, attack;
+		skillArea, sid, skillAttack;
+	-- get item
+	SELECT 
+		IFNULL(at.AttackTypeName, "slash") as attack,
+		IFNULL(im.ItemModelArea, 1) as area
+	FROM 
+		`Character` as c
+	LEFT JOIN
+		ItemInEquipment as iie
+	ON
+		c.CharacterID=iie.CharacterID
+	LEFT JOIN
+		Item as i
+	ON
+		i.ItemID=iie.ItemID
+	LEFT JOIN
+		ItemModel as im
+	ON
+		im.ItemModelID=i.ItemModelID
+	LEFT JOIN
+		ItemType as it
+	ON
+		it.ItemTypeID=im.ItemTypeID
+	LEFT JOIN
+		AttackType as at
+	ON
+		im.AttackTypeID=at.AttackTypeID
+	WHERE
+		c.CharacterID=cid AND c.UserID=uid AND (at.AttackTypeName="slash" OR at.AttackTypeName IS NULL)
+	ORDER BY
+		im.ItemModelWeight
+	LIMIT
+		1
+	INTO
+		itemAttack, itemArea;
+	SELECT itemArea, itemAttack, skillAttack, skillArea, sid;
+END
+
+;;
+
+DROP PROCEDURE IF EXISTS getCharacterEnemyInfo
+
+;;
+
+CREATE PROCEDURE getCharacterEnemyInfo(cid BIGINT, uid BIGINT)
+BEGIN
 	-- get enemy and character info
 	SELECT
 		eir.EnemyInRoomRow,

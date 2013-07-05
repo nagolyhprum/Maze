@@ -19,15 +19,64 @@
 		$count = mysqli_affected_rows($c);
 		mysqli_stmt_close($stmt);
 		if($count === 1) {
-			if($skill) {
-				$return = array();
-			} else { //weapon
-				$skill = $skill ? $skill : "null";
-				mysqli_multi_query($c, "CALL getCharacterAssultInfo(" . mysqli_real_escape_string($c, $cid) . ", " . mysqli_real_escape_string($c, $uid) . ", " . mysqli_real_escape_string($c, $skill) . ")");
-				if($result = mysqli_store_result($c)) {
-					$attackarea = mysqli_fetch_assoc($result);
+			//set up variables
+			$stmt = mysqli_prepare($c, "SET @uid=?, @cid=?, @ind=?;");
+			mysqli_stmt_bind_param($stmt, "iii", $uid, $cid, $skill);
+			mysqli_stmt_execute($stmt);
+			mysqli_stmt_close($stmt);
+			//do stuff with skills
+			mysqli_multi_query($c, "CALL getItemSkillInfo(@cid, @uid, @ind)");
+			$result = mysqli_store_result($c);
+			$info = mysqli_fetch_assoc($result);
+			mysqli_free_result($result);
+			while(mysqli_more_results($c) && mysqli_next_result($c)) {
+				if($extraResult = mysqli_store_result($c)){
+					mysqli_free_result($extraResult);
 				}
-				mysqli_next_result($c);
+			}
+			if($skill && (($info["itemAttack"] === $info["skillAttack"]) || !$info["skillAttack"])) {
+				$stmt = mysqli_prepare($c, "
+					UPDATE
+						`Character` as c
+					INNER JOIN
+						CharacterSkill as cs						
+					ON
+						cs.CharacterID=cs.CharacterID
+					INNER JOIN
+						Skill as s
+					ON
+						s.SkillID=cs.SkillID
+					INNER JOIN
+						StatisticAttribute as sa
+					ON
+						sa.StatisticID=c.CharacterCurrentStatisticID
+					INNER JOIN
+						StatisticName as sn
+					ON
+						sn.StatisticNameID=sa.StatisticNameID
+					SET
+						cs.CharacterSkillCanUse=getCurrentTimeMillis()+s.SkillCooldown,
+						sa.StatisticAttributeValue = sa.StatisticAttributeValue - s.SkillEnergy
+					WHERE
+						c.UserID=? 
+							AND 
+						c.CharacterID=? 
+							AND 
+						CharacterSkillIndex=? 
+							AND 
+						CharacterSkillCanUse <= getCurrentTimeMillis() 
+							AND 
+						getCharacterCurrentStatistic(c.CharacterCurrentStatisticID, 'energy') >= s.SkillEnergy	
+							AND
+						sn.StatisticNameValue='energy'
+				");				
+				mysqli_stmt_bind_param($stmt, "iii", $uid, $cid, $skill);
+				mysqli_stmt_execute($stmt);
+				mysqli_stmt_close($stmt);
+			} 
+			if(!$skill || ($skill && mysqli_affected_rows($c))) {
+				$skill = $skill ? $skill : "null";
+				mysqli_multi_query($c, "CALL getCharacterEnemyInfo(@cid, @uid)");				
 				if($result = mysqli_store_result($c)) {
 					if($r = mysqli_fetch_assoc($result)) {
 						$character = array(
@@ -36,8 +85,8 @@
 							"direction" => (int)$r["CharacterDirection"],
 							"strength" => (int)$r["StatisticStrength"],
 							"intelligence" => (int)$r["StatisticIntelligence"],
-							"area" => (int)$attackarea["area"],
-							"attack" => $attackarea["attack"]
+							"area" => (int)($info["sid"] ? $info["skillArea"] : $info["itemArea"]),
+							"attack" => ($info["sid"] ? $info["skillAttack"] : $info["itemAttack"])
 						);
 						do {
 							$tiles[$r["EnemyInRoomRow"]][$r["EnemyInRoomColumn"]] = array(
@@ -112,6 +161,7 @@
 					}
 					$return = $enemies;
 				}
+			} else { //reset character
 			}
 		}
 		return $return ? $return : array("enemies" => array(), "items" => array());

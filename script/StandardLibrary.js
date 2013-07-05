@@ -514,13 +514,13 @@ Character.prototype.moveBy = function(horizontal, vertical, complete) {
 	});
 };
 
-Character.prototype.attack = function(complete) {
+Character.prototype.attack = function(action, complete) {
 	var me = this, column = -1;
 	Sound.effect(this.sounds.slash[Math.floor(this.sounds.slash.length * Math.random())]);
 	this.tween.push({
 		init : function() {
 			me.display.column = 0;
-			me.active = me[(me === character && equipment_items.mainhand.item) ? equipment_items.mainhand.item.attack : me.attackstyle];
+			me.active = me[(me === character && equipment_items.mainhand.item) ? (action || equipment_items.mainhand.item.attack) : (action || me.attackstyle)];
 		},
 		change : function() {
 			column++;

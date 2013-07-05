@@ -31,36 +31,38 @@ $(function() {
 		var skill = skillMapping[(key + 9) % 10], i;
 		if(skill && !character.tween.isTweening()) {
 			if(skill.isCool) {
-				if(equipment_items.mainhand.item && equipment_items.mainhand.item.attack === skill.action) {
+				if((equipment_items.mainhand.item && equipment_items.mainhand.item.attack === skill.action) || skill.action === null) {
 					if(character.statistics.getCurrent("energy") >= skill.energy) {
-						addBehavior("Skill", skill.name);
-						character.statistics.energy.current -= skill.energy;
-						character.attack();
-						for(i = 0; i < skill.add.length; i++) {
-							character.statistics.add(skill.add[i], true);
-						}
-						for(i = 0; i < skill.multiply.length; i++) {
-							character.statistics.multiply(skill.multiply[i]);
-						}
-						if(skill.area > 0) { //then it is a linear skill
-							sendDamage(character.getDirection(), skill);
-						} else if(skill.area < 0) { //then it is a circular skill							
-							sendDamage({column : 1, row : 0}, skill);
-							sendDamage({column : -1, row : 0}, skill);
-							sendDamage({column : 0, row : 1}, skill);
-							sendDamage({column : 0, row : -1}, skill);
-						}  //otherwise this is a self skill
-						skill.lastUse = new Date().getTime();
-						skill.isCool = false;
-						setTimeout(function() {
-							skill.isCool = true;
-						}, skill.cooldown);					
-						for(i = 0; i < skill.add.length; i++) {
-							remove(skill.add[i]);
-						}
-						for(i = 0; i < skill.multiply.length; i++) {
-							remove(multiply.add[i]);
-						}
+						Server.sendDamage(skill.id, function() {
+							addBehavior("Skill", skill.name);
+							character.statistics.energy.current -= skill.energy;
+							character.attack(skill.action || "spellcast");
+							for(i = 0; i < skill.add.length; i++) {
+								character.statistics.add(skill.add[i], true);
+							}
+							for(i = 0; i < skill.multiply.length; i++) {
+								character.statistics.multiply(skill.multiply[i]);
+							}
+							if(skill.area > 0) { //then it is a linear skill
+								sendDamage(character.getDirection(), skill);
+							} else if(skill.area < 0) { //then it is a circular skill							
+								sendDamage({column : 1, row : 0}, skill);
+								sendDamage({column : -1, row : 0}, skill);
+								sendDamage({column : 0, row : 1}, skill);
+								sendDamage({column : 0, row : -1}, skill);
+							}  //otherwise this is a self skill
+							skill.lastUse = new Date().getTime();
+							skill.isCool = false;
+							setTimeout(function() {
+								skill.isCool = true;
+							}, skill.cooldown);					
+							for(i = 0; i < skill.add.length; i++) {
+								remove(skill.add[i]);
+							}
+							for(i = 0; i < skill.multiply.length; i++) {
+								remove(multiply.add[i]);
+							}
+						});
 					} else {
 						alert("Not enough energy.");
 					}
