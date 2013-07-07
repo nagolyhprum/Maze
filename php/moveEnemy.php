@@ -1,6 +1,9 @@
 <?php
 	require_once("../admin/db.php");
 	
+	echo json_encode(array("character" => $character, "enemies" => $enemies, "cts" => $cts));
+	exit;
+	
 	function moveEnemy($c, $cid, $uid) {
 		//get the current time millis
 		$stmt = mysqli_prepare($c, "SELECT getCurrentTimeMillis();");

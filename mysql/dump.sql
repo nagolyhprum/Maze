@@ -141,7 +141,7 @@ DROP TABLE IF EXISTS `character`;
 CREATE TABLE `character` (
   `CharacterID` bigint(20) NOT NULL AUTO_INCREMENT,
   `CharacterName` varchar(64) NOT NULL,
-  `CharacterPortrait` bigint(20) NOT NULL,
+  `ImageID` bigint(20) NOT NULL,
   `CharacterCurrentStatisticID` bigint(20) NOT NULL,
   `CharacterMaxStatisticID` bigint(20) NOT NULL,
   `UserID` bigint(20) NOT NULL,
@@ -153,12 +153,12 @@ CREATE TABLE `character` (
   `CharacterCanUse` BIGINT NOT NULL DEFAULT 0,
 	`CharacterUsedAt` BIGINT DEFAULT NULL,
   PRIMARY KEY (`CharacterID`),
-  KEY `fk_Character_Image1_idx` (`CharacterPortrait`),
+  KEY `fk_Character_Image1_idx` (`ImageID`),
   KEY `fk_Character_Statistic1_idx` (`CharacterCurrentStatisticID`),
   KEY `fk_Character_Statistic2_idx` (`CharacterMaxStatisticID`),
   KEY `fk_Character_User1_idx` (`UserID`),
   KEY `fk_Character_Room1_idx` (`RoomID`),
-  CONSTRAINT `fk_Character_Image1` FOREIGN KEY (`CharacterPortrait`) REFERENCES `image` (`ImageID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Character_Image1` FOREIGN KEY (`ImageID`) REFERENCES `image` (`ImageID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Character_Room1` FOREIGN KEY (`RoomID`) REFERENCES `room` (`RoomID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Character_Statistic1` FOREIGN KEY (`CharacterCurrentStatisticID`) REFERENCES `statistic` (`StatisticID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Character_Statistic2` FOREIGN KEY (`CharacterMaxStatisticID`) REFERENCES `statistic` (`StatisticID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -443,21 +443,21 @@ DROP TABLE IF EXISTS `enemyinroom`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `enemyinroom` (
   `EnemyInRoomID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `EnemyInRoomStatistics` bigint(20) NOT NULL,
+  `StatisticID` bigint(20) NOT NULL,
   `EnemyID` bigint(20) NOT NULL,
   `RoomID` bigint(20) NOT NULL,
   `EnemyInRoomColumn` bigint(20) NOT NULL,
   `EnemyInRoomRow` bigint(20) NOT NULL,
-  `EnemyInRoomDirection` bigint(20) NOT NULL,
+  `EnemyInRoomDirection` bigint(20) NOT NULL DEFAULT 2,
 	`EnemyInRoomCanUse` BIGINT NOT NULL DEFAULT 0,
 	`EnemyInRoomUsedAt` BIGINT DEFAULT NULL,
   PRIMARY KEY (`EnemyInRoomID`),
   KEY `fk_EnemyInRoom_Room1_idx` (`RoomID`),
   KEY `fk_EnemyInRoom_Enemy1_idx` (`EnemyID`),
-  KEY `fk_EnemyInRoom_Statistic1_idx` (`EnemyInRoomStatistics`),
+  KEY `fk_EnemyInRoom_Statistic1_idx` (`StatisticID`),
   CONSTRAINT `fk_EnemyInRoom_Enemy1` FOREIGN KEY (`EnemyID`) REFERENCES `enemy` (`EnemyID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_EnemyInRoom_Room1` FOREIGN KEY (`RoomID`) REFERENCES `room` (`RoomID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_EnemyInRoom_Statistic1` FOREIGN KEY (`EnemyInRoomStatistics`) REFERENCES `statistic` (`StatisticID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_EnemyInRoom_Statistic1` FOREIGN KEY (`StatisticID`) REFERENCES `statistic` (`StatisticID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -799,7 +799,7 @@ DROP TABLE IF EXISTS `map`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `map` (
   `MapID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `MapIsActive` tinyint(1) NOT NULL,
+  `MapIsActive` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`MapID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -844,7 +844,7 @@ CREATE TABLE `room` (
   `MapID` bigint(20) NOT NULL,
   `RoomColumn` bigint(20) NOT NULL,
   `RoomRow` bigint(20) NOT NULL,
-  `RoomIsDiscovered` tinyint(1) NOT NULL,
+  `RoomIsDiscovered` tinyint(1) NOT NULL DEFAULT 0,
   `RoomWalls` bigint(20) NOT NULL,
   PRIMARY KEY (`RoomID`),
   KEY `fk_Room_Map1_idx` (`MapID`),
@@ -972,7 +972,7 @@ DROP TABLE IF EXISTS Statistic;
 
 CREATE TABLE Statistic (
 	StatisticID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	StatisticIsActive BOOLEAN NOT NULL
+	StatisticIsActive BOOLEAN NOT NULL DEFAULT 1
 );
 
 INSERT INTO Statistic VALUES (1, 1), (2, 1), (3, 1), (4, 1);
@@ -991,11 +991,11 @@ CREATE TABLE StatisticAttribute (
 INSERT INTO StatisticAttribute VALUES
 --  id, s, sn, v 
 	-- current
-	(1, 1, 1, 10),
-	(2, 1, 2, 20),
-	(3, 1, 5, 20),
-	(4, 1, 7, 100),
-	(5, 1, 8, 100),
+	(1, 1, 1, 0),
+	(2, 1, 2, 0),
+	(3, 1, 5, 0),
+	(4, 1, 7, 0),
+	(5, 1, 8, 0),
 	-- max
 	(6, 2, 1, 10),
 	(7, 2, 2, 20),

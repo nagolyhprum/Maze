@@ -1,229 +1,74 @@
 <?php
-	require_once("../admin/db.php");
 
-	function createMap($c) {
-		$stmt = mysqli_prepare($c, "INSERT INTO Map");
-		mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
-		return mysqli_insert_id($c);		
-	}
+	require_once("classes/DAO.php");
+		
+	$mapmodel = 1;
 	
-	function getMapModel($c, $id) {
-		$mapmodel = array();
-		$stmt = mysqli_prepare($c, "SELECT MapModelRows, MapModelColumns FROM MapModel WHERE MapModelID=?");
-		mysqli_stmt_bind_param($stmt, "i", $id);
-		mysqli_stmt_bind_result($stmt, $mapmodel["rows"], $mapmodel["columns"]);
-		mysqli_stmt_execute($stmt);
-		mysqli_stmt_fetch($stmt);
-		mysqli_stmt_close($stmt);
-		return $mapmodel;
-	}	
-	
-	function getRoomModelInMapModel($c, $id) {
-		$roommodels = array();
-		$stmt = mysqli_prepare($c, "SELECT RoomModelID, RoomModelInMapModelCount FROM RoomModelInMapModel WHERE MapModelID=?");
-		mysqli_stmt_bind_param($stmt, "i", $id);
-		mysqli_stmt_bind_result($stmt, $room, $count);
-		mysqli_stmt_execute($stmt);
-		while(mysqli_stmt_fetch($stmt)) {
-			while($count > 0) {
-				$roommodels[] = $room;
-				$count--;
-			}
-		}
-		mysqli_stmt_close($stmt);
-		return $roommodels;
-	}
-	
-	function getEnemyInRoomModel($c, $rooms) {
-		$enemies = array();
-		$stmt = mysqli_prepare($c, "
-			SELECT 
-				StatisticID, 
-				eirm.EnemyID, 
-				EnemyInRoomModelDirection, 
-				EnemyInRoomModelRow, 
-				EnemyInRoomModelColumn 
-			FROM 
-				EnemyInRoomModel as eirm
-			INNER JOIN
-				Enemy as e
-			ON
-				eirm.EnemyID=e.EnemyID
-			WHERE 
-				RoomModelID=?");
-		mysqli_stmt_bind_param($stmt, "i", $room);
-		mysqli_stmt_bind_result($stmt, $statistics, $enemy, $direction, $row, $column);
-		for($i = 0; $i < count($rooms); $i++) {
-			if(!$enemies["" . $rooms[$i]]) {
-				$r = array();
-				$room = $rooms[$i];
-				mysqli_stmt_execute($stmt);
-				while(mysqli_stmt_fetch($stmt)) {
-					$r[] = array(
-						"statistics" => $statistics,
-						"enemy" => $enemy,
-						"row" => $row,
-						"column" => $column,
-						"direction" => $direction
-					);
+	$character = new Character();
+	if($character->isValid() && $character->RoomID === NULL) { //make sure this character is valid
+		$mapmodel = new DAO("MapModel", $mapmodel);	//get the requested mapmodel
+		if($mapmodel->isValid()) { //if the map model is valid
+			foreach($mapmodel->getMany("RoomModelInMapModel") as $rmimm) { //go through all of the room models in this map model
+				foreach($rmimm->getOne("RoomModel")->getMany("EnemyInRoomModel") as $eirm) { //go through all of the enemies in each room model
+					$enemy = $eirm->getOne("Enemy"); //get the associated enemy
+					//set up simple data
+					$enemy = array(
+						"enemy" => $eirm->EnemyID,
+						"statistic" => $enemy->StatisticID,
+						"column" => $eirm->EnemyInRoomModelColumn,
+						"row" => $eirm->EnemyInRoomModelRow
+					);					
+					$enemies[] = $enemy;
 				}
-				$enemies["" . $rooms[$i]] = $r;
-			}
-		}
-		mysqli_stmt_close($stmt);
-		return $enemies;
-	}
-	
-	function shouldMakeMapForCharacter($c, $user, $character) {
-		$return = false;
-		$stmt = mysqli_prepare($c, "
-			SELECT 
-				RoomID
-			FROM 
-				`Character` as c
-			INNER JOIN
-				User as u
-			ON
-				u.UserID=c.UserID
-			WHERE
-				c.UserID=? AND c.CharacterID=?");
-		mysqli_stmt_bind_param($stmt, "ii", $user, $character);
-		mysqli_stmt_bind_result($stmt, $id);
-		mysqli_stmt_execute($stmt);
-		if(mysqli_stmt_fetch($stmt)) {
-			$return = $id === NULL;
-		}
-		mysqli_stmt_close($stmt);
-		return $return;
-	}
-	
-	function createMapWithMapModel($c, $user, $character, $mapmodel) {
-		if(shouldMakeMapForCharacter($c, $user, $character)) {
-			$mapmodel = getMapModel($c, $mapmodel);
-			$roommodelinmapmodel = getRoomModelInMapModel($c, $mapmodel);
-			$enemyinroommodel = getEnemyInRoomModel($c, $roommodelinmapmodel);		
-			$rooms = array();
-			$visited = array();
-			for($i = 0; $i < $mapmodel["rows"]; $i++) {
-				$rooms[$i] = array();
-				$visited[$i] = array();
-				for($j = 0; $j < $mapmodel["columns"]; $j++) {
-					$rooms[$i][$j] = array(
-						"walls" => WALL_ALL,
-						"enemies" => array()
-					);
-					if($i !==  0 || $j !== 0) {
-						$roommodel = array_splice($roommodelinmapmodel, mt_rand(0, count($roommodelinmapmodel) - 1), 1);
-						$eirm = $enemyinroommodel["" . $roommodel[0]];
-						for($k = 0; $k < count($eirm); $k++) {
-							$rooms[$i][$j]["enemies"][] = array(
-								"row" => $eirm[$k]["row"],
-								"column" => $eirm[$k]["column"],
-								"direction" => $eirm[$k]["direction"],
-								"statistics" => cloneStatistics($c, $eirm[$k]["statistics"]),
-								"enemy" => $eirm[$k]["enemy"]
-							);
-						}						
-					}
-					$visited[$i][$j] = false;
+				while($rmimm->RoomModelInMapModelCount > 0) { //add the room model for each count
+					$roommodel[] = $enemies;
+					--$rmimm->RoomModelInMapModelCount;
 				}
 			}
-			makeMap(0, 0, $mapmodel["rows"], $mapmodel["columns"], $rooms, $visited);			
-			//insert into the map
-			$stmt = mysqli_prepare($c, "INSERT INTO Map(MapIsActive) VALUES (1)");			
-			mysqli_stmt_execute($stmt);
-			mysqli_stmt_close($stmt);
-			$map = mysqli_insert_id($c);
-			//insert into the room in map
-			$stmt = mysqli_prepare($c, "INSERT INTO Room (RoomWalls, MapID, RoomColumn, RoomRow, RoomIsDiscovered) VALUES (?, ?, ?, ?, 0)");
-			mysqli_stmt_bind_param($stmt, "iiii", $walls, $map, $column, $row);
-			for($row = 0; $row < $mapmodel["rows"]; $row++) {			
-				for($column = 0; $column < $mapmodel["columns"]; $column++) {
-					$walls = $rooms[$row][$column]["walls"];
-					mysqli_stmt_execute($stmt);
-					$rooms[$row][$column]["id"] = mysqli_insert_id($c);
-				}
-			}
-			mysqli_stmt_close($stmt);
-			//place the character in 0, 0
-			$stmt = mysqli_prepare($c, "
-				UPDATE 
-					`character` as c
-				INNER JOIN
-					StatisticAttribute as maxs
-				ON
-					maxs.StatisticID=c.CharacterMaxStatisticID
-				INNER JOIN
-					StatisticAttribute as curs
-				ON
-					curs.StatisticID=c.CharacterCurrentStatisticID
-				SET 
-					c.CharacterColumn=" . floor(ROOM_COLUMNS / 2) . ", 
-					c.CharacterRow=" . floor(ROOM_ROWS / 2) . ", 
-					c.RoomID=?, 
-					c.CharacterDirection=" . DIRECTION_DOWN . ", 
-					c.CharacterDirection=2,
-					curs.StatisticAttributeValue = maxs.StatisticAttributeValue
-				WHERE 
-					c.CharacterID=? AND curs.StatisticNameID=maxs.StatisticNameID");
-			mysqli_stmt_bind_param($stmt, "ii", $rooms[0][0]["id"], $character);
-			mysqli_stmt_execute($stmt);
-			mysqli_stmt_close($stmt);
-			//update the character statistics and skills
-			//TODO
-			//insert into the enemy in room
-			$stmt = mysqli_prepare($c, "INSERT INTO EnemyInRoom (EnemyInRoomStatistics, EnemyID, RoomID, EnemyInRoomColumn, EnemyInRoomRow, EnemyInRoomDirection) VALUES (?, ?, ?, ?, ?, ?)");	
-			mysqli_stmt_bind_param($stmt, "iiiiii", $statistics, $enemy, $room, $column, $row, $direction);
-			for($r = 0; $r < $mapmodel["rows"]; $r++) {
-				for($col = 0; $col < $mapmodel["columns"]; $col++) {
-					$room = $rooms[$r][$col]["id"];
-					for($i = 0; $i < count($rooms[$r][$col]["enemies"]); $i++) {
-						$e = $rooms[$r][$col]["enemies"][$i];
-						$statistics = $e["statistics"];
-						$enemy = $e["enemy"];
-						$column = $e["column"];
-						$row = $e["row"];
-						$direction = $e["direction"];
-						mysqli_stmt_execute($stmt);
+			shuffle($roommodel); //randomize the room models
+			$map = new DAO("Map"); //make the map
+			$map->insert();			
+			makeMap(0, 0, $mapmodel->MapModelRows, $mapmodel->MapModelColumns, $rooms, $visited); //prepared the rooms for adding later
+			$room = new DAO("Room"); //dao for creating rooms
+			$room->MapID = $map->MapID; //for this map
+			for($room->RoomRow = 0; $room->RoomRow < $mapmodel->MapModelRows; $room->RoomRow++) { //go through all of the rows
+				for($room->RoomColumn = 0; $room->RoomColumn < $mapmodel->MapModelColumns; $room->RoomColumn++) { //and columns of this map
+					$room->RoomWalls = $rooms[$room->RoomRow][$room->RoomColumn]["walls"] ^ WALL_ALL; //create the room with this wall data
+					$room->insert();
+					if(!$character->RoomID) { //if this is the first room then put the character here
+						$character->RoomID = $room->RoomID;
+						$character->CharacterColumn = floor(ROOM_COLUMNS / 2);
+						$character->CharacterRow = floor(ROOM_ROWS / 2);
+						$character->CharacterDirection = DIRECTION_DOWN;
+						$character->update();
+						$current = $character->getOne("Statistic", "CharacterCurrentStatisticID")->getMany("StatisticAttribute");
+						$max = $character->getOne("Statistic", "CharacterMaxStatisticID")->getMany("StatisticAttribute");
+						while($current->valid() && $max->valid()) {
+							$c = $current->current();
+							$m = $max->current();
+							$c->StatisticAttributeValue = $m->StatisticAttributeValue;
+							$c->update();
+							$current->next();
+							$max->next();
+						}
+					} else { //otherwise put the enemies here
+						$enemyinroom = new DAO("EnemyInRoom"); //dao for adding enemies
+						$enemyinroom->RoomID = $room->RoomID; //into this room
+						for($i = 0; $i < count($roommodel[0]); $i++) { //go through all of the simplified arrays we made earlier
+							$eirm = $roommodel[0][$i];
+							$enemyinroom->EnemyInRoomColumn = $eirm["column"];
+							$enemyinroom->EnemyInRoomRow = $eirm["row"];
+							$enemyinroom->EnemyID = $eirm["enemy"];
+							$statistic = new DAO("Statistic", $eirm["statistic"]);
+							$attribute = $statistic->getMany("StatisticAttribute");						
+							$attribute->StatisticID = $enemyinroom->StatisticID = $statistic->insert()->StatisticID;
+							$attribute->insert();
+							$enemyinroom->insert();
+						}
+						array_shift($roommodel);
 					}
 				}
 			}
-			mysqli_stmt_close($stmt);
-		}
-	}
-	
-	function cloneStatistics($c, $id) {	
-		mysqli_query($c, "INSERT INTO Statistic(StatisticIsActive) VALUES (1)");
-		$newID = mysqli_insert_id($c);
-		$stmt = mysqli_prepare($c, "
-			INSERT INTO 
-				StatisticAttribute
-				(					
-					StatisticNameID,
-					StatisticAttributeValue,
-					StatisticID
-				) 
-			SELECT 				
-				StatisticNameID,
-				StatisticAttributeValue,
-				?
-			FROM 
-				StatisticAttribute
-			WHERE 
-				StatisticID=?");
-		mysqli_stmt_bind_param($stmt, "ii", $newID, $id);
-		mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
-		return $newID;
-	}
-	
-	function oppositeDirection($direction) {
-		switch($direction) {
-			case WALL_UP : return WALL_DOWN;
-			case WALL_RIGHT : return WALL_LEFT;
-			case WALL_DOWN : return WALL_UP;
-			case WALL_LEFT : return WALL_RIGHT;
 		}
 	}
 	
@@ -254,10 +99,13 @@
 			}
 		}
 	}
-	
-	$character = 1;
-	$mapmodel = 1;
-	$c = connect();
-	createMapWithMapModel($c, $USER, $character, $mapmodel);
-	close($c);
+
+	function oppositeDirection($direction) {
+		switch($direction) {
+			case WALL_UP : return WALL_DOWN;
+			case WALL_RIGHT : return WALL_LEFT;
+			case WALL_DOWN : return WALL_UP;
+			case WALL_LEFT : return WALL_RIGHT;
+		}
+	}
 ?>

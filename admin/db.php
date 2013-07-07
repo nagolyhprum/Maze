@@ -6,7 +6,6 @@
 	function close($c) {
 		mysqli_close($c);
 	}
-	
 	//WALLS
 	define("WALL_NONE", 0);
 	define("WALL_UP", 1);

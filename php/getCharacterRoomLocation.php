@@ -1,29 +1,11 @@
 <?php 
-	require_once("../admin/db.php");
-
-	function getCharacterRoomLocation($c, $cid, $uid) {
-		$stmt = mysqli_prepare($c, "
-			SELECT 
-				RoomColumn, 
-				RoomRow 
-			FROM 
-				`Character` as c
-			INNER JOIN
-				Room as r
-			ON
-				r.RoomID=c.RoomID
-			WHERE 
-				CharacterID=? AND UserID=?");
-		mysqli_stmt_bind_param($stmt, "ii", $cid, $uid);
-		mysqli_stmt_bind_result($stmt, $column, $row);
-		mysqli_stmt_execute($stmt);
-		mysqli_stmt_fetch($stmt);
-		mysqli_stmt_close($stmt);
-		return array("column" => $column, "row" => $row);
+	require_once("classes/DAO.php");
+	if(DB::connect()) {
+		$character = new Character();
+		if($character->isValid()) {
+			$room = $character->getOne("Room");
+			echo json_encode(array("column" => $room->RoomColumn, "row" => $room->RoomRow));	
+		}
+		DB::close();
 	}
-	
-	$cid = 1;
-	$c = connect();
-	echo json_encode(getCharacterRoomLocation($c, $cid, $USER));
-	close($c);
 ?>

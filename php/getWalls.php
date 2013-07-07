@@ -1,18 +1,16 @@
 <?php 
-	require_once("../admin/db.php");
+	require_once("classes/DAO.php");
 	
-	function getWalls($c, $uid, $cid) {
-		$stmt = mysqli_prepare($c, "SELECT getWalls(?, ?)");
-		mysqli_stmt_bind_param($stmt, "ii", $uid, $cid);		
-		mysqli_stmt_bind_result($stmt, $walls);
-		mysqli_stmt_execute($stmt);
-		mysqli_stmt_fetch($stmt);
-		mysqli_stmt_close($stmt);
-		return $walls;
+	if(DB::connect()) { 
+		$character = new Character(); //get the active character
+		if($character->isValid()) { //if the character is valid
+			$room = $character->getOne("Room");
+			if(!$room->RoomIsDiscovered) {
+				$room->RoomIsDiscovered = 1;
+				$room->update();
+			}
+			echo $room->RoomWalls; //print the character's current room's wall data
+		}
+		DB::close(); 
 	}
-
-	$cid = $_GET["cid"];
-	$c = connect();
-	echo json_encode(getWalls($c, $USER, $cid));
-	close($c);
 ?>

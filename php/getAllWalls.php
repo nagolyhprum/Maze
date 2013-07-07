@@ -1,26 +1,22 @@
 <?php 
-	require_once("../admin/db.php");
+	require_once("classes/DAO.php");
 	
-	function getAllWalls($c, $uid, $cid) {
-		mysqli_multi_query($c, "CALL getAllWalls(" . mysqli_real_escape_string($c, $cid) . ", " . mysqli_real_escape_string($c, $uid) . ")");
-		$column = $row = -1;
-		if($result = mysqli_store_result($c)) {
-			while($r = mysqli_fetch_assoc($result)) {
-				if($r["RoomIsDiscovered"]) {
-					$data[] = (int) $r["RoomWalls"];
+	if(DB::connect()) {
+		$character = new Character();
+		if($character->isValid()) {
+			foreach($rooms = $character->getOne("Room")->getOne("Map")->getMany("Room") as $room) {
+				if($room->RoomIsDiscovered) {
+					$data[] = $room->RoomWalls;
 				} else {
-					$data[] = null;
+					$data[] = $room->null;
 				}
-				$column = max($r["RoomColumn"], $column);
-				$row = max($r["RoomRow"], $row);
+				$column = max($column, $room->RoomColumn);
+				$row = max($row, $room->RoomRow);
 			}
-			mysqli_free_result($result);
+			
+			echo json_encode(array("data" => $data, "columns" => $column + 1, "rows" => $row + 1));
 		}
-		return array("data" => $data, "columns" => $column + 1, "rows" => $row + 1);
+		DB::close();
 	}
-
-	$cid = $_GET["cid"];
-	$c = connect();
-	echo json_encode(getAllWalls($c, $USER, $cid));
-	close($c);
+	
 ?>

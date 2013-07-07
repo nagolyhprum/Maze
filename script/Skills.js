@@ -9,7 +9,7 @@ $(function() {
 		if(!skills.visible) {
 			performSkill(key);
 		}
-		if(skills.visible && active && !isNaN(key) && active.type === "active") {
+		if(skills.visible && active && !isNaN(key) && active.isCool) {
 			Server.setSkillIndex(active.id, key, function() {
 				for(var i in skillMapping) {
 					var s = skillMapping[i];
@@ -29,7 +29,7 @@ $(function() {
 	
 	function performSkill(key) {
 		var skill = skillMapping[(key + 9) % 10], i;
-		if(skill && !character.tween.isTweening()) {
+		if(skill && skill.type === "active" && !character.tween.isTweening()) {
 			if(skill.isCool) {
 				if((equipment_items.mainhand.item && equipment_items.mainhand.item.attack === skill.action) || skill.action === null) {
 					if(character.statistics.getCurrent("energy") >= skill.energy) {
