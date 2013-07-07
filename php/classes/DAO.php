@@ -105,7 +105,7 @@
 						//convert any numeric columns into numbers
 						foreach($row as $key => &$value) {
 							if(is_numeric($value)) {
-								$value = (int)$value;
+								$value = (double)$value;
 							} else if(!$value) {
 								$value = null;
 							}
@@ -120,7 +120,7 @@
 					while($row = mysqli_fetch_assoc($result)) {
 						$value = $row["Default"];
 						if(is_numeric($value)) {
-							$value = (int)$value;
+							$value = (double)$value;
 						} else {
 							$value = null;
 						}
@@ -217,12 +217,12 @@
 						$index++;
 					}
 				}
-				$id = $this->data[0][$this->table . "ID"];
+				$id = $this->data[$i][$this->table . "ID"];
 				$stmt = mysqli_prepare(DB::getConnection(), "SET @$index = ?;");
 				mysqli_stmt_bind_param($stmt, "i", $id);
 				mysqli_stmt_execute($stmt);
 				mysqli_stmt_close($stmt);
-				mysqli_query(DB::getConnection(), "UPDATE `" . mysqli_real_escape_string(DB::getConnection(), $this->table) . "` SET $set WHERE " . $this->table . "ID=@$index");
+				mysqli_query(DB::getConnection(), "UPDATE `" . mysqli_real_escape_string(DB::getConnection(), $this->table) . "` SET $set WHERE " . $this->table . "ID=@$index");				
 			}
 			return $this;
 		}
@@ -256,7 +256,7 @@
 			if(!$condition) {
 				session_start();
 				$_SESSION["user"] = 1;
-				parent::__construct("Character", "CharacterID=@0 AND UserID=@1", array((int)$_GET["cid"], $_SESSION["user"]));
+				parent::__construct("Character", "CharacterID=@0 AND UserID=@1", array((double)$_GET["cid"], $_SESSION["user"]));
 				session_commit();
 			} else {
 				parent::__construct("Character", $condition, $paramters);
@@ -264,7 +264,7 @@
 		}
 		
 		public function timeToMove() {
-			return 0;
+			return timeToMove($this->getStatistic("speed"));
 		}
 		
 		public function getStatistic($name) {
@@ -277,6 +277,10 @@
 	
 	function currentTimeMillis() {
 		return round(microtime(true) * 1000);
+	}
+	
+	function timeToMove($speed) {
+		return ceil(500 / $speed * 48);
 	}
 	
 ?>

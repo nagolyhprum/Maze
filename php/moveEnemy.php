@@ -1,135 +1,62 @@
 <?php
-	require_once("../admin/db.php");
+	require "classes/DAO.php";
 	
-	echo json_encode(array("character" => $character, "enemies" => $enemies, "cts" => $cts));
-	exit;
-	
-	function moveEnemy($c, $cid, $uid) {
-		//get the current time millis
-		$stmt = mysqli_prepare($c, "SELECT getCurrentTimeMillis();");
-		mysqli_stmt_bind_result($stmt, $cts);
-		mysqli_stmt_execute($stmt);
-		mysqli_stmt_fetch($stmt);
-		mysqli_stmt_close($stmt);
-		//get the enemy assult info
-		$stmt = mysqli_prepare($c, "SET @cid=?, @uid=?");
-		mysqli_stmt_bind_param($stmt, "ii", $cid, $uid);
-		mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
-		if($result = mysqli_query($c, "CALL getEnemyAssultInfo(@cid, @uid)")) {
-			if($r = mysqli_fetch_assoc($result)) {
-				$character = array(
-					"row" => (int)$r["CharacterRow"],
-					"column" => (int)$r["CharacterColumn"],
-					"health" => (int)$r["StatisticHealth"],
-					"defense" => (int)$r["StatisticDefense"],
-					"resistance" => (int)$r["StatisticResistance"]					
-				);
-				do {
-					$tiles[$r["EnemyInRoomRow"]][$r["EnemyInRoomColumn"]] = $enemies[] = array(
-						"row" => (int)$r["EnemyInRoomRow"],
-						"column" => (int)$r["EnemyInRoomColumn"],
-						"lastRow" => (int)$r["EnemyInRoomRow"],
-						"lastColumn" => (int)$r["EnemyInRoomColumn"],
-						"strength" => (int)$r["StatisticStrength"],
-						"intelligence" => (int)$r["StatisticIntelligence"],
-						"timeToMove" => (int)$r["timeToMove"],
-						"canUse" => $r["EnemyInRoomCanUse"],
-						"id" => (int)$r["EnemyInRoomID"],
-						"started" => (int)$r["EnemyInRoomCanUse"]
-					);					
-				} while($r = mysqli_fetch_assoc($result));
+	if(DB::connect()) {
+		$character = new Character();
+		if($character->isValid()) {
+			$now = currentTimeMillis();
+			$enemies = new DAO("EnemyInRoom", "RoomID=@0 AND EnemyInRoomCanUse <= @1 ORDER BY abs(@2 - EnemyInRoomRow) + abs(@3 - EnemyInRoomColumn) ASC", array($character->RoomID, $now, $character->CharacterRow, $character->CharacterColumn));
+			if($enemies->isValid()) {
+				$health = new DAO("StatisticName", "StatisticNameValue='health'");
+				$strength = new DAO("StatisticName", "StatisticNameValue='strength'");
+				$intelligence = new DAO("StatisticName", "StatisticNameValue='intelligence'");
+				$defense = new DAO("StatisticName", "StatisticNameValue='defense'");
+				$resistance = new DAO("StatisticName", "StatisticNameValue='resistance'");
+				$speed = new DAO("StatisticName", "StatisticNameValue='speed'");
+				foreach($enemies as $enemy) {
+					$h = new DAO("StatisticAttribute", "StatisticID=@0 AND StatisticNameID=@1", array($enemy->StatisticID, $health->StatisticNameID));
+					if($h->StatisticAttributeValue > 0) {
+						$tiles[$enemy->EnemyInRoomRow][$enemy->EnemyInRoomColumn] = 1;				
+						$es[] = $enemy;
+					}
+				}			
+				$h = new DAO("StatisticAttribute", "StatisticID=@0 AND StatisticNameID=@1", array($character->CharacterCurrentStatisticID, $health->StatisticNameID));			
 				do {
 					$again = 0;
-					for($i = 0; $i < count($enemies); $i++) {
-						$e = $enemies[$i];
-						if($e["canUse"] < $cts) {
-							$e["canUse"] += $e["timeToMove"];
-							if(abs($e["row"] - $character["row"]) + abs($e["column"] - $character["column"]) === 1) {
-								$sDamage = $e["strength"] - ($e["strength"] * $character["defense"] / 100.0);
-								$iDamage = $e["intelligence"] - ($e["intelligence"] * $character["resistance"] / 100.0);
-								$character["health"] -= max($sDamage, $iDamage);
-							} else {
-								$next = getNextMove($tiles, $e, $character);
-								unset($tiles[$e["row"]][$e["column"]]);
-								$e["lastRow"] = $e["row"];
-								$e["lastColumn"] = $e["column"];
-								$e["row"] = $next["row"];
-								$e["column"] = $next["column"];
+					for($i = 0; $i < count($es); $i++) {
+						$enemy = $es[$i];
+						if($enemy->EnemyInRoomCanUse <= $now) {
+							$s = new DAO("StatisticAttribute", "StatisticID=@0 AND StatisticNameID=@1", array($enemy->StatisticID, $speed->StatisticNameID));
+							$enemy->EnemyInRoomCanUse += timeToMove($s->StatisticAttributeValue);
+							if(abs($character->CharacterRow - $enemy->EnemyInRoomRow) + abs($character->CharacterColumn - $enemy->EnemyInRoomColumn) == 1) { //then attack
+								//TODO
+							} else { //then move
+								$next = getNextMove($tiles, array("row" => $enemy->EnemyInRoomRow, "column" => $enemy->EnemyInRoomColumn), array("row" => $character->CharacterRow, "column" => $character->CharacterColumn));								
+								$tiles[$enemy->EnemyInRoomRow][$enemy->EnemyInRoomColumn] = 0;
+								$data[$i] = array(
+									"lastRow" => $enemy->EnemyInRoomRow,
+									"lastColumn" => $enemy->EnemyInRoomColumn,
+									"row" => ($enemy->EnemyInRoomRow = $next["row"]),
+									"column" => ($enemy->EnemyInRoomColumn = $next["column"]),
+									"id" => $enemy->EnemyInRoomID
+								);
+								$tiles[$enemy->EnemyInRoomRow][$enemy->EnemyInRoomColumn] = 1;
 							}
 							$again = 1;
 						}
-						$enemies[$i] = $tiles[$e["row"]][$e["column"]] = $e;
-					}
-				} while($again && $character["health"] > 0);
-								
-				while(mysqli_more_results($c) && mysqli_next_result($c)) {
-					if($extraResult = mysqli_store_result($c)){
-						mysqli_free_result($extraResult);
-					}
+						$es[$i] = $enemy;
+					}		
+				} while($again && $h->StatisticAttributeValue);				
+				$h->update();
+				foreach($es as $e) {
+					$e->EnemyInRoomUsedAt = $now;
+					$e->update();
 				}
-				
-				$stmt = mysqli_prepare($c, "
-					UPDATE
-						EnemyInRoom
-					SET
-						EnemyInRoomRow=?,
-						EnemyInRoomColumn=?,
-						EnemyInRoomCanUse=?,
-						EnemyInRoomUsedAt=getCurrentTimeMillis()
-					WHERE
-						EnemyInRoomID=?					
-				");
-				mysqli_stmt_bind_param($stmt, "iiii", $row, $column, $canUse, $id);
-				for($i = 0; $i < count($enemies); $i++) {
-					$e = $enemies[$i];
-					$row = $e["row"];
-					$column = $e["column"];
-					$canUse = $e["canUse"];
-					$id = $e["id"];
-					mysqli_stmt_execute($stmt);
-				}				
-				mysqli_stmt_close($stmt);
-				$stmt = mysqli_prepare($c, "
-					UPDATE
-						`Character` as c
-					INNER JOIN
-						StatisticAttribute as sa
-					ON
-						sa.StatisticID=c.CharacterCurrentStatisticID						
-					INNER JOIN
-						StatisticName as sn
-					ON
-						sa.StatisticNameID=sn.StatisticNameID
-					SET
-						sa.StatisticAttributeValue = ?,
-						c.RoomID = 
-						(
-							CASE
-								WHEN sa.StatisticAttributeValue > 0 THEN c.RoomID
-								ELSE NULL
-							END
-						)
-					WHERE
-						c.CharacterID=? AND c.UserID=? AND sn.StatisticNameValue='health'
-				");
-				mysqli_stmt_bind_param($stmt, "iii", $character["health"], $cid, $uid);
-				mysqli_stmt_execute($stmt);
-				mysqli_stmt_close($stmt);
-			}
-			mysqli_free_result($result);
+			}			
+			echo json_encode(array("character" => $character, "enemies" => $data, "cts" => $now));
 		}
-		return array(
-			"character" => $character,
-			"enemies" => $enemies,
-			"cts" => $cts
-		);
+		DB::close();
 	}
-	
-	$cid = 1;
-	$c = connect();
-	echo json_encode(moveEnemy($c, $cid, $USER));
-	close($c);
 	
 	class LocationPQ extends SplPriorityQueue { 
 	
@@ -155,8 +82,8 @@
 			$current = $pq->extract();
 			$r = $current["row"];
 			$c = $current["column"];
-			if($r === $end["row"] && $c === $end["column"]) {
-				while(!$current["parent"]["id"]) {
+			if($r == $end["row"] && $c == $end["column"]) {
+				while($current["parent"]["parent"]) {
 					$current = $current["parent"];
 				}
 				return $current;
@@ -177,6 +104,6 @@
 				$pq->insert(array("row" => $r, "column" => $c - 1, "parent" => $current), array("column" => $c - 1, "row" => $r));
 				$visited[$r][$c - 1] = 1;
 			}
-		}
+		}		
 	}
 ?>
