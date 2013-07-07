@@ -1,23 +1,15 @@
 <?php
-	require "../admin/db.php";
+	require "classes/DAO.php";
 	require "getSkill.php";
-
-	function getAllSkills($c, $cid, $uid) {
-		$table = mysqli_query($c, "SELECT SkillID FROM Skill");
-		if($table) {
-			while($row = mysqli_fetch_assoc($table)) {
-				$r[] = $row["SkillID"];
+	if(DB::connect()) {
+		$character = new Character();
+		if($character->isValid()) {
+			$skills = new DAO("Skill", true);
+			foreach($skills as $skill) {		
+				$r[] = getSkill($character, $skill->SkillID);
 			}
-			mysqli_free_result($table);
+			echo json_encode($r);
 		}
-		for($i = 0; $i < count($r); $i++) {
-			$r[$i] = getSkill($c, $r[$i], $cid, $uid);
-		}
-		return $r;
+		DB::close();
 	}
-	
-	$cid = $_GET["cid"];
-	$c = connect();
-	echo json_encode(getAllSkills($c, $cid, $USER));
-	close($c);
 ?>

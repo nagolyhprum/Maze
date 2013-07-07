@@ -1,20 +1,21 @@
 <?php
-	require "../admin/db.php";
-
-	function pickupItem($c, $cid, $uid) {
-		$stmt = mysqli_prepare($c, "SELECT pickupItem(?, ?)");
-		mysqli_stmt_bind_param($stmt, "ii", $cid, $uid);
-		mysqli_stmt_bind_result($stmt, $success);
-		mysqli_stmt_execute($stmt);
-		mysqli_stmt_fetch($stmt);
-		mysqli_stmt_close($stmt);
-		return $success;
+	require "classes/DAO.php";
+	if(DB::connect()) {
+		$character = new Character();
+		if($character->isValid()) {
+			$iii = new DAO("ItemInInventory", "CharacterID=@0 AND ItemID IS NULL LIMIT 1", array($character->CharacterID));
+			if($iii->isValid()) {
+				$iir = new DAO("ItemInRoom", "RoomID=@0 AND ItemInRoomIsActive=1 AND ItemInRoomRow=@1 AND ItemInRoomColumn=@2 LIMIT 1", array($character->RoomID, $character->CharacterRow, $character->CharacterColumn));
+				if($iir->isValid()) {
+					$iir->ItemInRoomIsActive = 0;
+					$iir->update();
+					$iii->ItemID = $iir->ItemID;
+					$iii->update();
+					echo 1;
+				}
+			}
+		}
+		echo "0";
+		DB::close();
 	}
-	
-	$cid = $_GET["cid"];
-	
-	$c = connect();
-	echo json_encode(pickupItem($c, $cid, $USER));
-	close($c);
-
 ?>

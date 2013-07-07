@@ -117,7 +117,7 @@ function equip(c, type) {
 	c.thrust && (character.thrust[o] = c.thrust);
 	c.hurt && (character.hurt[o] = c.hurt);
 	
-	inventory_items[inventory_items.indexOf(c)] = undefined;
+	inventory_items[inventory_items.indexOf(c)] = null;
 	equipment_items[type].item = c;	
 	Sound.effect(c.sounds.move);
 }

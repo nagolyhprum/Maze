@@ -12,7 +12,7 @@
 				$statistics[$attribute->getOne("StatisticName")->StatisticNameValue]["max"] = $attribute->StatisticAttributeValue;
 			} 
 			//get the audio
-			$characteraudio = new DAO("CharacterAudio", "CharacterAudioIsMale=%ismale% OR CharacterAudioIsMale IS NULL", array("ismale" => $character->CharacterIsMale));
+			$characteraudio = new DAO("CharacterAudio", "CharacterAudioIsMale=@0 OR CharacterAudioIsMale IS NULL", array($character->CharacterIsMale));
 			foreach($characteraudio as $audio) {
 				$sounds[$audio->getOne("AttackType")->AttackTypeName] = $audio->getOne("Audio")->AudioName;
 			}

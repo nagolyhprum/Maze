@@ -6,11 +6,12 @@
 	if(DB::connect()) {
 		$character = new Character();
 		if($character->isValid()) {
-			if(abs($row - $character->CharacterRow) + abs($column - $character->CharacterColumn) === 1) {
+			$now = currentTimeMillis();
+			if($character->CharacterCanMove <= $now && abs($row - $character->CharacterRow) + abs($column - $character->CharacterColumn) === 1) {
 				foreach($character->getOne("Room")->getMany("EnemyInRoom") as $eir) {
 					if($eir->EnemyInRoomRow === $row && $eir->EnemyInRoomColumn === $column) {					
 						$name = new DAO("StatisticName", "StatisticNameValue='health'");
-						$health = new DAO("StatisticAttribute", "StatisticID=%sid% AND StatisticNameID=%name%", array("sid" => $eir->StatisticID, "name" => $name->StatisticNameID));
+						$health = new DAO("StatisticAttribute", "StatisticID=@0 AND StatisticNameID=@1", array($eir->StatisticID, $name->StatisticNameID));
 						if($health->StatisticAttributeValue > 0) {
 							$sofarsogood = 0;
 						}
@@ -45,10 +46,11 @@
 							$room->RoomRow--;
 						}
 						//get the new room
-						$room = new DAO("Room", "RoomRow=%row% AND RoomColumn=%column% AND MapID=%mid%", array("row" => $room->RoomRow, "column" => $room->RoomColumn, "mid" => $room->MapID));
+						$room = new DAO("Room", "RoomRow=@0 AND RoomColumn=@1 AND MapID=@2", array($room->RoomRow, $room->RoomColumn, $room->MapID));
 						$character->CharacterRow = $row;
 						$character->CharacterColumn = $column;						
 						$character->RoomID = $room->RoomID;
+						$character->CharacterCanUse = $now + $character->timeToMove();
 						$character->update();
 						echo 1;
 					}					

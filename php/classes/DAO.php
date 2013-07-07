@@ -88,19 +88,19 @@
 					return;
 				}
 				if(is_numeric($condition)) { //if the condition is a number then we will set up for id selection for this table
-					$parameters = array("id" => $condition);
-					$condition = $table . "ID=%id%";
+					$parameters = array($condition);
+					$condition = $table . "ID=@0";
 				}
-				//replace %$key% with the specified value
-				$stmt = "SELECT * FROM `" . mysqli_real_escape_string(DB::getConnection(), $table) . "` WHERE $condition";
+				$index = "0";
 				foreach($parameters as $key => $value) { //i need to escape % and then unescape
-					if(is_numeric($value)) {
-						$stmt = str_replace("%$key%", mysqli_real_escape_string(DB::getConnection(), $value), $stmt);
-					} else {
-						$stmt = str_replace("%$key%", "\"" . mysqli_real_escape_string(DB::getConnection(), $value) . "\"", $stmt);
-					}
+					$stmt = mysqli_prepare(DB::getConnection(), "SET @$index = $value;");
+					mysqli_stmt_bind_param($stmt, is_numeric($value) ? "i" : "s", $value);
+					mysqli_stmt_execute($stmt);
+					mysqli_stmt_close($stmt);
+					$index++;
 				}
-				if($result = mysqli_query(DB::getConnection(), $stmt)) { //get the table result
+				
+				if($result = mysqli_query(DB::getConnection(), "SELECT * FROM `" . mysqli_real_escape_string(DB::getConnection(), $table) . "` WHERE $condition")) { //get the table result
 					while($row = mysqli_fetch_assoc($result)) { //get each row
 						//convert any numeric columns into numbers
 						foreach($row as $key => &$value) {
@@ -116,8 +116,7 @@
 					mysqli_free_result($result);
 				}
 			} else { //we are attempting to do an insert and should at least provide the fields necessary
-				$stmt = "SHOW COLUMNS IN `" . mysqli_real_escape_string(DB::getConnection(), $table) . "`";
-				if($result = mysqli_query(DB::getConnection(), $stmt)) {					
+				if($result = mysqli_query(DB::getConnection(), "SHOW COLUMNS IN `" . mysqli_real_escape_string(DB::getConnection(), $table) . "`")) {					
 					while($row = mysqli_fetch_assoc($result)) {
 						$value = $row["Default"];
 						if(is_numeric($value)) {
@@ -175,9 +174,9 @@
 		
 		public function insert() {
 			for($i = 0; $i < count($this->data); $i++) {
-				$stmt = "INSERT INTO `" . mysqli_real_escape_string(DB::getConnection(), $this->table) . "`";
 				$columns = "";
 				$values ="";
+				$index = "0";
 				foreach($this->data[$i] as $key => $value) {
 					if($key !== ($this->table . "ID") && !($value instanceof DAO)) {
 						if($columns) {
@@ -187,46 +186,43 @@
 						if($values) {
 							$values .= ", ";
 						}
-						if(is_numeric($value) || is_null($value)) {
-							if(is_null($value)) {
-								$value = "null";
-							}
-							$values .= mysqli_real_escape_string(DB::getConnection(), $value);
-						} else {				
-							$values .= "\"" . mysqli_real_escape_string(DB::getConnection(), $value) . "\"";
-						}
+						$values .= "@$index";
+						$stmt = mysqli_prepare(DB::getConnection(), "SET @$index = ?;");
+						mysqli_stmt_bind_param($stmt, is_numeric($value) ? "i" : "s", $value);
+						mysqli_stmt_execute($stmt);
+						mysqli_stmt_close($stmt);
+						$index++;
 					}
 				}
-				$stmt = "$stmt ($columns) VALUES ($values)";
-				mysqli_query(DB::getConnection(), $stmt);
+				mysqli_query(DB::getConnection(), "INSERT INTO `" . mysqli_real_escape_string(DB::getConnection(), $this->table) . "` ($columns) VALUES ($values)");
 				$this->data[$i][$this->table . "ID"] = mysqli_insert_id(DB::getConnection());
 			}
 			return $this;
 		}
 		
-		public function update() {
+		public function update() {		
 			for($i = 0; $i < count($this->data); $i++) {
-				$stmt = "UPDATE `" . mysqli_real_escape_string(DB::getConnection(), $this->table) . "` SET";
+				$index = "0";
 				$set = "";
 				foreach($this->data[$i] as $key => $value) {
 					if($key !== ($this->table . "ID") && !($value instanceof DAO)) {
 						if($set) {
 							$set .= ", ";
 						}
-						$set .= "`" . mysqli_real_escape_string(DB::getConnection(), $key) . "`=";
-						if(is_numeric($value) || is_null($value)) {
-							if(is_null($value)) {
-								$value = "null";
-							}
-							$set .= mysqli_real_escape_string(DB::getConnection(), $value);
-						} else {				
-							$set .= "\"" . mysqli_real_escape_string(DB::getConnection(), $value) . "\"";
-						}
+						$set .= "`" . mysqli_real_escape_string(DB::getConnection(), $key) . "`=@$index";
+						$stmt = mysqli_prepare(DB::getConnection(), "SET @$index = ?;");
+						mysqli_stmt_bind_param($stmt, is_numeric($value) ? "i" : "s", $value);
+						mysqli_stmt_execute($stmt);
+						mysqli_stmt_close($stmt);						
+						$index++;
 					}
 				}
-				$stmt = "$stmt $set WHERE " . $this->table . "ID=" . $this->data[$i][$this->table . "ID"];
-				mysqli_query(DB::getConnection(), $stmt);
-				$this->data[$i][$this->table . "ID"] = mysqli_insert_id(DB::getConnection());
+				$id = $this->data[0][$this->table . "ID"];
+				$stmt = mysqli_prepare(DB::getConnection(), "SET @$index = ?;");
+				mysqli_stmt_bind_param($stmt, "i", $id);
+				mysqli_stmt_execute($stmt);
+				mysqli_stmt_close($stmt);
+				mysqli_query(DB::getConnection(), "UPDATE `" . mysqli_real_escape_string(DB::getConnection(), $this->table) . "` SET $set WHERE " . $this->table . "ID=@$index");
 			}
 			return $this;
 		}
@@ -238,7 +234,7 @@
 			$column = $column ? $column : $this->table . "ID";
 			$tid = $this->table;				
 			for($i = 0; $i < count($this->data); $i++) {
-				$dao = $this->data[$i][$table] = new DAO($table, "`" . $column . "`=%id%", array("id" => $this->data[$i][$this->table . "ID"]));				
+				$dao = $this->data[$i][$table] = new DAO($table, "`" . $column . "`=@0", array($this->data[$i][$column]));				
 				$dao->$tid = $this; //because i want to set all of them
 			}
 			return $this->data[0][$table];
@@ -247,7 +243,12 @@
 		public function isValid() {
 			return $this->isValid;
 		}		
+		
+		public function size() {
+			return count($this->data);
+		}
 	}
+		
 	
 	class Character extends DAO {
 	
@@ -255,11 +256,22 @@
 			if(!$condition) {
 				session_start();
 				$_SESSION["user"] = 1;
-				parent::__construct("Character", "CharacterID=%cid% AND UserID=%uid%", array("cid" => $_GET["cid"], "uid" => $_SESSION["user"]));
+				parent::__construct("Character", "CharacterID=@0 AND UserID=@1", array((int)$_GET["cid"], $_SESSION["user"]));
 				session_commit();
 			} else {
 				parent::__construct("Character", $condition, $paramters);
 			}
+		}
+		
+		public function timeToMove() {
+			return 0;
+		}
+		
+		public function getStatistic($name) {
+			$sn = new DAO("StatisticName", "StatisticName=@0", array($name));
+			$csa = new DAO("StatisticAttribute", "StatisticNameID=@0 AND StatisticID=@1", array($sn->StatisticNameID, $this->CharacterID));
+			$s = $csa->StatisticAttributeValue;
+			return $s;
 		}
 	}
 	

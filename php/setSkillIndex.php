@@ -6,7 +6,7 @@
 	if(DB::connect()) { //connect
 		$character = new Character(); //get character
 		if($character->isValid()) { //if this is a valid character			
-			$cs = new DAO("CharacterSkill", "CharacterID=%cid% AND CharacterSkillIndex=%index%", array("cid" => $character->CharacterID, "index" => $index)); //get the character skilll with the index
+			$cs = new DAO("CharacterSkill", "CharacterID=@0 AND CharacterSkillIndex=@1", array($character->CharacterID, $index)); //get the character skilll with the index
 			if($cs->isValid()) { //if there is one
 				if($cs->CharacterSkillCanUse <= currentTimeMillis()) { //see if i can unequip it, then do it
 					$cs->CharacterSkillIndex = null;
@@ -17,7 +17,7 @@
 				$todo = 1;
 			}
 			if($todo) { //then i will bind the new skill
-				$cs = new DAO("CharacterSkill", "CharacterID=%cid% AND SkillID=%sid%", array("cid" => $character->CharacterID, "sid" => $sid));
+				$cs = new DAO("CharacterSkill", "CharacterID=@0 AND SkillID=@1", array($character->CharacterID, $sid));
 				$cs->CharacterSkillIndex = $index;
 				$cs->update();
 				echo 1;

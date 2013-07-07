@@ -1,29 +1,133 @@
 <?php
 	
 	require_once("../admin/db.php");
+	
+	require_once "classes/DAO.php";
+	
+	
+	$index = (int)$_GET["index"];
+	$direction = (int)$_GET["direction"];
+	$direction = max(min((int)$direction, 3), 0);
+	
+	if(DB::connect()) {
+		$character = new Character();
+		if($character->isValid()) {
+			$now = currentTimeMillis();
+			if($character->CharacterCanUse <= $now) {
+				$area = $at = $success = 1;
+				$mainhand = new DAO("ItemType", "ItemTypeName='mainhand'");
+				$left = new DAO("ItemInEquipment", "CharacterID=@0 AND ItemTypeID=@1 LIMIT 0, 1", array($character->CharacterID, $mainhand->ItemTypeID));
+				if($left->ItemID) {
+					$im = $left->getOne("Item")->getOne("ItemModel");
+					$area = $im->ItemModelArea;
+					$at = $im->getOne("AttackType")->AttackTypeName;
+				}
+				$right = new DAO("ItemInEquipment", "CharacterID=@0 AND ItemTypeID=@1 LIMIT 1, 1", array($character->CharacterID, $mainhand->ItemTypeID));
+				if($right->ItemID) {
+					$im = $right->getOne("Item")->getOne("ItemModel");
+					$area = $area ? $area : $im->ItemModelArea;
+					$a = $at ? $at : $im->getOne("AttackType")->AttackTypeName;
+				}					
+				if($index) {
+					$cs = new DAO("CharacterSkill", "CharacterID=@0 AND CharacterSkillIndex=@1", array($character->CharacterID, $index));
+					if($cs->isValid() && $cs->CharacterSkillCanUse <= $now) {
+						$skill = $cs->getOne("Skill");
+						$sat = $skill->getOne("AttackType")->AttackTypeName;
+						if(!$sat || $sat === $at) { //TODO MAKE SURE I HAVE ENOUGH ENERGY AND THEN SPEND THAT ENERGY
+							$cs->CharacterSkillCanUse += $skill->SkillCooldown;							
+							$cs->update();
+							//TODO ADD PERMANANT STATISTICS
+						} else {
+							$success = 0;
+						}
+					} else {
+						$success = 0;
+					}
+				} 
+				if(!$at) {
+					$at = "slash";
+					$area = 1;
+				}
+				if($success) {
+					$health = new DAO("StatisticName", "StatisticNameValue='health'");
+					if($at === "spellcast") {
+						$damage = $character->getStatistic("intelligence");
+						$sn = new DAO("StatisticName", "StatisticNameValue='resistance'");
+					} else {
+						$damage = $character->getStatistic("strength");
+						$sn = new DAO("StatisticName", "StatisticNameValue='defense'");
+					}
+					if($area != 0) {
+						foreach($character->getOne("Room")->getMany("EnemyInRoom") as $eir) {
+							$tiles[$eir->EnemyInRoomRow][$eir->EnemyInRoomColumn] = $eir;
+						}					
+					}
+					if($area > 0) { //straight
+						switch($direction) {
+							case DIRECTION_UP : 
+								getAssultedEnemy($enemies, $tiles, $character->CharacterRow - 1, $character->CharacterColumn, -1, 0, $area);
+								break;
+							case DIRECTION_LEFT : 
+								getAssultedEnemy($enemies, $tiles, $character->CharacterRow, $character->CharacterColumn - 1, 0, -1, $area);
+								break;
+							case DIRECTION_DOWN : 
+								getAssultedEnemy($enemies, $tiles, $character->CharacterRow + 1, $character->CharacterColumn, 1, 0, $area);
+								break;
+							case DIRECTION_RIGHT : 
+								getAssultedEnemy($enemies, $tiles, $character->CharacterRow, $character->CharacterColumn + 1, 0, 1, $area);
+								break;
+						}
+					} else if($area < 0) { //around							
+						$area = abs($area);
+						getAssultedEnemy($enemies, $tiles, $character->CharacterRow + 1, $character->CharacterColumn, 1, 0, $area);
+						getAssultedEnemy($enemies, $tiles, $character->CharacterRow - 1, $character->CharacterColumn, -1, 0, $area);
+						getAssultedEnemy($enemies, $tiles, $character->CharacterRow, $character->CharacterColumn + 1, 0, 1, $area);
+						getAssultedEnemy($enemies, $tiles, $character->CharacterRow, $character->CharacterColumn - 1, 0, -1, $area);
+					}
+					$data = array("enemies" => array(), "items" => array());
+					for($i = 0; $i < count($enemies); $i++) {
+						$eir = $enemies[$i];
+						$h = new DAO("StatisticAttribute", "StatisticNameID=@0 AND StatisticID=@1", array($health->StatisticNameID, $eir->StatisticID));
+						if($h->StatisticAttributeValue > 0) {
+							$dr = new DAO("StatisticAttribute", "StatisticNameID=@0 AND StatisticID=@1", array($sn->StatisticNameID, $eir->StatisticID));
+							$d = ceil($damage - $damage * $dr->StatisticAttributeValue / 100);
+							$h->StatisticAttributeValue = max(0, $h->StatisticAttributeValue - $d);
+							$h->update();
+							if($h->StatisticAttributeValue <= 0) {
+								$dead[] = $eir;
+							}
+							$data["enemies"][] = array(
+								"id" => $eir->EnemyInRoomID,
+								"damage" => $d
+							);
+						}
+					}
+					foreach($dead as $eir) {						
+						$chance = mt_rand(0, 100);
+						$ei = new DAO("EnemyItem", "EnemyID=@0 AND EnemyItemChance > @1 ORDER BY EnemyItemChance ASC LIMIT 1", array($eir->EnemyID, $chance));
+						if($ei->isValid()) {
+							$i = new DAO("Item");
+							$i->ItemModelID = $ei->ItemModelID;
+							$i->insert();
+							$iir = new DAO("ItemInRoom");
+							$iir->ItemID = $i->ItemID;
+							$iir->ItemInRoomRow = $eir->EnemyInRoomRow;
+							$iir->ItemInRoomColumn = $eir->EnemyInRoomColumn;
+							$iir->RoomID = $character->RoomID;
+							$iir->insert();
+							$data["items"][] = $iir->ItemInRoomID;
+						}
+					}
+					$character->CharacterCanUse += $character->timeToMove();
+					$character->update();
+					echo json_encode($data);
+				}
+			}
+		}
+		DB::close();
+	}
 
 	function sendDamage($c, $cid, $uid, $skill, $direction) {
-		$return = null;
-		$stmt = mysqli_prepare($c, "
-			UPDATE 
-				`Character`
-			SET
-				CharacterCanUse=getCurrentTimeMillis()+timeToMove(getCharacterCurrentStatistic(CharacterID, 'speed')),
-				CharacterDirection = ?
-			WHERE
-				CharacterCanUse <= getCurrentTimeMillis() AND CharacterID=? AND UserID=?
-		");
-		$direction = max(min((int)$direction, 3), 0);
-		mysqli_stmt_bind_param($stmt, "iii", $direction, $cid, $uid);
-		mysqli_stmt_execute($stmt);
-		$count = mysqli_affected_rows($c);
-		mysqli_stmt_close($stmt);
-		if($count === 1) {
-			//set up variables
-			$stmt = mysqli_prepare($c, "SET @uid=?, @cid=?, @ind=?;");
-			mysqli_stmt_bind_param($stmt, "iii", $uid, $cid, $skill);
-			mysqli_stmt_execute($stmt);
-			mysqli_stmt_close($stmt);
 			//do stuff with skills
 			mysqli_multi_query($c, "CALL getItemSkillInfo(@cid, @uid, @ind)");
 			$result = mysqli_store_result($c);
@@ -108,23 +212,23 @@
 						if($character["area"] > 0) { //straight
 							switch($character["direction"]) {
 								case DIRECTION_UP : 
-									getAssultedEnemy($enemies["enemies"], $tiles, $character["row"] - 1, $character["column"], -1, 0, $character["area"]);
+									getAssultedEnemy($enemies["enemies"], $tiles, $character->CharacterRow - 1, $character->CharacterColumn, -1, 0, $character["area"]);
 									break;
 								case DIRECTION_LEFT : 
-									getAssultedEnemy($enemies["enemies"], $tiles, $character["row"], $character["column"] - 1, 0, -1, $character["area"]);
+									getAssultedEnemy($enemies["enemies"], $tiles, $character->CharacterRow, $character->CharacterColumn - 1, 0, -1, $character["area"]);
 									break;
 								case DIRECTION_DOWN : 
-									getAssultedEnemy($enemies["enemies"], $tiles, $character["row"] + 1, $character["column"], 1, 0, $character["area"]);
+									getAssultedEnemy($enemies["enemies"], $tiles, $character->CharacterRow + 1, $character->CharacterColumn, 1, 0, $character["area"]);
 									break;
 								case DIRECTION_RIGHT : 
-									getAssultedEnemy($enemies["enemies"], $tiles, $character["row"], $character["column"] + 1, 0, 1, $character["area"]);
+									getAssultedEnemy($enemies["enemies"], $tiles, $character->CharacterRow, $character->CharacterColumn + 1, 0, 1, $character["area"]);
 									break;
 							}
 						} else if($character["area"] < 0) { //around							
-							getAssultedEnemy($enemies["enemies"], $tiles, $character["row"] + 1, $character["column"], 1, 0, $character["area"]);
-							getAssultedEnemy($enemies["enemies"], $tiles, $character["row"] - 1, $character["column"], -1, 0, $character["area"]);
-							getAssultedEnemy($enemies["enemies"], $tiles, $character["row"], $character["column"] + 1, 0, 1, $character["area"]);
-							getAssultedEnemy($enemies["enemies"], $tiles, $character["row"], $character["column"] - 1, 0, -1, $character["area"]);
+							getAssultedEnemy($enemies["enemies"], $tiles, $character->CharacterRow + 1, $character->CharacterColumn, 1, 0, $character["area"]);
+							getAssultedEnemy($enemies["enemies"], $tiles, $character->CharacterRow - 1, $character->CharacterColumn, -1, 0, $character["area"]);
+							getAssultedEnemy($enemies["enemies"], $tiles, $character->CharacterRow, $character->CharacterColumn + 1, 0, 1, $character["area"]);
+							getAssultedEnemy($enemies["enemies"], $tiles, $character->CharacterRow, $character->CharacterColumn - 1, 0, -1, $character["area"]);
 						}
 						if(count($enemies["enemies"])) {
 							$stmt = mysqli_prepare($c, "call damageEnemy(?, ?)");
@@ -163,9 +267,9 @@
 				}
 			} else { //reset character
 			}
+			return $return ? $return : array("enemies" => array(), "items" => array());
 		}
-		return $return ? $return : array("enemies" => array(), "items" => array());
-	}
+	
 	
 	function getAssultedEnemy(&$enemies, $tiles, $row, $column, $moveRow, $moveColumn, $area) {	
 		while($row >= 0 && $row < ROOM_ROWS && $column >= 0 && $column < ROOM_COLUMNS && $area > 0) {
@@ -178,11 +282,4 @@
 			$area--;
 		}
 	}
-	
-	$cid = $_GET["cid"];
-	$skill = $_GET["skill"];
-	$direction = $_GET["direction"];
-	$c = connect();
-	echo json_encode(sendDamage($c, $cid, $USER, $skill, $direction));
-	close($c);
 ?>

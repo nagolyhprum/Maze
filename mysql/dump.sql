@@ -324,10 +324,10 @@ CREATE TABLE `characterskill` (
 LOCK TABLES `characterskill` WRITE;
 /*!40000 ALTER TABLE `characterskill` DISABLE KEYS */;
 INSERT INTO `characterskill` VALUES 
-	(1,1,1,1,'0000-00-00 00:00:00'),
-	(2,1,2,2,'0000-00-00 00:00:00'),
-	(3,1,3,3,'0000-00-00 00:00:00'),
-	(4,1,4,4,'0000-00-00 00:00:00');
+	(1,1,1,0,0),
+	(2,1,2,1,0),
+	(3,1,3,2,0),
+	(4,1,4,3,0);
 /*!40000 ALTER TABLE `characterskill` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -340,17 +340,13 @@ DROP TABLE IF EXISTS `enemy`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `enemy` (
   `EnemyID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `EnemyPortrait` bigint(20) NOT NULL,
+  `ImageID` bigint(20) NOT NULL,
   `EnemyName` varchar(32) NOT NULL,
   `StatisticID` bigint(20) NOT NULL,
-  `AttackTypeID` bigint(20) NOT NULL,
-  `EnemyCanMove` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`EnemyID`),
-  KEY `fk_Enemy_Image1_idx` (`EnemyPortrait`),
+  KEY `fk_Enemy_Image1_idx` (`ImageID`),
   KEY `fk_Enemy_Statistic1_idx` (`StatisticID`),
-  KEY `fk_Enemy_AttackType1_idx` (`AttackTypeID`),
-  CONSTRAINT `fk_Enemy_AttackType1` FOREIGN KEY (`AttackTypeID`) REFERENCES `attacktype` (`AttackTypeID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Enemy_Image1` FOREIGN KEY (`EnemyPortrait`) REFERENCES `image` (`ImageID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Enemy_Image1` FOREIGN KEY (`ImageID`) REFERENCES `image` (`ImageID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Enemy_Statistic1` FOREIGN KEY (`StatisticID`) REFERENCES `statistic` (`StatisticID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -361,7 +357,7 @@ CREATE TABLE `enemy` (
 
 LOCK TABLES `enemy` WRITE;
 /*!40000 ALTER TABLE `enemy` DISABLE KEYS */;
-INSERT INTO `enemy` VALUES (1,53,'Skeleton',3,1,'2013-06-21 22:07:28');
+INSERT INTO `enemy` VALUES (1,53,'Skeleton',3);
 /*!40000 ALTER TABLE `enemy` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -679,14 +675,14 @@ CREATE TABLE `itemmodel` (
   `AttackTypeID` bigint(20),
   `ItemModelWeight` bigint(20),
   `ItemTypeID` bigint(20) NOT NULL,
-  `ItemModelPortrait` bigint(20) NOT NULL,
+  `ImageID` bigint(20) NOT NULL,
   PRIMARY KEY (`ItemModelID`),
   KEY `fk_ItemModel_ItemType1_idx` (`ItemTypeID`),
   KEY `fk_ItemModel_AttackType1_idx` (`AttackTypeID`),
   KEY `fk_ItemModel_Statistic1_idx` (`StatisticID`),
-  KEY `fk_ItemModel_Image1_idx` (`ItemModelPortrait`),
+  KEY `fk_ItemModel_Image1_idx` (`ImageID`),
   CONSTRAINT `fk_ItemModel_AttackType1` FOREIGN KEY (`AttackTypeID`) REFERENCES `attacktype` (`AttackTypeID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_ItemModel_Image1` FOREIGN KEY (`ItemModelPortrait`) REFERENCES `image` (`ImageID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ItemModel_Image1` FOREIGN KEY (`ImageID`) REFERENCES `image` (`ImageID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ItemModel_ItemType1` FOREIGN KEY (`ItemTypeID`) REFERENCES `itemtype` (`ItemTypeID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ItemModel_Statistic1` FOREIGN KEY (`StatisticID`) REFERENCES `statistic` (`StatisticID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
@@ -698,7 +694,7 @@ CREATE TABLE `itemmodel` (
 
 LOCK TABLES `itemmodel` WRITE;
 /*!40000 ALTER TABLE `itemmodel` DISABLE KEYS */;
-INSERT INTO `itemmodel` VALUES (1,'Short Sword',1,4,1,2,12,131);
+INSERT INTO `itemmodel` VALUES (1,'Short Sword',1,5,1,2,12,131);
 /*!40000 ALTER TABLE `itemmodel` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -913,7 +909,7 @@ CREATE TABLE `skill` (
   `SkillID` bigint(20) NOT NULL AUTO_INCREMENT,
   `SkillName` varchar(64) NOT NULL,
   `SkillDescription` varchar(64) NOT NULL,
-  `SkillIcon` bigint(20) NOT NULL,
+  `ImageID` bigint(20) NOT NULL,
   `AttackTypeID` bigint(20) DEFAULT NULL,
   `SkillIsActive` tinyint(1) NOT NULL,
   `SkillCooldown` bigint(20) NOT NULL,
@@ -922,6 +918,7 @@ CREATE TABLE `skill` (
   PRIMARY KEY (`SkillID`),
   UNIQUE KEY `SkillName_UNIQUE` (`SkillName`),
   KEY `fk_Skill_AttackType1_idx` (`AttackTypeID`),
+	FOREIGN KEY (`ImageID`) REFERENCES Image(ImageID),
   CONSTRAINT `fk_Skill_AttackType1` FOREIGN KEY (`AttackTypeID`) REFERENCES `attacktype` (`AttackTypeID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -975,7 +972,7 @@ CREATE TABLE Statistic (
 	StatisticIsActive BOOLEAN NOT NULL DEFAULT 1
 );
 
-INSERT INTO Statistic VALUES (1, 1), (2, 1), (3, 1), (4, 1);
+INSERT INTO Statistic VALUES (1, 1), (2, 1), (3, 1), (4, 1), (5, 1);
 
 DROP TABLE IF EXISTS StatisticAttribute;
 
@@ -1003,13 +1000,16 @@ INSERT INTO StatisticAttribute VALUES
 	(9, 2, 7, 100),
 	(10, 2, 8, 100),
 	-- enemy
-	(11, 3, 7, 20),
-	(12, 3, 8, 20),
+	(11, 3, 7, 20), -- health
+	(12, 3, 8, 20), 
 	(13, 3, 1, 5),
-	(14, 3, 2, 5),
+	(14, 3, 2, 5), -- defense
 	(15, 3, 5, 5),
 	-- skill
-	(16, 4, 1, 10)
+	(16, 4, 7, 100),
+	-- item
+	(17, 5, 1, 5),
+	(18, 5, 5, 5);
 ;
 
 DROP TABLE IF EXISTS StatisticName;

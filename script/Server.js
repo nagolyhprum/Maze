@@ -27,8 +27,8 @@ var Server = (function() {
 		ajax("php/getEquipment.php", {cid:cid}, success);
 	};
 
-	Server.equipItem = function(iiiid, success) {
-		ajax("php/equipItem.php", {iiiid:iiiid, cid:cid}, success);
+	Server.equipItem = function(iid, success) {
+		ajax("php/equipItem.php", {iid:iid, cid:cid}, success);
 	};
 	
 	Server.getItemsInInventory = function(complete) {
