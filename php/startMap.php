@@ -3,73 +3,75 @@
 	require_once("classes/DAO.php");
 		
 	$mapmodel = 1;
-	
-	$character = new Character();
-	if($character->isValid() && $character->RoomID === NULL) { //make sure this character is valid
-		$mapmodel = new DAO("MapModel", $mapmodel);	//get the requested mapmodel
-		if($mapmodel->isValid()) { //if the map model is valid
-			foreach($mapmodel->getMany("RoomModelInMapModel") as $rmimm) { //go through all of the room models in this map model
-				foreach($rmimm->getOne("RoomModel")->getMany("EnemyInRoomModel") as $eirm) { //go through all of the enemies in each room model
-					$enemy = $eirm->getOne("Enemy"); //get the associated enemy
-					//set up simple data
-					$enemy = array(
-						"enemy" => $eirm->EnemyID,
-						"statistic" => $enemy->StatisticID,
-						"column" => $eirm->EnemyInRoomModelColumn,
-						"row" => $eirm->EnemyInRoomModelRow
-					);					
-					$enemies[] = $enemy;
+	if(DB::connect()) {
+		$character = new Character();
+		if($character->isValid() && $character->RoomID === NULL) { //make sure this character is valid
+			$mapmodel = new DAO("MapModel", $mapmodel);	//get the requested mapmodel
+			if($mapmodel->isValid()) { //if the map model is valid
+				foreach($mapmodel->getMany("RoomModelInMapModel") as $rmimm) { //go through all of the room models in this map model
+					foreach($rmimm->getOne("RoomModel")->getMany("EnemyInRoomModel") as $eirm) { //go through all of the enemies in each room model
+						$enemy = $eirm->getOne("Enemy"); //get the associated enemy
+						//set up simple data
+						$enemy = array(
+							"enemy" => $eirm->EnemyID,
+							"statistic" => $enemy->StatisticID,
+							"column" => $eirm->EnemyInRoomModelColumn,
+							"row" => $eirm->EnemyInRoomModelRow
+						);					
+						$enemies[] = $enemy;
+					}
+					while($rmimm->RoomModelInMapModelCount > 0) { //add the room model for each count
+						$roommodel[] = $enemies;
+						--$rmimm->RoomModelInMapModelCount;
+					}
 				}
-				while($rmimm->RoomModelInMapModelCount > 0) { //add the room model for each count
-					$roommodel[] = $enemies;
-					--$rmimm->RoomModelInMapModelCount;
-				}
-			}
-			shuffle($roommodel); //randomize the room models
-			$map = new DAO("Map"); //make the map
-			$map->insert();			
-			makeMap(0, 0, $mapmodel->MapModelRows, $mapmodel->MapModelColumns, $rooms, $visited); //prepared the rooms for adding later
-			$room = new DAO("Room"); //dao for creating rooms
-			$room->MapID = $map->MapID; //for this map
-			for($room->RoomRow = 0; $room->RoomRow < $mapmodel->MapModelRows; $room->RoomRow++) { //go through all of the rows
-				for($room->RoomColumn = 0; $room->RoomColumn < $mapmodel->MapModelColumns; $room->RoomColumn++) { //and columns of this map
-					$room->RoomWalls = $rooms[$room->RoomRow][$room->RoomColumn]["walls"] ^ WALL_ALL; //create the room with this wall data
-					$room->insert();
-					if(!$character->RoomID) { //if this is the first room then put the character here
-						$character->RoomID = $room->RoomID;
-						$character->CharacterColumn = floor(ROOM_COLUMNS / 2);
-						$character->CharacterRow = floor(ROOM_ROWS / 2);
-						$character->CharacterDirection = DIRECTION_DOWN;
-						$character->update();
-						$current = $character->getOne("Statistic", "CharacterCurrentStatisticID")->getMany("StatisticAttribute");
-						$max = $character->getOne("Statistic", "CharacterMaxStatisticID")->getMany("StatisticAttribute");
-						while($current->valid() && $max->valid()) {
-							$c = $current->current();
-							$m = $max->current();
-							$c->StatisticAttributeValue = $m->StatisticAttributeValue;
-							$c->update();
-							$current->next();
-							$max->next();
+				shuffle($roommodel); //randomize the room models
+				$map = new DAO("Map"); //make the map
+				$map->insert();			
+				makeMap(0, 0, $mapmodel->MapModelRows, $mapmodel->MapModelColumns, $rooms, $visited); //prepared the rooms for adding later
+				$room = new DAO("Room"); //dao for creating rooms
+				$room->MapID = $map->MapID; //for this map
+				for($room->RoomRow = 0; $room->RoomRow < $mapmodel->MapModelRows; $room->RoomRow++) { //go through all of the rows
+					for($room->RoomColumn = 0; $room->RoomColumn < $mapmodel->MapModelColumns; $room->RoomColumn++) { //and columns of this map
+						$room->RoomWalls = $rooms[$room->RoomRow][$room->RoomColumn]["walls"] ^ WALL_ALL; //create the room with this wall data
+						$room->insert();
+						if(!$character->RoomID) { //if this is the first room then put the character here
+							$character->RoomID = $room->RoomID;
+							$character->CharacterColumn = floor(ROOM_COLUMNS / 2);
+							$character->CharacterRow = floor(ROOM_ROWS / 2);
+							$character->CharacterDirection = DIRECTION_DOWN;
+							$character->update();
+							$current = $character->getOne("Statistic", "CharacterCurrentStatisticID")->getMany("StatisticAttribute");
+							$max = $character->getOne("Statistic", "CharacterMaxStatisticID")->getMany("StatisticAttribute");
+							while($current->valid() && $max->valid()) {
+								$c = $current->current();
+								$m = $max->current();
+								$c->StatisticAttributeValue = $m->StatisticAttributeValue;
+								$c->update();
+								$current->next();
+								$max->next();
+							}
+						} else { //otherwise put the enemies here
+							$enemyinroom = new DAO("EnemyInRoom"); //dao for adding enemies
+							$enemyinroom->RoomID = $room->RoomID; //into this room
+							for($i = 0; $i < count($roommodel[0]); $i++) { //go through all of the simplified arrays we made earlier
+								$eirm = $roommodel[0][$i];
+								$enemyinroom->EnemyInRoomColumn = $eirm["column"];
+								$enemyinroom->EnemyInRoomRow = $eirm["row"];
+								$enemyinroom->EnemyID = $eirm["enemy"];
+								$statistic = new DAO("Statistic", $eirm["statistic"]);
+								$attribute = $statistic->getMany("StatisticAttribute");						
+								$attribute->StatisticID = $enemyinroom->StatisticID = $statistic->insert()->StatisticID;
+								$attribute->insert();
+								$enemyinroom->insert();
+							}
+							array_shift($roommodel);
 						}
-					} else { //otherwise put the enemies here
-						$enemyinroom = new DAO("EnemyInRoom"); //dao for adding enemies
-						$enemyinroom->RoomID = $room->RoomID; //into this room
-						for($i = 0; $i < count($roommodel[0]); $i++) { //go through all of the simplified arrays we made earlier
-							$eirm = $roommodel[0][$i];
-							$enemyinroom->EnemyInRoomColumn = $eirm["column"];
-							$enemyinroom->EnemyInRoomRow = $eirm["row"];
-							$enemyinroom->EnemyID = $eirm["enemy"];
-							$statistic = new DAO("Statistic", $eirm["statistic"]);
-							$attribute = $statistic->getMany("StatisticAttribute");						
-							$attribute->StatisticID = $enemyinroom->StatisticID = $statistic->insert()->StatisticID;
-							$attribute->insert();
-							$enemyinroom->insert();
-						}
-						array_shift($roommodel);
 					}
 				}
 			}
 		}
+		DB::close();
 	}
 	
 	function makeMap($fromrow, $fromcolumn, $rows, $columns, &$rooms, &$visited) {

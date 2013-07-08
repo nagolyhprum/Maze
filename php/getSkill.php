@@ -15,7 +15,8 @@
 			"type" => $s->SkillIsActive ? "active" : "passive",
 			"lastUse" => $cs->CharacterSkillCanUse - $s->SkillCooldown,
 			"multiply" => array(),
-			"add" => array()
+			"add" => array(),
+			"action" => $at->isValid() ? $at->AttackTypeName : null
 		);
 		
 		foreach($s->getMany("SkillStatistic") as $ss) {

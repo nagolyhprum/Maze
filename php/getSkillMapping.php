@@ -11,5 +11,6 @@
 			}
 			echo json_encode($r);
 		}
+		DB::close();
 	}
 ?>

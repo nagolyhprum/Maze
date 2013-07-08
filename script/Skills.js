@@ -33,7 +33,7 @@ $(function() {
 			if(skill.isCool) {
 				if((equipment_items.mainhand.item && equipment_items.mainhand.item.attack === skill.action) || skill.action === null) {
 					if(character.statistics.getCurrent("energy") >= skill.energy) {
-						Server.sendDamage(skill.id, function() {
+						Server.sendDamage((key + 9) % 10, function() {
 							addBehavior("Skill", skill.name);
 							character.statistics.energy.current -= skill.energy;
 							character.attack(skill.action || "spellcast");

@@ -43,10 +43,10 @@ var Server = (function() {
 		ajax("php/moveEnemy.php", {cid:cid}, complete);
 	};
 	
-	Server.sendDamage = function(sid, complete) {
-		sid = sid || "";
+	Server.sendDamage = function(index, complete) {
+		index = index || "";
 		var i, j, thisRoom = room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column;
-		ajax("php/sendDamage.php", {cid:cid, direction:character.display.row, skill:sid}, function(result) {
+		ajax("php/sendDamage.php", {cid:cid, direction:character.display.row, index:index}, function(result) {
 			for(i = 0; i < result.enemies.length; i++) {
 				for(j = 0; j < enemies.length; j++) {
 					if(result.enemies[i].id === enemies[j].id) {

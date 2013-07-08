@@ -32,7 +32,8 @@
 			Connects to the databse
 		*/
 		public static function connect() {
-			return DB::$connection = mysqli_connect("localhost", "root", "root", "worldtactics");			
+			DB::$connection = mysqli_connect("localhost", "root", "root", "worldtactics");			
+			return DB::$connection;
 		}
 		
 		/*
@@ -93,13 +94,12 @@
 				}
 				$index = "0";
 				foreach($parameters as $key => $value) { //i need to escape % and then unescape
-					$stmt = mysqli_prepare(DB::getConnection(), "SET @$index = $value;");
+					$stmt = mysqli_prepare(DB::getConnection(), "SET @$index = ?;");
 					mysqli_stmt_bind_param($stmt, is_numeric($value) ? "i" : "s", $value);
 					mysqli_stmt_execute($stmt);
 					mysqli_stmt_close($stmt);
 					$index++;
 				}
-				
 				if($result = mysqli_query(DB::getConnection(), "SELECT * FROM `" . mysqli_real_escape_string(DB::getConnection(), $table) . "` WHERE $condition")) { //get the table result
 					while($row = mysqli_fetch_assoc($result)) { //get each row
 						//convert any numeric columns into numbers
@@ -268,7 +268,7 @@
 		}
 		
 		public function getStatistic($name) {
-			$sn = new DAO("StatisticName", "StatisticName=@0", array($name));
+			$sn = new DAO("StatisticName", "StatisticNameValue=@0", array($name));
 			$csa = new DAO("StatisticAttribute", "StatisticNameID=@0 AND StatisticID=@1", array($sn->StatisticNameID, $this->CharacterID));
 			$s = $csa->StatisticAttributeValue;
 			return $s;
