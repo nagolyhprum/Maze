@@ -3,7 +3,7 @@
 	require "classes/DAO.php";
 	if(DB::connect()) {
 		$character = new Character();
-		if($character->isValid()) {
+		if($character->valid()) {
 			foreach($character->getMany("ItemInInventory") as $iii) {
 				$items[] = $iii->ItemID ? getItem($iii->ItemID) : null;
 			}

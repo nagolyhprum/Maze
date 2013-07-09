@@ -3,7 +3,7 @@
 	
 	if(DB::connect()) {
 		$character = new Character();
-		if($character->isValid()) {
+		if($character->valid()) {
 			foreach($rooms = $character->getOne("Room")->getOne("Map")->getMany("Room") as $room) {
 				if($room->RoomIsDiscovered) {
 					$data[] = $room->RoomWalls;

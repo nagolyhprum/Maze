@@ -3,32 +3,37 @@
 	
 	if(DB::connect()) {
 		$character = new Character();
-		if($character->isValid()) {
+		if($character->valid()) {
 			$now = currentTimeMillis();
-			$enemies = new DAO("EnemyInRoom", "RoomID=@0 AND EnemyInRoomCanUse <= @1 ORDER BY abs(@2 - EnemyInRoomRow) + abs(@3 - EnemyInRoomColumn) ASC", array($character->RoomID, $now, $character->CharacterRow, $character->CharacterColumn));			
-			if($enemies->isValid()) {
+			$enemies = new DAO("EnemyInRoom", "RoomID=? AND EnemyInRoomCanUse <= ? ORDER BY abs(? - EnemyInRoomRow) + abs(? - EnemyInRoomColumn) ASC", array($character->RoomID, $now, $character->CharacterRow, $character->CharacterColumn));			
+			if($enemies->valid()) {
 				$strength = new DAO("StatisticName", "StatisticNameValue='strength'");
 				$intelligence = new DAO("StatisticName", "StatisticNameValue='intelligence'");
 				$speed = new DAO("StatisticName", "StatisticNameValue='speed'");
 				$health = new DAO("StatisticName", "StatisticNameValue='health'");
 				foreach($enemies as $enemy) {
-					$h = new DAO("StatisticAttribute", "StatisticID=@0 AND StatisticNameID=@1", array($enemy->StatisticID, $health->StatisticNameID));
+					$h = new DAO("StatisticAttribute", "StatisticID=? AND StatisticNameID=?", array($enemy->StatisticID, $health->StatisticNameID));
 					if($h->StatisticAttributeValue > 0) {
 						$tiles[$enemy->EnemyInRoomRow][$enemy->EnemyInRoomColumn] = 1;				
 						$es[] = $enemy;
 					}
 				}			
-				$h = new DAO("StatisticAttribute", "StatisticID=@0 AND StatisticNameID=@1", array($character->CharacterCurrentStatisticID, $health->StatisticNameID));	
+				$h = new DAO("StatisticAttribute", "StatisticID=? AND StatisticNameID=?", array($character->CharacterCurrentStatisticID, $health->StatisticNameID));	
 				$health = $character->getStatistic("health");
 				$defense = $character->getStatistic("defense");
 				$resistance = $character->getStatistic("resistance");		
 				$damage = 0;
-				do {
-					$again = 0;
-					for($i = 0; $i < count($es); $i++) {
-						$enemy = $es[$i];
+				for($i = 0; $i < count($es); $i++) {
+					$enemy = $es[$i];
+					$s = new DAO("StatisticAttribute", "StatisticID=? AND StatisticNameID=?", array($enemy->StatisticID, $speed->StatisticNameID));
+					$str = new DAO("StatisticAttribute", "StatisticID=? AND StatisticNameID=?", array($enemy->StatisticID, $strength->StatisticNameID));
+					$str = ceil($str->StatisticAttributeValue - ($str->StatisticAttributeValue * $defense / 100));
+					$int = new DAO("StatisticAttribute", "StatisticID=? AND StatisticNameID=?", array($enemy->StatisticID, $intelligence->StatisticNameID));
+					$int = ceil($int->StatisticAttributeValue - ($int->StatisticAttributeValue * $resistance / 100));
+					$power = max($str, $int);
+					do {
+						$again = 0;
 						if($enemy->EnemyInRoomCanUse <= $now) {
-							$s = new DAO("StatisticAttribute", "StatisticID=@0 AND StatisticNameID=@1", array($enemy->StatisticID, $speed->StatisticNameID));
 							$enemy->EnemyInRoomCanUse += timeToMove($s->StatisticAttributeValue);
 							if(abs($character->CharacterRow - $enemy->EnemyInRoomRow) + abs($character->CharacterColumn - $enemy->EnemyInRoomColumn) == 1) { //then attack
 								$data[$i] = array(
@@ -38,11 +43,7 @@
 									"column" => $enemy->EnemyInRoomColumn,
 									"id" => $enemy->EnemyInRoomID
 								);
-								$str = new DAO("StatisticAttribute", "StatisticID=@0 AND StatisticNameID=@1", array($enemy->StatisticID, $strength->StatisticNameID));
-								$str = ceil($str->StatisticAttributeValue - ($str->StatisticAttributeValue * $defense / 100));
-								$int = new DAO("StatisticAttribute", "StatisticID=@0 AND StatisticNameID=@1", array($enemy->StatisticID, $intelligence->StatisticNameID));
-								$int = ceil($int->StatisticAttributeValue - ($int->StatisticAttributeValue * $resistance / 100));
-								$damage += max($str, $int);
+								$damage += $power;
 							} else { //then move
 								$next = getNextMove($tiles, array("row" => $enemy->EnemyInRoomRow, "column" => $enemy->EnemyInRoomColumn), array("row" => $character->CharacterRow, "column" => $character->CharacterColumn));								
 								$tiles[$enemy->EnemyInRoomRow][$enemy->EnemyInRoomColumn] = 0;
@@ -57,15 +58,12 @@
 							}
 							$again = 1;
 						}
-						$es[$i] = $enemy;
-					}		
-				} while($again && ($health - $damage) > 0);				
+					} while($again && ($health - $damage) > 0);		
+					$enemy->EnemyInRoomUsedAt = $now;
+					$enemy->update();
+				}		
 				$h->StatisticAttributeValue -= $damage;
 				$h->update();
-				foreach($es as $e) {
-					$e->EnemyInRoomUsedAt = $now;
-					$e->update();
-				}
 			}			
 			echo json_encode(array("character" => array("health" => $health - $damage), "enemies" => $data, "cts" => $now));
 		}

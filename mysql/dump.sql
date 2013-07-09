@@ -309,6 +309,7 @@ CREATE TABLE `characterskill` (
   `SkillID` bigint(20) NOT NULL,
   `CharacterSkillIndex` bigint(20) DEFAULT NULL,
   `CharacterSkillCanUse` BIGINT NOT NULL DEFAULT 0,
+  `CharacterSkillUsedAt` BIGINT DEFAULT NULL,
   PRIMARY KEY (`CharacterSkillID`),
   KEY `fk_CharacterSkill_Skill2_idx` (`SkillID`),
   KEY `fk_CharacterSkill_Character2_idx` (`CharacterID`),
@@ -324,10 +325,10 @@ CREATE TABLE `characterskill` (
 LOCK TABLES `characterskill` WRITE;
 /*!40000 ALTER TABLE `characterskill` DISABLE KEYS */;
 INSERT INTO `characterskill` VALUES 
-	(1,1,1,0,0),
-	(2,1,2,1,0),
-	(3,1,3,2,0),
-	(4,1,4,3,0);
+	(1,1,1,0,0,NULL),
+	(2,1,2,1,0,NULL),
+	(3,1,3,2,0,NULL),
+	(4,1,4,3,0,NULL);
 /*!40000 ALTER TABLE `characterskill` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -991,13 +992,13 @@ INSERT INTO StatisticAttribute VALUES
 	(1, 1, 1, 0),
 	(2, 1, 2, 0),
 	(3, 1, 5, 0),
-	(4, 1, 7, 0),
+	(4, 1, 7, 0), -- health
 	(5, 1, 8, 0),
 	-- max
 	(6, 2, 1, 10),
 	(7, 2, 2, 20),
 	(8, 2, 5, 20),
-	(9, 2, 7, 100),
+	(9, 2, 7, 100), -- health
 	(10, 2, 8, 100),
 	-- enemy
 	(11, 3, 7, 20), -- health

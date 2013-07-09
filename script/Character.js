@@ -37,7 +37,7 @@ $(function() {
 			} else {
 				moved = 0;
 				if(which === 32) {							
-					Server.sendDamage();
+					Server.sendDamage("");
 					addBehavior("Character", "Attacks");
 					character.attack();
 				}

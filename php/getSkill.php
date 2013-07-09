@@ -1,6 +1,6 @@
 <?php
 	function getSkill($character, $sid) {
-		$cs = new DAO("CharacterSkill", "CharacterID=@0 AND SkillID=@1", array($character->CharacterID, $sid));
+		$cs = new DAO("CharacterSkill", "CharacterID=? AND SkillID=?", array($character->CharacterID, $sid));
 		$s = $cs->getOne("Skill");
 		$at = $s->getOne("AttackType");
 		$skill = array(
@@ -16,7 +16,7 @@
 			"lastUse" => $cs->CharacterSkillCanUse - $s->SkillCooldown,
 			"multiply" => array(),
 			"add" => array(),
-			"action" => $at->isValid() ? $at->AttackTypeName : null
+			"action" => $at ? $at->AttackTypeName : null
 		);
 		
 		foreach($s->getMany("SkillStatistic") as $ss) {

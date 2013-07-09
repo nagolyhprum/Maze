@@ -2,7 +2,7 @@
 	require_once("classes/DAO.php");	
 	if(DB::connect()) { 
 		$character = new Character(); //get the currently used character
-		if($character->isValid()) { //if it is valid
+		if($character->valid()) { //if it is valid
 			//get the current statistics
 			foreach($character->getOne("Statistic", "CharacterCurrentStatisticID")->getMany("StatisticAttribute") as $attribute) {
 				$statistics[$attribute->getOne("StatisticName")->StatisticNameValue]["current"] = $attribute->StatisticAttributeValue;
@@ -12,7 +12,7 @@
 				$statistics[$attribute->getOne("StatisticName")->StatisticNameValue]["max"] = $attribute->StatisticAttributeValue;
 			} 
 			//get the audio
-			$characteraudio = new DAO("CharacterAudio", "CharacterAudioIsMale=@0 OR CharacterAudioIsMale IS NULL", array($character->CharacterIsMale));
+			$characteraudio = new DAO("CharacterAudio", "CharacterAudioIsMale=? OR CharacterAudioIsMale IS NULL", array($character->CharacterIsMale));
 			foreach($characteraudio as $audio) {
 				$sounds[$audio->getOne("AttackType")->AttackTypeName] = $audio->getOne("Audio")->AudioName;
 			}

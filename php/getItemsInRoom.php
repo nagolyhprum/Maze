@@ -4,7 +4,7 @@
 	
 	if(DB::connect()) {
 		$character = new Character();
-		if($character->isValid()) {
+		if($character->valid()) {
 			foreach($character->getMany("ItemInRoom", "RoomID") as $iir) {
 				if($iir->ItemInRoomIsActive) {
 					$item = getItem($iir->ItemID);

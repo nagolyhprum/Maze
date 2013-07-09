@@ -2,11 +2,11 @@
 	require_once("classes/DAO.php");
 	if(DB::connect()) {
 		$character = new Character();
-		if($character->isValid()) {		
+		if($character->valid()) {		
 			$enemies = array();
 			$health = new DAO("StatisticName", "StatisticNameValue='health'");
 			foreach($character->getOne("Room")->getMany("EnemyInRoom") as $re) {				
-				$h = new DAO("StatisticAttribute", "StatisticNameID=@0 AND StatisticID=@1", array($health->StatisticNameID, $re->StatisticID));
+				$h = new DAO("StatisticAttribute", "StatisticNameID=? AND StatisticID=?", array($health->StatisticNameID, $re->StatisticID));
 				if($h->StatisticAttributeValue > 0) {
 					$e = $re->getOne("Enemy");				
 					
@@ -22,7 +22,7 @@
 						)
 					);
 					foreach($re->getMany("StatisticAttribute", "StatisticID") as $sa) {
-						$enemy["statistics"][$sa->getOne("StatisticName")->StatisticNameValue]["current"]	= $sa->StatisticAttributeValue;
+						$enemy["statistics"][$sa->getOne("StatisticName")->StatisticNameValue]["current"] = $sa->StatisticAttributeValue;
 					}
 					foreach($e->getMany("StatisticAttribute", "StatisticID") as $sa) {
 						$enemy["statistics"][$sa->getOne("StatisticName")->StatisticNameValue]["max"]	= $sa->StatisticAttributeValue;

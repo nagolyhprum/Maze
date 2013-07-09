@@ -3,7 +3,7 @@
 	
 	if(DB::connect()) { 
 		$character = new Character(); //get the active character
-		if($character->isValid()) { //if the character is valid
+		if($character->valid()) { //if the character is valid
 			$room = $character->getOne("Room");
 			if(!$room->RoomIsDiscovered) {
 				$room->RoomIsDiscovered = 1;

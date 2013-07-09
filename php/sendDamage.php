@@ -11,34 +11,35 @@
 	
 	if(DB::connect()) {
 		$character = new Character();
-		if($character->isValid()) {
+		if($character->valid()) {
 			$now = currentTimeMillis();
 			if($character->CharacterCanUse <= $now) {
 				$area = $success = 1;
 				$at = 0;
 				$mainhand = new DAO("ItemType", "ItemTypeName='mainhand'");
-				$left = new DAO("ItemInEquipment", "CharacterID=@0 AND ItemTypeID=@1 LIMIT 0, 1", array($character->CharacterID, $mainhand->ItemTypeID));
+				$left = new DAO("ItemInEquipment", "CharacterID=? AND ItemTypeID=? LIMIT 0, 1", array($character->CharacterID, $mainhand->ItemTypeID));
 				if($left->ItemID) {
 					$im = $left->getOne("Item")->getOne("ItemModel");
 					$area = $im->ItemModelArea;
 					$at = $im->getOne("AttackType")->AttackTypeName;
 				}
-				$right = new DAO("ItemInEquipment", "CharacterID=@0 AND ItemTypeID=@1 LIMIT 1, 1", array($character->CharacterID, $mainhand->ItemTypeID));
+				$right = new DAO("ItemInEquipment", "CharacterID=? AND ItemTypeID=? LIMIT 1, 1", array($character->CharacterID, $mainhand->ItemTypeID));
 				if($right->ItemID) {
 					$im = $right->getOne("Item")->getOne("ItemModel");
 					$area = $area ? $area : $im->ItemModelArea;
 					$a = $at ? $at : $im->getOne("AttackType")->AttackTypeName;
 				}		
 				if(is_numeric($_GET["index"])) {
-					$cs = new DAO("CharacterSkill", "CharacterID=@0 AND CharacterSkillIndex=@1 AND CharacterSkillCanUse <= @2", array($character->CharacterID, $index, $now));
-					if($cs->isValid()) {
+					$cs = new DAO("CharacterSkill", "CharacterID=? AND CharacterSkillIndex=? AND CharacterSkillCanUse <= ?", array($character->CharacterID, $index, $now));
+					if($cs->valid()) {
 						$skill = $cs->getOne("Skill");
 						$sat = $skill->getOne("AttackType")->AttackTypeName;
 						if((!$sat || $sat == $at) && $skill->SkillIsActive && $skill->SkillEnergy <= $character->getStatistic("energy")) {
-							$cs->CharacterSkillCanUse += $skill->SkillCooldown;							
+							$cs->CharacterSkillCanUse = $now + $skill->SkillCooldown;							
+							$cs->CharacterSkillUsedAt = $now;
 							$cs->update();
 							$energy = new DAO("StatisticName", "StatisticNameValue='energy'");
-							$e = new DAO("StatisticAttribute", "StatisticID=@0 AND StatisticNameID=@1", array($character->CharacterCurrentStatisticID, $energy->StatisticNameID));
+							$e = new DAO("StatisticAttribute", "StatisticID=? AND StatisticNameID=?", array($character->CharacterCurrentStatisticID, $energy->StatisticNameID));
 							$e->StatisticAttributeValue -= $skill->SkillEnergy;
 							$e->update();
 							//TODO ADD PERMANANT STATISTICS
@@ -92,9 +93,9 @@
 					$data = array("enemies" => array(), "items" => array());
 					for($i = 0; $i < count($enemies); $i++) {
 						$eir = $enemies[$i];
-						$h = new DAO("StatisticAttribute", "StatisticNameID=@0 AND StatisticID=@1", array($health->StatisticNameID, $eir->StatisticID));
+						$h = new DAO("StatisticAttribute", "StatisticNameID=? AND StatisticID=?", array($health->StatisticNameID, $eir->StatisticID));
 						if($h->StatisticAttributeValue > 0) {
-							$dr = new DAO("StatisticAttribute", "StatisticNameID=@0 AND StatisticID=@1", array($sn->StatisticNameID, $eir->StatisticID));
+							$dr = new DAO("StatisticAttribute", "StatisticNameID=? AND StatisticID=?", array($sn->StatisticNameID, $eir->StatisticID));
 							$d = ceil($damage - $damage * $dr->StatisticAttributeValue / 100);
 							$h->StatisticAttributeValue = max(0, $h->StatisticAttributeValue - $d);
 							$h->update();
@@ -109,8 +110,8 @@
 					}
 					foreach($dead as $eir) {						
 						$chance = mt_rand(0, 100);
-						$ei = new DAO("EnemyItem", "EnemyID=@0 AND EnemyItemChance > @1 ORDER BY EnemyItemChance ASC LIMIT 1", array($eir->EnemyID, $chance));
-						if($ei->isValid()) {
+						$ei = new DAO("EnemyItem", "EnemyID=? AND EnemyItemChance > ? ORDER BY EnemyItemChance ASC LIMIT 1", array($eir->EnemyID, $chance));
+						if($ei->valid()) {
 							$i = new DAO("Item");
 							$i->ItemModelID = $ei->ItemModelID;
 							$i->insert();
@@ -123,7 +124,8 @@
 							$data["items"][] = $iir->ItemInRoomID;
 						}
 					}
-					$character->CharacterCanUse += $character->timeToMove();
+					$character->CharacterCanUse = $now + $character->timeToMove();
+					$character->CharacterUsedAt = $now;
 					$character->update();
 					echo json_encode($data);
 				}

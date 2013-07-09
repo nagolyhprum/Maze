@@ -5,10 +5,10 @@
 	$mapmodel = 1;
 	if(DB::connect()) {
 		$character = new Character();
-		if($character->isValid() && $character->RoomID === NULL) { //make sure this character is valid
-			$mapmodel = new DAO("MapModel", $mapmodel);	//get the requested mapmodel
-			if($mapmodel->isValid()) { //if the map model is valid
-				foreach($mapmodel->getMany("RoomModelInMapModel") as $rmimm) { //go through all of the room models in this map model
+		if($character->valid() && $character->RoomID === NULL || TRUE) { //make sure this character is valid
+			$mapmodel = new DAO("MapModel", $mapmodel);	//get the requested mapmodel			
+			if($mapmodel->valid()) { //if the map model is valid
+				foreach($mapmodel->getMany("RoomModelInMapModel") as $rmimm) { //go through all of the room models in this map model				
 					foreach($rmimm->getOne("RoomModel")->getMany("EnemyInRoomModel") as $eirm) { //go through all of the enemies in each room model
 						$enemy = $eirm->getOne("Enemy"); //get the associated enemy
 						//set up simple data
@@ -43,13 +43,14 @@
 							$character->update();
 							$current = $character->getOne("Statistic", "CharacterCurrentStatisticID")->getMany("StatisticAttribute");
 							$max = $character->getOne("Statistic", "CharacterMaxStatisticID")->getMany("StatisticAttribute");
-							while($current->valid() && $max->valid()) {
-								$c = $current->current();
-								$m = $max->current();
-								$c->StatisticAttributeValue = $m->StatisticAttributeValue;
-								$c->update();
-								$current->next();
-								$max->next();
+							foreach($current as $c) {
+								foreach($max as $m) {
+									if($c->StatisticNameID == $m->StatisticNameID) {
+										$c->StatisticAttributeValue = $m->StatisticAttributeValue;
+										$c->update();
+										break;
+									}
+								}
 							}
 						} else { //otherwise put the enemies here
 							$enemyinroom = new DAO("EnemyInRoom"); //dao for adding enemies

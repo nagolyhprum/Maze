@@ -3,7 +3,7 @@
 	require "getSkill.php";
 	if(DB::connect()) {
 		$character = new Character();
-		if($character->isValid()) {
+		if($character->valid()) {
 			$skills = new DAO("Skill", true);
 			foreach($skills as $skill) {		
 				$r[] = getSkill($character, $skill->SkillID);
