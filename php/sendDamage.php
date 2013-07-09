@@ -91,6 +91,7 @@
 						getAssultedEnemy($enemies, $tiles, $character->CharacterRow, $character->CharacterColumn - 1, 0, -1, $area);
 					}
 					$data = array("enemies" => array(), "items" => array());
+					$dead = array();
 					for($i = 0; $i < count($enemies); $i++) {
 						$eir = $enemies[$i];
 						$h = new DAO("StatisticAttribute", "StatisticNameID=? AND StatisticID=?", array($health->StatisticNameID, $eir->StatisticID));
@@ -114,14 +115,14 @@
 						if($ei->valid()) {
 							$i = new DAO("Item");
 							$i->ItemModelID = $ei->ItemModelID;
-							$i->insert();
+							$i->insert(true);
 							$iir = new DAO("ItemInRoom");
 							$iir->ItemID = $i->ItemID;
 							$iir->ItemInRoomRow = $eir->EnemyInRoomRow;
 							$iir->ItemInRoomColumn = $eir->EnemyInRoomColumn;
 							$iir->RoomID = $character->RoomID;
 							$iir->insert();
-							$data["items"][] = $iir->ItemInRoomID;
+							$data["items"] = true;
 						}
 					}
 					$character->CharacterCanUse = $now + $character->timeToMove();

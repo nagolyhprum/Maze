@@ -1,7 +1,7 @@
 $(function() {
 	var count = 0;
 	items.events.attach("drop", function() {
-		Server.getRoomItems(-1, function(list) {
+		Server.getRoomItems(function(list) {
 			items.list = list;			
 			while(count < list.length) {
 				var move = list[count].sounds.move;
@@ -11,7 +11,7 @@ $(function() {
 		});
 	});
 	room.events.attach("change", function() {
-		Server.getRoomItems(-1, function(list) {
+		Server.getRoomItems(function(list) {
 			items.list = list;
 			count = list.length;
 		});

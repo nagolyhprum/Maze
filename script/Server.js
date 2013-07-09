@@ -54,12 +54,10 @@ var Server = (function() {
 				}
 			}
 			if(result.items) {
-				for(i = 0; i < result.items.length; i++) {		
-					Server.getRoomItems(result.items[i], function(item) {
-						(roomItems[thisRoom] = roomItems[thisRoom] || []).push(item);
-						items.events.invoke("drop");
-					});
-				}
+				Server.getRoomItems(function(is) {
+					roomItems = is;
+					items.events.invoke("drop");
+				});
 			}
 			complete && complete();
 		});
@@ -353,8 +351,8 @@ var Server = (function() {
 
 	var roomItems = [];
 
-	Server.getRoomItems = function(iirid, success) {
-		ajax("php/getItemsInRoom.php", {iirid:iirid, cid:cid}, function(items) {
+	Server.getRoomItems = function(success) {
+		ajax("php/getItemsInRoom.php", {cid:cid}, function(items) {
 			if(items) {
 				for(var i = 0; i < items.length; i++) {
 					items[i] = new Item(items[i]);

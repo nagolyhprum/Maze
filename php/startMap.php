@@ -5,7 +5,7 @@
 	$mapmodel = 1;
 	if(DB::connect()) {
 		$character = new Character();
-		if($character->valid() && $character->RoomID === NULL || TRUE) { //make sure this character is valid
+		if($character->valid() && $character->RoomID === NULL) { //make sure this character is valid
 			$mapmodel = new DAO("MapModel", $mapmodel);	//get the requested mapmodel			
 			if($mapmodel->valid()) { //if the map model is valid
 				foreach($mapmodel->getMany("RoomModelInMapModel") as $rmimm) { //go through all of the room models in this map model				
@@ -27,19 +27,18 @@
 				}
 				shuffle($roommodel); //randomize the room models
 				$map = new DAO("Map"); //make the map
-				$map->insert();			
+				$map->insert(true);			
 				makeMap(0, 0, $mapmodel->MapModelRows, $mapmodel->MapModelColumns, $rooms, $visited); //prepared the rooms for adding later
 				$room = new DAO("Room"); //dao for creating rooms
 				$room->MapID = $map->MapID; //for this map
 				for($room->RoomRow = 0; $room->RoomRow < $mapmodel->MapModelRows; $room->RoomRow++) { //go through all of the rows
 					for($room->RoomColumn = 0; $room->RoomColumn < $mapmodel->MapModelColumns; $room->RoomColumn++) { //and columns of this map
 						$room->RoomWalls = $rooms[$room->RoomRow][$room->RoomColumn]["walls"] ^ WALL_ALL; //create the room with this wall data
-						$room->insert();
+						$room->insert(true);
 						if(!$character->RoomID) { //if this is the first room then put the character here
 							$character->RoomID = $room->RoomID;
 							$character->CharacterColumn = floor(ROOM_COLUMNS / 2);
 							$character->CharacterRow = floor(ROOM_ROWS / 2);
-							$character->CharacterDirection = DIRECTION_DOWN;
 							$character->update();
 							$current = $character->getOne("Statistic", "CharacterCurrentStatisticID")->getMany("StatisticAttribute");
 							$max = $character->getOne("Statistic", "CharacterMaxStatisticID")->getMany("StatisticAttribute");
@@ -62,7 +61,7 @@
 								$enemyinroom->EnemyID = $eirm["enemy"];
 								$statistic = new DAO("Statistic", $eirm["statistic"]);
 								$attribute = $statistic->getMany("StatisticAttribute");						
-								$attribute->StatisticID = $enemyinroom->StatisticID = $statistic->insert()->StatisticID;
+								$attribute->StatisticID = $enemyinroom->StatisticID = $statistic->insert(true)->StatisticID;
 								$attribute->insert();
 								$enemyinroom->insert();
 							}

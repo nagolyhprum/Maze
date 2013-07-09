@@ -21,13 +21,12 @@
 	define("ROOM_ROWS", 7);
 	define("ROOM_COLUMNS", 7);
 	
-	//USER
-	
-	$USER = 1;
-	
 	class DB {
+		
+		private static $index = 0;
 		private static $connection;
-		private static $cache = array();
+		private static $cache = array();		
+		private static $buffer = "";
 		
 		/*
 			Connects to the databse
@@ -37,7 +36,7 @@
 			return DB::$connection;
 		}
 		
-		public static function escape($s) {
+		private static function escape($s) {
 			return mysqli_real_escape_string(DB::$connection, $s);
 		}
 		
@@ -45,21 +44,38 @@
 			Disconnects from the databse
 		*/
 		public static function close() {
-			mysqli_close(DB::$connection);
+			if(DB::$buffer) {
+				//echo str_replace(";", ";<br/>", DB::$buffer);
+				if(mysqli_multi_query(DB::$connection, DB::$buffer)) {
+					do {
+						if($result = mysqli_store_result(DB::$connection)){
+							mysqli_free_result($result);
+						}
+					} while(mysqli_more_results(DB::$connection) && mysqli_next_result(DB::$connection));
+				}
+				
+				mysqli_close(DB::$connection);
+			}
 		}
 		
-		public static function query($sql, $parameters, $useCache = true) {
+		public static function query($sql, $parameters, $useCache = true, $immediate = true) {
 			$last = 0;
 			$index = strpos($sql, "?");
 			$executed = "";
 			while($index !== false) {
-				if(is_numeric($parameters[0]) || is_null($parameters[0])) {
+				$executed .= substr($sql, $last, $index - $last);
+				if($sql[$index + 1] == "?") {					
+					$executed .= "`" . DB::escape($parameters[0]) . "`";
+					++$index;
+				} else if(is_numeric($parameters[0]) || is_null($parameters[0])) {					
 					if(is_null($parameters[0])) {
 						$parameters[0] = "null";
-					}
-					$executed .= substr($sql, $last, $index - $last) . DB::escape($parameters[0]);
-				} else {
-					$executed .= substr($sql, $last, $index - $last) . "'" . DB::escape($parameters[0]) . "'";
+					}					
+					$executed .= DB::escape($parameters[0]);
+				} else if(is_array($parameters[0])) {					
+					$executed .= DB::escape($parameters[0]["name"]);					
+				} else {				
+					$executed .= "'" . DB::escape($parameters[0]) . "'";
 				}
 				array_shift($parameters);
 				$last = $index + 1;
@@ -72,7 +88,11 @@
 				mysqli_data_seek($result, 0);
 				return $result;
 			}
-			return DB::$cache[$executed] = mysqli_query(DB::$connection, $executed);
+			if($immediate) {
+				return DB::$cache[$executed] = mysqli_query(DB::$connection, $executed);
+			} else {
+				DB::$buffer .= $executed;
+			}
 		}
 		
 		public static function getConnection() {
@@ -80,6 +100,14 @@
 				DB::connect();
 			}
 			return DB::$connection;
+		}
+		
+		public static function insertID() {		
+			++DB::$index;
+			DB::query("SET @" . DB::$index . " = LAST_INSERT_ID();", array($id), false, false);
+			return array(
+				"name" => "@" . DB::$index
+			);
 		}
 	}
 	
@@ -116,7 +144,7 @@
 		/*
 			Sets up the object for inserting or selection
 		*/
-		public function __construct($table, $condition, $parameters) {
+		public function __construct($table, $condition = false, $parameters = array()) {
 			$this->table = $table; 
 			if($condition || is_array($condition)) { //if there is a condition then we are selecting or have already selected
 				if(is_array($condition)) { //if the condition is an array then we have already selected					
@@ -130,10 +158,11 @@
 					return;
 				}
 				if(is_numeric($condition)) { //if the condition is a number then we will set up for id selection for this table
-					$parameters = array($condition);
-					$condition = "`" . DB::escape($table . "ID") . "`=?";
+					$parameters = array($table . "ID", $condition);
+					$condition = "??=?";
 				}
-				if($result = DB::query("SELECT * FROM `" . DB::escape($table) . "` WHERE $condition", $parameters)) { //get the table result
+				array_unshift($parameters, $table);
+				if($result = DB::query("SELECT * FROM ?? WHERE $condition;", $parameters)) { //get the table result
 					while($row = mysqli_fetch_assoc($result)) { //get each row
 						//convert any numeric columns into numbers
 						foreach($row as $key => &$value) {
@@ -147,7 +176,7 @@
 					}
 				}
 			} else { //we are attempting to do an insert and should at least provide the fields necessary
-				if($result = DB::query("SHOW COLUMNS IN `" . DB::escape($table) . "`")) {					
+				if($result = DB::query("SHOW COLUMNS IN ??", array($table))) {					
 					while($row = mysqli_fetch_assoc($result)) {
 						$value = $row["Default"];
 						if(is_numeric($value)) {
@@ -186,7 +215,7 @@
 		/*
 			This table has the specified column which is a foreign key to the specified table
 		*/
-		public function getOne($foreignTable, $localColumn) {
+		public function getOne($foreignTable, $localColumn = false) {
 			$localTable = $this->table;
 			$foreignColumn = $foreignTable . "ID";
 			$localColumn = $localColumn ? $localColumn : $foreignColumn;
@@ -209,7 +238,7 @@
 		/*
 			Gets all rows that have a relationship with this one in the specified table
 		*/
-		public function getMany($foreignTable, $localColumn) {
+		public function getMany($foreignTable, $localColumn = false) {
 			$localTable = $this->table;
 			$foreignColumn = $localColumn ? $localColumn : $localTable . "ID";
 			$localColumn = $localColumn ? $localColumn : $localTable . "ID";
@@ -229,27 +258,32 @@
 			return $this->$foreignTable;
 		}
 		
-		public function insert() {
+		public function insert($generateKey = false) {
 			$count = count($this->data);
 			for($i = 0; $i < $count; $i++) {
 				$columns = "";
 				$values ="";		
-				$parameters	= array();
-				foreach($this->data[$i] as $key => $value) {
-					if($key !== ($this->table . "ID") && !($value instanceof DAO)) {
+				$valuesr = array();
+				$columnsr = array();
+				foreach($this->data[$i] as $column => $value) {
+					if($column != ($this->table . "ID") && !($value instanceof DAO)) {
 						if($columns) {
 							$columns .= ", ";
 						}
-						$columns .= "`" . DB::escape($key) . "`";
+						$columns .= "??";
+						$columnsr[] = $column;
 						if($values) {
 							$values .= ", ";
 						}
 						$values .= "?";
-						$parameters[] = $value;
+						$valuesr[] = $value;
 					}
 				}
-				DB::query("INSERT INTO `" . DB::escape($this->table) . "` ($columns) VALUES ($values)", $parameters, false);
-				$this->data[$i][$this->table . "ID"] = mysqli_insert_id(DB::getConnection());
+				$parameters = array_merge(array($this->table), $columnsr, $valuesr);
+				DB::query("INSERT INTO ?? ($columns) VALUES ($values);", $parameters, false, false);
+				if($generateKey) {
+					$this->data[$i][$this->table . "ID"] = DB::insertID();
+				}
 			}
 			return $this;
 		}
@@ -259,17 +293,20 @@
 			for($i = 0; $i < $count; $i++) {
 				$set = "";
 				$parameters = array();
-				foreach($this->data[$i] as $key => $value) {
-					if($key !== ($this->table . "ID") && !($value instanceof DAO)) {
+				foreach($this->data[$i] as $column => $value) {
+					if($column != ($this->table . "ID") && !($value instanceof DAO)) {
 						if($set) {
 							$set .= ", ";
 						}
-						$set .= "`" . DB::escape($key) . "`=?";
+						$set .= "??=?";
+						$parameters[] = $column;
 						$parameters[] = $value;
 					}
 				}
+				array_unshift($parameters, $this->table);
+				$parameters[] = $this->table . "ID";
 				$parameters[] = $this->data[$i][$this->table . "ID"];
-				DB::query("UPDATE `" . DB::escape($this->table) . "` SET $set WHERE " . $this->table . "ID=?", $parameters, false);				
+				DB::query("UPDATE ?? SET $set WHERE ??=?;", $parameters, false, false);				
 			}
 			return $this;
 		}
@@ -278,15 +315,11 @@
 	
 	class Character extends DAO {
 	
-		public function __construct($condition, $parameters) {
-			if(!$condition) {
-				session_start();
-				$_SESSION["user"] = 1;
-				parent::__construct("Character", "CharacterID=? AND UserID=?", array((double)$_GET["cid"], $_SESSION["user"]));
-				session_commit();
-			} else {
-				parent::__construct("Character", $condition, $paramters);
-			}
+		public function __construct() {
+			session_start();
+			$_SESSION["user"] = 1;
+			parent::__construct("Character", "CharacterID=? AND UserID=?", array((double)$_GET["cid"], $_SESSION["user"]));
+			session_commit();
 		}
 		
 		public function timeToMove() {

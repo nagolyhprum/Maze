@@ -64,6 +64,10 @@
 				}		
 				$h->StatisticAttributeValue -= $damage;
 				$h->update();
+				if($h->StatisticAttributeValue <= 0) {
+					$character->RoomID = null;
+					$character->update();
+				}
 			}			
 			echo json_encode(array("character" => array("health" => $health - $damage), "enemies" => $data, "cts" => $now));
 		}

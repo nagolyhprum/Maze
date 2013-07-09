@@ -148,7 +148,6 @@ CREATE TABLE `character` (
   `RoomID` bigint(20) DEFAULT NULL,
   `CharacterColumn` bigint(20) DEFAULT NULL,
   `CharacterRow` bigint(20) DEFAULT NULL,
-  `CharacterDirection` bigint(20) DEFAULT NULL,
   `CharacterIsMale` tinyint(1) NOT NULL,
   `CharacterCanUse` BIGINT NOT NULL DEFAULT 0,
 	`CharacterUsedAt` BIGINT DEFAULT NULL,
@@ -172,7 +171,7 @@ CREATE TABLE `character` (
 
 LOCK TABLES `character` WRITE;
 /*!40000 ALTER TABLE `character` DISABLE KEYS */;
-INSERT INTO `character` VALUES (1,'nagolyhprum',50,1,2,1,null,null,null,null,1, 0, NULL);
+INSERT INTO `character` VALUES (1,'nagolyhprum',50,1,2,1,null,null,null,1, 0, NULL);
 /*!40000 ALTER TABLE `character` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -445,7 +444,6 @@ CREATE TABLE `enemyinroom` (
   `RoomID` bigint(20) NOT NULL,
   `EnemyInRoomColumn` bigint(20) NOT NULL,
   `EnemyInRoomRow` bigint(20) NOT NULL,
-  `EnemyInRoomDirection` bigint(20) NOT NULL DEFAULT 2,
 	`EnemyInRoomCanUse` BIGINT NOT NULL DEFAULT 0,
 	`EnemyInRoomUsedAt` BIGINT DEFAULT NULL,
   PRIMARY KEY (`EnemyInRoomID`),
@@ -469,7 +467,6 @@ CREATE TABLE `enemyinroommodel` (
   `EnemyInRoomModelID` bigint(20) NOT NULL AUTO_INCREMENT,
   `EnemyID` bigint(20) NOT NULL,
   `RoomModelID` bigint(20) NOT NULL,
-  `EnemyInRoomModelDirection` bigint(20) NOT NULL,
   `EnemyInRoomModelRow` bigint(20) NOT NULL,
   `EnemyInRoomModelColumn` bigint(20) NOT NULL,
   PRIMARY KEY (`EnemyInRoomModelID`)
@@ -482,7 +479,7 @@ CREATE TABLE `enemyinroommodel` (
 
 LOCK TABLES `enemyinroommodel` WRITE;
 /*!40000 ALTER TABLE `enemyinroommodel` DISABLE KEYS */;
-INSERT INTO `enemyinroommodel` VALUES (1,1,1,1,3,1),(2,1,1,2,1,3);
+INSERT INTO `enemyinroommodel` VALUES (1,1,1,3,1),(2,1,1,1,3);
 /*!40000 ALTER TABLE `enemyinroommodel` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1124,3 +1121,5 @@ CREATE TABLE EnemyItem (
 );
 
 INSERT INTO EnemyItem VALUES (1, 1, 100, 1);
+
+SET FOREIGN_KEY_CHECKS=1;

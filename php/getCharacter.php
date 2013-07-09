@@ -20,7 +20,7 @@
 			$json = array(
 				"name" => $character->CharacterName,
 				"portrait" => $character->getOne("Image")->ImageName,
-				"display" => array("row" => $character->CharacterDirection),
+				"display" => array("row" => DIRECTION_DOWN),
 				"location" => array(
 					"row" => $character->CharacterRow,
 					"column" => $character->CharacterColumn
