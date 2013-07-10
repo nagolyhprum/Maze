@@ -7,6 +7,7 @@ $(function() {
 		
 		setCatchup(function() {
 			if(character.statistics.getCurrent("energy") < character.statistics.getMax("energy")) {
+				Server.healEnergy();
 				character.statistics.energy.current++;
 			}
 		}, 1000);

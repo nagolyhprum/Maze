@@ -34,15 +34,35 @@
 					if($cs->valid()) {
 						$skill = $cs->getOne("Skill");
 						$sat = $skill->getOne("AttackType")->AttackTypeName;
-						if((!$sat || $sat == $at) && $skill->SkillIsActive && $skill->SkillEnergy <= $character->getStatistic("energy")) {
+						if((!$sat || $sat == $at) && $skill->SkillIsActive && $skill->SkillEnergy <= $character->getStatistic("energy", $now)) {
 							$cs->CharacterSkillCanUse = $now + $skill->SkillCooldown;							
 							$cs->CharacterSkillUsedAt = $now;
 							$cs->update();
-							$energy = new DAO("StatisticName", "StatisticNameValue='energy'");
+							$energy = new DAO("StatisticName", "StatisticNameValue='energy'");							
 							$e = new DAO("StatisticAttribute", "StatisticID=? AND StatisticNameID=?", array($character->CharacterCurrentStatisticID, $energy->StatisticNameID));
 							$e->StatisticAttributeValue -= $skill->SkillEnergy;
 							$e->update();
-							//TODO ADD PERMANANT STATISTICS
+							DB::flush();
+							//permanant skills
+							$csas = $character->getOne("Statistic", "CharacterCurrentStatisticID")->getMany("StatisticAttribute");							
+							foreach($skill->getMany("SkillStatistic") as $ss) {
+								if($ss->SkillStatisticDuration == -1) {
+									foreach($ss->getMany("StatisticAttribute", "StatisticID") as $sa) {
+										foreach($csas as $csa) {
+											if($csa->StatisticNameID == $sa->StatisticNameID) {
+												$max = new DAO("StatisticAttribute", "StatisticID=? AND StatisticNameID=?", array($character->CharacterMaxStatisticID, $csa->StatisticNameID)); //max
+												$csa->StatisticAttributeValue = min($csa->StatisticAttributeValue + $sa->StatisticAttributeValue, $max->StatisticAttributeValue);												
+												$csas->write($csa);
+												$changed = 1;
+											}
+										}
+									}
+								}
+							}
+							if($changed) {
+								$csas->update();
+							}
+							$success = 1;
 						} else {
 							$success = 0;
 						}
@@ -57,10 +77,10 @@
 				if($success) {
 					$health = new DAO("StatisticName", "StatisticNameValue='health'");
 					if($at === "spellcast") {
-						$damage = $character->getStatistic("intelligence");
+						$damage = $character->getStatistic("intelligence", $now);
 						$sn = new DAO("StatisticName", "StatisticNameValue='resistance'");
 					} else {
-						$damage = $character->getStatistic("strength");
+						$damage = $character->getStatistic("strength", $now);
 						$sn = new DAO("StatisticName", "StatisticNameValue='defense'");
 					}
 					if($area != 0) {
@@ -125,15 +145,15 @@
 							$data["items"] = true;
 						}
 					}
-					$character->CharacterCanUse = $now + $character->timeToMove();
+					$character->CharacterCanUse = $now + $character->timeToMove($now);
 					$character->CharacterUsedAt = $now;
 					$character->update();
-					echo json_encode($data);
 				}
 			}
 		}
 		DB::close();
 	}	
+	echo json_encode($data);
 	
 	function getAssultedEnemy(&$enemies, $tiles, $row, $column, $moveRow, $moveColumn, $area) {	
 		while($row >= 0 && $row < ROOM_ROWS && $column >= 0 && $column < ROOM_COLUMNS && $area > 0) {

@@ -39,6 +39,7 @@
 							$character->RoomID = $room->RoomID;
 							$character->CharacterColumn = floor(ROOM_COLUMNS / 2);
 							$character->CharacterRow = floor(ROOM_ROWS / 2);
+							$character->CharacterLastEnergyUpdate = currentTimeMillis();
 							$character->update();
 							$current = $character->getOne("Statistic", "CharacterCurrentStatisticID")->getMany("StatisticAttribute");
 							$max = $character->getOne("Statistic", "CharacterMaxStatisticID")->getMany("StatisticAttribute");

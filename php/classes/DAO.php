@@ -40,10 +40,7 @@
 			return mysqli_real_escape_string(DB::$connection, $s);
 		}
 		
-		/*
-			Disconnects from the databse
-		*/
-		public static function close() {
+		public static function flush() {
 			if(DB::$buffer) {
 				//echo str_replace(";", ";<br/>", DB::$buffer);
 				if(mysqli_multi_query(DB::$connection, DB::$buffer)) {
@@ -52,10 +49,17 @@
 							mysqli_free_result($result);
 						}
 					} while(mysqli_more_results(DB::$connection) && mysqli_next_result(DB::$connection));
-				}
-				
-				mysqli_close(DB::$connection);
+				}			
+				DB::$buffer = "";
 			}
+		}
+		
+		/*
+			Disconnects from the databse
+		*/
+		public static function close() {
+			DB::flush();
+			mysqli_close(DB::$connection);
 		}
 		
 		public static function query($sql, $parameters, $useCache = true, $immediate = true) {
@@ -137,7 +141,7 @@
 			return isset($this->data[$this->position]);
 		}
 		
-		private function write($dao) {
+		public function write($dao) {
 			$this->data[$this->position] = $dao->data[0];
 		}
 		
@@ -322,14 +326,38 @@
 			session_commit();
 		}
 		
-		public function timeToMove() {
-			return timeToMove($this->getStatistic("speed"));
+		public function timeToMove($now) {
+			return timeToMove($this->getStatistic("speed", $now));
 		}
 		
-		public function getStatistic($name) {
+		public function getStatistic($name, $now) {
 			$sn = new DAO("StatisticName", "StatisticNameValue=?", array($name));
 			$csa = new DAO("StatisticAttribute", "StatisticNameID=? AND StatisticID=?", array($sn->StatisticNameID, $this->CharacterID));
 			$s = $csa->StatisticAttributeValue;
+			//get skill statistics
+			foreach($this->getMany("CharacterSkill") as $cs) {
+				if($cs->CharacterSkillIndex !== null) {
+					$skill = $cs->getOne("Skill");
+					foreach($skill->getMany("SkillStatistic") as $ss) {
+						if($cs->CharacterSkillUsedAt + $ss->SkillStatisticDuration >= $now) {
+							$statistic = new DAO("StatisticAttribute", "StatisticID=? AND StatisticNameID=?", array($ss->StatisticID, $sn->StatisticNameID));
+							if($statistic->valid()) {
+								$s += $statistic->StatisticAttributeValue;
+							}
+						}
+					}
+				}
+			}
+			//get item statistics
+			foreach($this->getMany("ItemInEquipment") as $iie) {
+				if($iie->ItemID !== null) {
+					$im = $iie->getOne("Item")->getOne("ItemModel");
+					$statistic = new DAO("StatisticAttribute", "StatisticID=? AND StatisticNameID=?", array($im->StatisticID, $sn->StatisticNameID));
+					if($statistic->valid()) {
+						$s += $statistic->StatisticAttributeValue;
+					}
+				}
+			}
 			return $s;
 		}
 	}

@@ -52,10 +52,7 @@ $(function() {
 								sendDamage({column : 0, row : -1}, skill);
 							}  //otherwise this is a self skill
 							skill.lastUse = new Date().getTime();
-							skill.isCool = false;
-							setTimeout(function() {
-								skill.isCool = true;
-							}, skill.cooldown);					
+							skill.isCool = false;			
 							for(i = 0; i < skill.add.length; i++) {
 								remove(skill.add[i]);
 							}
@@ -203,6 +200,7 @@ $(function() {
 	
 	function drawSkillIcon(skill, x, y) {
 		context.drawImage(skill.image.icon, x, y, cellwidth, cellheight);
+		skill.isCool = (skill.lastUse + skill.cooldown) <= new Date().getTime();
 		if(!skill.isCool) {
 			context.save();
 			context.beginPath();

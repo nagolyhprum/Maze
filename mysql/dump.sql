@@ -151,6 +151,7 @@ CREATE TABLE `character` (
   `CharacterIsMale` tinyint(1) NOT NULL,
   `CharacterCanUse` BIGINT NOT NULL DEFAULT 0,
 	`CharacterUsedAt` BIGINT DEFAULT NULL,
+	`CharacterLastEnergyUpdate` BIGINT DEFAULT NULL,
   PRIMARY KEY (`CharacterID`),
   KEY `fk_Character_Image1_idx` (`ImageID`),
   KEY `fk_Character_Statistic1_idx` (`CharacterCurrentStatisticID`),
@@ -171,7 +172,7 @@ CREATE TABLE `character` (
 
 LOCK TABLES `character` WRITE;
 /*!40000 ALTER TABLE `character` DISABLE KEYS */;
-INSERT INTO `character` VALUES (1,'nagolyhprum',50,1,2,1,null,null,null,1, 0, NULL);
+INSERT INTO `character` VALUES (1,'nagolyhprum',50,1,2,1,null,null,null,1, 0, NULL, 0);
 /*!40000 ALTER TABLE `character` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -988,27 +989,32 @@ INSERT INTO StatisticAttribute VALUES
 	-- current
 	(1, 1, 1, 0),
 	(2, 1, 2, 0),
-	(3, 1, 5, 0),
-	(4, 1, 7, 0), -- health
-	(5, 1, 8, 0),
+	(3, 1, 3, 0),
+	(4, 1, 4, 0),
+	(5, 1, 5, 0),
+	(6, 1, 6, 0),
+	(7, 1, 7, 0), -- health
+	(8, 1, 8, 0),
 	-- max
-	(6, 2, 1, 10),
-	(7, 2, 2, 20),
-	(8, 2, 5, 20),
-	(9, 2, 7, 100), -- health
-	(10, 2, 8, 100),
+	(9, 2, 1, 10),
+	(10, 2, 2, 20),
+	(11, 2, 3, 0),
+	(12, 2, 4, 0),
+	(13, 2, 5, 20),
+	(14, 2, 6, 0),
+	(15, 2, 7, 100), -- health
+	(16, 2, 8, 100),
 	-- enemy
-	(11, 3, 7, 20), -- health
-	(12, 3, 8, 20), 
-	(13, 3, 1, 5),
-	(14, 3, 2, 5), -- defense
-	(15, 3, 5, 5),
+	(17, 3, 7, 20), -- health
+	(18, 3, 8, 20), 
+	(19, 3, 1, 5),
+	(20, 3, 2, 5), -- defense
+	(21, 3, 5, 5),
 	-- skill
-	(16, 4, 7, 100),
+	(22, 4, 7, 100),
 	-- item
-	(17, 5, 1, 5),
-	(18, 5, 5, 5);
-;
+	(23, 5, 1, 5),
+	(24, 5, 5, 5);
 
 DROP TABLE IF EXISTS StatisticName;
 

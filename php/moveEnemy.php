@@ -19,9 +19,9 @@
 					}
 				}			
 				$h = new DAO("StatisticAttribute", "StatisticID=? AND StatisticNameID=?", array($character->CharacterCurrentStatisticID, $health->StatisticNameID));	
-				$health = $character->getStatistic("health");
-				$defense = $character->getStatistic("defense");
-				$resistance = $character->getStatistic("resistance");		
+				$health = $character->getStatistic("health", $now);
+				$defense = $character->getStatistic("defense", $now);
+				$resistance = $character->getStatistic("resistance", $now);		
 				$damage = 0;
 				for($i = 0; $i < count($es); $i++) {
 					$enemy = $es[$i];

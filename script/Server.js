@@ -3,6 +3,10 @@ var cid = 1;
 var Server = (function() {
 	var Server = {};
 	
+	Server.healEnergy = function() {
+		ajax("php/healEnergy.php", {cid:cid});
+	};
+	
 	Server.getSkillMapping = function(success) {
 		ajax("php/getSkillMapping.php", {cid:cid}, function(sm) {
 			for(var i = 0; i < sm.length; i++) {

@@ -32,7 +32,7 @@ function ajax(src, params, success) {
 	src += "?" + s;
 	xmlhttp.onreadystatechange = function() {
 		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-			success(JSON.parse(xmlhttp.responseText));
+			success && success(JSON.parse(xmlhttp.responseText));
 		}
 	};
 	xmlhttp.open("GET", src, true);
@@ -385,7 +385,7 @@ var Statistics = (function() {
 	};
 
 	f.prototype.add = function(s, perm) {
-		if(perm && s.duration === 1/0) {
+		if(perm && s.duration === -1) {
 			for(var i = 0; i < stats.length; i++) {
 				this[stats[i]].current = Math.min(s[stats[i]].current + this[stats[i]].current, this[stats[i]].max);
 			}

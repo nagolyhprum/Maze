@@ -27,6 +27,7 @@
 					"max" => $sa->StatisticAttributeValue
 				);
 			}
+			$r["duration"] = $ss->SkillStatisticDuration;
 			$skill[$ss->SkillStatisticIsAdd ? "add" : "multiply"][] = $r;
 		}
 		
