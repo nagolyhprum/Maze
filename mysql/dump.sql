@@ -85,14 +85,14 @@ CREATE TABLE `badge` (
   `BadgeName` varchar(32) NOT NULL,
   `CategoryID` bigint(20) DEFAULT NULL,
   `BadgeCount` bigint(20) NOT NULL,
-  `BadgeIcon` bigint(20) NOT NULL,
+  `ImageID` bigint(20) NOT NULL,
   `SubcategoryID` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`BadgeId`),
   KEY `fk_Badge_BehaviorCategory1_idx` (`CategoryID`),
-  KEY `fk_Badge_Image1_idx` (`BadgeIcon`),
+  KEY `fk_Badge_Image1_idx` (`ImageID`),
   KEY `fk_Badge_Subcategory1_idx` (`SubcategoryID`),
   CONSTRAINT `fk_Badge_BehaviorCategory1` FOREIGN KEY (`CategoryID`) REFERENCES `category` (`CategoryID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Badge_Image1` FOREIGN KEY (`BadgeIcon`) REFERENCES `image` (`ImageID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Badge_Image1` FOREIGN KEY (`ImageID`) REFERENCES `image` (`ImageID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Badge_Subcategory1` FOREIGN KEY (`SubcategoryID`) REFERENCES `subcategory` (`SubcategoryID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;

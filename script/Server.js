@@ -15,13 +15,20 @@ var Server = (function() {
 		sendMessage();
 	});
 	
-	events.attach("message", function(action, args) {
-		args.action = action;
-		connection.send(JSON.stringify(args));
+	events.attach("Message", function(action, args) {
+		connection.send(JSON.stringify({action:action,args:args}));
 	});
 	
-	connection.onmessage = function() {
-		queue.push(connection.data);
+	events.message = function(action, args) {
+		this.invoke("Message", [action, args]);
+	};
+	
+	connection.onopen = function() {
+		events.message("Initialize", {cid : cid});
+	};
+	
+	connection.onmessage = function(msg) {
+		queue.push(msg.data);
 		sendMessage();
 	};
 	
@@ -66,6 +73,7 @@ var Server = (function() {
 	}));
 	sendMessage();
 	
+	/*
 	queue.push(JSON.stringify({
 		"action" : "GetCharacterBadges",
 		"args" : [
@@ -119,6 +127,7 @@ var Server = (function() {
 		]
 	}));
 	sendMessage();
+	*/
 	
 	ajax("php/getCharacterRoomLocation.php", {cid:cid}, function(args) {
 		queue.push(JSON.stringify({
@@ -418,6 +427,9 @@ Server.attach("GetCharacterBehaviors", function(b) {
 });
 
 Server.attach("GetCharacterBadges", function(b) {
+	for(var i = 0; i < b.length; i++) {
+		b[i].icon = loadImage(b[i].icon);
+	}
 	badges = b;
 });
 
