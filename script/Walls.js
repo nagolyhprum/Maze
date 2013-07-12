@@ -1,29 +1,27 @@
+var roomwalls,
+	tile = {
+		column : 6,
+		row : 11
+	};
+Server.attach("GetWalls", function(w) {
+	roomwalls = w;
+});
 $(function() {
-	var walls,
-		tile = {
-			column : 6,
-			row : 11
-		};
-	room.events.attach("change", function() {
-		Server.getWalls(function(w) {
-			walls = w;
-		});
-	});
 	lock("character", function() {
 		character.events.attach("trymove", function(l) {
 			var mr = CONSTANTS.TILE.MIDDLE.ROW(),
 				mc = CONSTANTS.TILE.MIDDLE.COLUMN();
 			l.collides = l.collides || 
-				l.column === -1 && l.row === mr && walls & CONSTANTS.WALL.LEFT || 
+				l.column === -1 && l.row === mr && roomwalls & CONSTANTS.WALL.LEFT || 
 				l.column === -1 && l.row !== mr;
 			l.collides = l.collides || 
-				l.column === CONSTANTS.TILE.COLUMNS && l.row === mr && walls & CONSTANTS.WALL.RIGHT || 
+				l.column === CONSTANTS.TILE.COLUMNS && l.row === mr && roomwalls & CONSTANTS.WALL.RIGHT || 
 				l.column === CONSTANTS.TILE.COLUMNS && l.row !== mr;		
 			l.collides = l.collides || 
-				l.row === -1 && l.column === mc && walls & CONSTANTS.WALL.TOP || 
+				l.row === -1 && l.column === mc && roomwalls & CONSTANTS.WALL.TOP || 
 				l.row === -1 && l.column !== mc;
 			l.collides = l.collides || 
-				l.row === CONSTANTS.TILE.ROWS && l.column === mc && walls & CONSTANTS.WALL.BOTTOM || 
+				l.row === CONSTANTS.TILE.ROWS && l.column === mc && roomwalls & CONSTANTS.WALL.BOTTOM || 
 				l.row === CONSTANTS.TILE.ROWS && l.column !== mc;
 				
 		});
@@ -34,7 +32,7 @@ $(function() {
 			sy = canvas.height / 2 - CONSTANTS.HEIGHT() / 2 - CONSTANTS.TILE.HEIGHT,
 			mid = Math.floor((CONSTANTS.TILE.ROWS + 2) / 2);
 		for(var i = 0; i < CONSTANTS.TILE.ROWS + 2; i++) {
-			if(i !== mid || (walls & CONSTANTS.WALL.LEFT)) {
+			if(i !== mid || (roomwalls & CONSTANTS.WALL.LEFT)) {
 				context.drawImage(tileset.image,
 					tileset.width * tile.column,
 					tileset.height * tile.row,
@@ -45,7 +43,7 @@ $(function() {
 					CONSTANTS.TILE.WIDTH,
 					CONSTANTS.TILE.HEIGHT);
 			}
-			if(i !== mid || (walls & CONSTANTS.WALL.RIGHT)) {
+			if(i !== mid || (roomwalls & CONSTANTS.WALL.RIGHT)) {
 				context.drawImage(tileset.image,
 					tileset.width * tile.column,
 					tileset.height * tile.row,
@@ -64,7 +62,7 @@ $(function() {
 			sy = canvas.height / 2 - CONSTANTS.HEIGHT() / 2 - CONSTANTS.TILE.HEIGHT,
 			mid = Math.floor(CONSTANTS.TILE.COLUMNS / 2);
 		for(var i = 0; i < CONSTANTS.TILE.COLUMNS; i++) {
-			if(i !== mid || (walls & CONSTANTS.WALL.TOP)) {
+			if(i !== mid || (roomwalls & CONSTANTS.WALL.TOP)) {
 				context.drawImage(tileset.image,
 					tileset.width * tile.column,
 					tileset.height * tile.row,
@@ -75,7 +73,7 @@ $(function() {
 					CONSTANTS.TILE.WIDTH,
 					CONSTANTS.TILE.HEIGHT);
 			}
-			if(i !== mid || (walls & CONSTANTS.WALL.BOTTOM)) {
+			if(i !== mid || (roomwalls & CONSTANTS.WALL.BOTTOM)) {
 				context.drawImage(tileset.image,
 					tileset.width * tile.column,
 					tileset.height * tile.row,

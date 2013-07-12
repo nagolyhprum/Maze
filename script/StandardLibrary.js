@@ -218,10 +218,6 @@ Sound.music("music/dungeon");
 var loadImage = (function() {
 	var images = {}, events = {};
 	return function(src, complete) {
-		if(src === undefined) {
-			console.log("undefined?");
-			return;
-		}
 		src = loadImage.root + src;
 		var image = images[src], event = events[src];
 		if(!image) {

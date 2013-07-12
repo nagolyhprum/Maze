@@ -47,7 +47,9 @@ var Blood = (function() {
 					v.y /= 2;
 				}
 			}
-			context.drawImage(stains_canvas, CONSTANTS.START.X(), CONSTANTS.START.Y());
+			if(stains_canvas) {
+				context.drawImage(stains_canvas, CONSTANTS.START.X(), CONSTANTS.START.Y());
+			}
 		});
 		
 		room.events.attach("change", function() {

@@ -1,8 +1,9 @@
+var tiles;
+Server.attach("GetTiles", function(t) {
+	tiles = t;
+});
+
 $(function() {
-	var tiles;
-	room.events.attach("change", function() {
-		tiles = Server.getTiles();
-	});
 	canvas.events.attach("draw", function() {
 		canvas.drawWith(2);
 		context.strokeStyle = "black";

@@ -1,9 +1,8 @@
+var allwalls = {data:[],columns:0,rows:0}, alpha = 0;
+Server.attach("GetAllWalls", function(w) {
+	allwalls = w;
+});
 $(function() {
-	var walls = {data:[],columns:0,rows:0}, alpha = 0;
-	Server.getAllWalls(function(w) {
-		walls = w;
-		room.events.invoke("change");
-	});
 	setInterval(function() {
 		alpha += Math.PI / 10;
 		alpha %= (2 * Math.PI);
@@ -15,12 +14,12 @@ $(function() {
 		context.strokeStyle = "black";
 		context.fillStyle = "rgba(255, 255, 255, 0.5)";
 		context.fillRect(0, 0, CONSTANTS.INBETWEEN(), CONSTANTS.INBETWEEN());
-		var cellw = CONSTANTS.INBETWEEN() / walls.columns,
-			cellh = CONSTANTS.INBETWEEN() / walls.rows;
-		for(var i = 0; i < walls.data.length; i++) {
-			var d = walls.data[i],
-				column = i % walls.columns,
-				row = Math.floor(i / walls.rows);
+		var cellw = CONSTANTS.INBETWEEN() / allwalls.columns,
+			cellh = CONSTANTS.INBETWEEN() / allwalls.rows;
+		for(var i = 0; i < allwalls.data.length; i++) {
+			var d = allwalls.data[i],
+				column = i % allwalls.columns,
+				row = Math.floor(i / allwalls.rows);
 			if(d !== null) {
 				context.fillRect(cellw * column, cellh * row, cellw, cellh);
 			}
@@ -45,20 +44,4 @@ $(function() {
 		cw - 1, ch - 1);
 		context.restore();
 	});
-	room.events.attach("change", function() {
-		if(!walls.data[room.location.column + room.location.row * walls.columns]) {			
-			Server.getWalls(function(w) {
-				walls.data[room.location.column + room.location.row * walls.columns] = w;
-				addBehavior("Discover", "Rooms");
-			});
-		}
-		for(var i = 0; i < walls.columns * walls.rows; i++) {
-			if(!walls.data[i]) {
-				return;
-			}
-		}
-		if(walls.data.length) {
-			addBehavior("Discover", "Maps");
-		}
-	}).invoke("change");
 });

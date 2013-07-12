@@ -57,6 +57,6 @@ $(function() {
 				setTimeout(move, 1000);
 			});
 		}
-		move();
+		//move();
 	});
 });

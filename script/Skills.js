@@ -80,10 +80,8 @@ $(function() {
 
 	var skillMapping = [];	
 	
-	lock("skills", function() {
-		Server.getSkillMapping(function(sm) {
-			skillMapping = sm;
-		});
+	Server.attach("GetSkillMapping", function(sm) {
+		skillMapping = sm;
 	});
 	
 	canvas.events.attach("mousemove", function(l) {

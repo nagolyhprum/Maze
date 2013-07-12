@@ -14,12 +14,8 @@ JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
 StandardLibrary.js
-C:\inetpub\wwwroot\Maze\script\StandardLibrary.js(244): warning: anonymous function does not always return a value
-		return image;
-............................^
 
-
-0 error(s), 1 warning(s)
+0 error(s), 0 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 

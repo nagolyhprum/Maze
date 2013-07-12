@@ -1,6 +1,204 @@
 var cid = 1;
 
 var Server = (function() {
+
+	var connection = new WebSocket("ws://localhost:8080");
+
+	var events = new EventHandler();
+	
+	var isLoaded = false;
+	
+	var queue = [];
+	
+	$(function() {
+		isLoaded = true;
+		sendMessage();
+	});
+	
+	events.attach("message", function(action, args) {
+		args.action = action;
+		connection.send(JSON.stringify(args));
+	});
+	
+	connection.onmessage = function() {
+		queue.push(connection.data);
+		sendMessage();
+	};
+	
+	function sendMessage() {
+		if(isLoaded) {
+			while(queue.length > 0) {
+				var data = queue.shift();
+				console.log(data);
+				data = JSON.parse(data);
+				events.invoke(data.action, data.args instanceof Array ? [data.args] : data.args);				
+			}
+		}
+	}
+	
+	queue.push(JSON.stringify({
+		"action" : "GetCharacterBehaviors",
+		"args" : {
+			"Kill" : {
+				"Skeleton" : 0
+			},			
+			"Character" : {
+				"Deaths" : 0,
+				"Steps" : 0,
+				"Attacks" : 0,
+				"Seconds Played" : 0
+			},
+			"Skill" : {
+				"Power Thrust" : 0,
+				"Fire Wave" : 0,
+				"Fire Arrow" : 0,
+				"Heal" : 0
+			},
+			"Damage" : {
+				"Dealt" : 0,
+				"Received" : 0
+			},
+			"Discover" : {
+				"Rooms" : 0,
+				"Maps" : 0
+			}
+		}
+	}));
+	sendMessage();
+	
+	queue.push(JSON.stringify({
+		"action" : "GetCharacterBadges",
+		"args" : [
+			{
+				"name" : "First Kill",
+				"category" : "Kill",
+				"count" : 1,
+				"icon" : "badges/death.png"
+			},
+			{
+				"name" : "Killer",
+				"category" : "Kill",
+				"count" : 50,
+				"icon" : "badges/ddeath.png"
+			},
+			{
+				"name" : "First Death",
+				"category" : "Character",
+				"subcategory" : "Deaths",
+				"count" : 1,
+				"icon" : "badges/killed.png"
+			},
+			{
+				"name" : "First Step",
+				"category" : "Character",
+				"subcategory" : "Steps",
+				"count" : 1,
+				"icon" : "badges/arrow.png"
+			},
+			{
+				name : "Adventurer",
+				category : "Discover",
+				subcategory : "Rooms",
+				count : 10,
+				complete : 1,
+				icon : "badges/up.png"
+			},
+			{
+				name : "Explorer",
+				category : "Discover",
+				subcategory : "Maps",
+				count : 1,
+				icon : "badges/dup.png"
+			},
+			{
+				name : "Skillful",
+				category : "Skill",
+				count : 10,
+				icon : "badges/tstar.png"
+			}
+		]
+	}));
+	sendMessage();
+	
+	ajax("php/getCharacterRoomLocation.php", {cid:cid}, function(args) {
+		queue.push(JSON.stringify({
+			action : "GetCharacterRoomLocation",
+			args : args
+		}));
+		sendMessage();
+	});
+	
+	ajax("php/getItemsInInventory.php", {cid:cid}, function(args) {		
+		queue.push(JSON.stringify({
+			action : "GetItemsInInventory",
+			args : args
+		}));
+		sendMessage();
+	});
+	
+	ajax("php/getCharacter.php", {cid:cid}, function(args) {
+		queue.push(JSON.stringify({
+			action : "GetCharacter",
+			args : args
+		}));
+		sendMessage();
+	});
+	
+	ajax("php/getSkills.php", {cid:cid}, function(args) {
+		queue.push(JSON.stringify({
+			action : "GetSkills",
+			args : args
+		}));
+		sendMessage();
+	});
+		
+	ajax("php/getWalls.php", {cid : cid}, function(args) {
+		queue.push(JSON.stringify({
+			action : "GetWalls",
+			args : args
+		}));
+		sendMessage();
+	});
+	$(function() {
+		//GET TILES
+		var r = [], s;
+		for(var i = 0; i < CONSTANTS.TILE.ROWS; i++) {
+			r.push(s = []);
+			for(var j = 0; j < CONSTANTS.TILE.COLUMNS; j++) {
+				s.push({
+					row : 11,
+					column : 0
+				});
+			}
+		}
+		queue.push(JSON.stringify({
+			action : "GetTiles",
+			args : r
+		}));
+		sendMessage();
+	
+		room.events.invoke("change");
+	});	
+	//END GET TILES
+	
+	ajax("php/getEquipment.php", {cid:cid}, function(args) {		
+		queue.push(JSON.stringify({
+			action : "GetEquipment",
+			args : args
+		}));
+		sendMessage();
+	});
+		
+	ajax("php/getAllWalls.php", {cid:cid}, function(args) {
+		queue.push(JSON.stringify({
+			action : "GetAllWalls",
+			args : args
+		}));
+		sendMessage();		
+	});
+	
+	//end function
+	/*
 	var Server = {};
 	
 	Server.healEnergy = function() {
@@ -26,17 +224,9 @@ var Server = (function() {
 	Server.setSkillIndex = function(sid, index, success) {
 		ajax("php/setSkillIndex.php", {sid:sid,index:index,cid:cid}, success);
 	};
-	
-	Server.getEquipment = function(success) {
-		ajax("php/getEquipment.php", {cid:cid}, success);
-	};
 
 	Server.equipItem = function(iid, success) {
 		ajax("php/equipItem.php", {iid:iid, cid:cid}, success);
-	};
-	
-	Server.getItemsInInventory = function(complete) {
-		ajax("php/getItemsInInventory.php", {cid:cid}, complete);
 	};
 	
 	Server.pickupItem = function(success) {
@@ -64,38 +254,6 @@ var Server = (function() {
 				});
 			}
 			complete && complete();
-		});
-	};
-	
-	Server.getTiles = function() {
-		var r = [], s;
-		for(var i = 0; i < CONSTANTS.TILE.ROWS; i++) {
-			r.push(s = []);
-			for(var j = 0; j < CONSTANTS.TILE.COLUMNS; j++) {
-				s.push({
-					row : 11,
-					column : 0
-				});
-			}
-		}
-		return r;
-	};
-
-	Server.getWalls = function(success) {
-		ajax("php/getWalls.php", {cid : cid}, success);
-	};
-
-	Server.getAllWalls = function(success) {
-		ajax("php/getAllWalls.php", {cid:cid}, success);
-	};
-
-	Server.getCharacterRoomLocation = function(success) {
-		ajax("php/getCharacterRoomLocation.php", {cid:cid}, success);
-	};
-
-	Server.getCharacter = function(success) {
-		ajax("php/getCharacter.php", {cid:cid}, function(data) {
-			success(new Character(data));
 		});
 	};
 
@@ -156,203 +314,6 @@ var Server = (function() {
 		});
 	};
 
-	function randomItem(column, row) {
-		var val = Math.random();
-		if(val > 0.5) {
-			return randomArmor(column, row);
-		} else if(val >= 0) {
-			return randomWeapon(column, row);
-		} else {
-			return randomJewelery(column, row);
-		}
-	}
-
-	function randomJewelery(column, row) {
-		return randomArmor(column, row);
-	}
-
-	function randomWeapon(column, row) {
-		var r = [{
-				portrait : "buckler",
-				weight : 1,
-				strength : 0,
-				defense : 5,
-				speed : 0,
-				name : "Buckler",
-				walk : {
-					src : "walk/WEAPON_shield_cutout_body.png",
-					rows : 4,
-					columns : 9
-				}
-			}, {
-				attack : "slash",
-				portrait : "dagger",
-				weight : 2,
-				strength : 5,
-				defense : 0,
-				speed : 0,
-				name : "Dagger",
-				area : 1,
-				slash :  {
-					src : "slash/WEAPON_dagger.png",
-					rows : 4,
-					columns : 6
-				}
-			}, {
-				attack : "bow",
-				portrait : "shortbow",
-				weight : 3,
-				strength : 3,
-				defense : 0,
-				speed : 3,
-				name : "Short Bow",
-				area : Math.max(CONSTANTS.TILE.ROWS, CONSTANTS.TILE.COLUMNS),
-				bow :  {
-					src : "bow/WEAPON_bow.png",
-					rows : 4,
-					columns : 13
-				}
-			}, {
-				attack : "spellcast",
-				portrait : "wand",
-				weight : 2,
-				strength : 0,
-				defense : 0,
-				speed : 0,
-				energy : 5,
-				intelligence : 10,
-				name : "Wand",
-				area : -1,
-				spellcast :  {
-					src : "spellcast/HEAD_skeleton_eye_glow.png",
-					rows : 4,
-					columns : 6
-				}
-			}, {
-				attack : "thrust",
-				portrait : "longsword",
-				weight : 4,
-				strength : 10,
-				defense : 0,
-				speed : 0,
-				energy : 0,
-				name : "Long Sword",
-				area : 2,
-				thrust :  {
-					src : "thrust/WEAPON_spear.png",
-					rows : 4,
-					columns : 8
-				}
-			}],
-			item = r[Math.floor(Math.random() * r.length)];
-		return new Item({
-			attack : item.attack,
-			name : item.name,
-			area : item.area,
-			weight : item.weight,
-			type : "mainhand",
-			portrait : "items/" + item.portrait + ".png",
-			id : 1,
-			//require relationships
-			slash : item.slash,
-			walk : item.walk,
-			thrust : item.thrust,
-			bow : item.bow,
-			spellcast : item.spellcast,
-			statistics : {
-				strength : {
-					current : item.strength,
-					max : item.strength
-				},
-				intelligence : {
-					current : item.intelligence,
-					max : item.intelligence
-				},
-				defense : {
-					current : item.defense,
-					max : item.defense
-				},
-				speed : {
-					current : item.speed,
-					max : item.speed
-				},
-				energy : {
-					current : item.energy,
-					max : item.energy
-				}
-			},
-			sounds : {
-				move : ["sound/inventory/coin"]
-			},
-			location : {
-				column : column,
-				row : row
-			}
-		});
-	}
-
-	function randomArmor(column, row) {
-		var weight = ["cloth", "hide", "leather", "chain", "steel"],
-			part = ["head", "feet", "hands", "legs", "chest"],
-			item = ["cloth", "head"];
-
-		while(item[0] === "cloth" && item[1] === "head") {
-			item[2] = Math.floor(Math.random() * weight.length);
-			item[0] = weight[item[2]];
-			item[1] = part[Math.floor(Math.random() * part.length)];
-		}
-		return new Item({
-			slash : {
-				src : "slash/" + item[1] + ".png",
-				rows : 4,
-				columns : 6
-			},
-			walk : {
-				src : "walk/" + item[1] + ".png",
-				rows : 4,
-				columns : 9
-			},
-			thrust : {
-				src : "thrust/" + item[1] + ".png",
-				rows : 4,
-				columns : 8
-			},
-			bow : {
-				src : "bow/" + item[1] + ".png",
-				rows : 4,
-				columns : 13
-			},
-			spellcast : {
-				src : "spellcast/" + item[1] + ".png",
-				rows : 4,
-				columns : 7
-			},
-
-
-			name : item[0] + " " + item[1],
-			sounds : {
-				move : ["sound/inventory/coin"]
-			},
-			type : item[1],
-			portrait : "items/" + item[0] + "-" + item[1] + ".png",
-			id : 1,
-			location : {
-				column : column,
-				row : row
-			},
-			statistics : {
-				defense : {
-					current : item[2] + 1,
-					max : item[2] + 1
-				},
-				speed : {
-					current : 4 - item[2],
-					max : 4 - item[2]
-				}
-			}
-		});
-	}
-
 	var roomItems = [];
 
 	Server.getRoomItems = function(success) {
@@ -365,92 +326,10 @@ var Server = (function() {
 			success(items || []);
 		});
 	};
-
-	Server.getSkills = function(success) {
-		ajax("php/getSkills.php", {cid:cid}, success);
-	};
 	
-	Server.getBehaviors = function() {
-		return {
-			Kill : {
-				Skeleton : 0
-			},			
-			Character : {
-				Deaths : 0,
-				Steps : 0,
-				Attacks : 0,
-				"Seconds Played" : 0
-			},
-			Skill : {
-				"Power Thrust" : 0,
-				"Fire Wave" : 0,
-				"Fire Arrow" : 0,
-				Heal : 0
-			},
-			Damage : {
-				Dealt : 0,
-				Received : 0
-			},
-			Discover : {
-				Rooms : 0,
-				Maps : 0
-			}
-		};
-	};
-	
-	Server.getBadges = function() {
-		return [
-			{
-				name : "First Kill",
-				category : "Kill",
-				count : 1,
-				icon : loadImage("badges/death.png")
-			},
-			{
-				name : "Killer",
-				category : "Kill",
-				count : 50,
-				icon : loadImage("badges/ddeath.png")
-			},
-			{
-				name : "First Death",
-				category : "Character",
-				subcategory : "Deaths",
-				count : 1,
-				icon : loadImage("badges/killed.png")
-			},
-			{
-				name : "First Step",
-				category : "Character",
-				subcategory : "Steps",
-				count : 1,
-				icon : loadImage("badges/arrow.png")
-			},
-			{
-				name : "Adventurer",
-				category : "Discover",
-				subcategory : "Rooms",
-				count : 10,
-				complete : 1,
-				icon : loadImage("badges/up.png")
-			},
-			{
-				name : "Explorer",
-				category : "Discover",
-				subcategory : "Maps",
-				count : 1,
-				icon : loadImage("badges/dup.png")
-			},
-			{
-				name : "Skillful",
-				category : "Skill",
-				count : 10,
-				icon : loadImage("badges/tstar.png")
-			}
-		];
-	};
+	*/
 
-	return Server;
+	return events;
 }());
 
 //http://pousse.rapiere.free.fr/tome/
@@ -527,14 +406,22 @@ items = {
 inventory_items = [],
 equipment_items = {},
 enemies = [],
-behaviors = Server.getBehaviors(),
-badges = Server.getBadges();
+behaviors = {},
+badges = [];
 
-Server.getCharacterRoomLocation(function(l) {
+Server.attach("GetCharacterRoomLocation", function(l) {
 	room.location = l;
 });
 
-Server.getItemsInInventory(function(iii) {
+Server.attach("GetCharacterBehaviors", function(b) {
+	behaviors = b;
+});
+
+Server.attach("GetCharacterBadges", function(b) {
+	badges = b;
+});
+
+Server.attach("GetItemsInInventory", function(iii) {
 	inventory_items = iii;
 	for(var i = 0; i < iii.length; i++) {
 		if(inventory_items[i]) {
@@ -544,13 +431,13 @@ Server.getItemsInInventory(function(iii) {
 	unlock("inventory", 1);
 });
 
-Server.getCharacter(function(c) {
-	character = c;
+Server.attach("GetCharacter", function(c) {
+	character = new Character(c);
 	character.events = new EventHandler();
 	unlock("character", 5);
 });
 
-Server.getSkills(function(s) {
+Server.attach("GetSkills", function(s) {
 	var i = 0, j, r;
 	for(; i < s.length; i++) {
 		s[i].image.icon = loadImage(s[i].image.icon);
@@ -564,5 +451,10 @@ Server.getSkills(function(s) {
 		}
 	}
 	skills = s;
-	unlock("skills", 1);
+});
+
+//make sure we get skills first
+
+Server.attach("AddBehavior", function(args) {
+	addBehavior(args.category, args.subcategory);
 });
