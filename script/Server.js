@@ -1,5 +1,54 @@
 var cid = 1;
 
+var CONSTANTS = {
+	TILE : {
+		WIDTH : 48,
+		HEIGHT : 48,
+		ROWS : 7,
+		COLUMNS : 7,
+		MIDDLE : {
+			ROW : function() {
+				return Math.floor(CONSTANTS.TILE.ROWS / 2);
+			},
+			COLUMN : function() {
+				return Math.floor(CONSTANTS.TILE.COLUMNS / 2);
+			}
+		}
+	},
+	WIDTH : function() {
+		return CONSTANTS.TILE.WIDTH * CONSTANTS.TILE.COLUMNS;
+	},
+	HEIGHT : function() {
+		return CONSTANTS.TILE.HEIGHT * CONSTANTS.TILE.ROWS;
+	},
+	WALL : {
+		NONE : 0,
+		TOP : 1,
+		RIGHT : 2,
+		BOTTOM : 4,
+		LEFT : 8,
+		ALL : 15
+	},
+	DIRECTION : {
+		UP : 0,
+		RIGHT : 3,
+		DOWN : 2,
+		LEFT : 1
+	},
+	INBETWEEN : function() {
+		return canvas.width / 2 - ((CONSTANTS.TILE.ROWS + 2) * CONSTANTS.TILE.WIDTH) / 2 - 20;
+	},
+	START : {
+		X : function() {
+			return canvas.width / 2 - CONSTANTS.WIDTH() / 2;
+		},
+		Y : function() {
+			return canvas.height / 2 - CONSTANTS.HEIGHT() / 2;
+		}
+	},
+	MAX_WEIGHT : 4
+};
+
 var Server = (function() {
 
 	var connection = new WebSocket("ws://localhost:8080");
@@ -72,139 +121,6 @@ var Server = (function() {
 		}
 	}));
 	sendMessage();
-	
-	/*
-	queue.push(JSON.stringify({
-		"action" : "GetCharacterBadges",
-		"args" : [
-			{
-				"name" : "First Kill",
-				"category" : "Kill",
-				"count" : 1,
-				"icon" : "badges/death.png"
-			},
-			{
-				"name" : "Killer",
-				"category" : "Kill",
-				"count" : 50,
-				"icon" : "badges/ddeath.png"
-			},
-			{
-				"name" : "First Death",
-				"category" : "Character",
-				"subcategory" : "Deaths",
-				"count" : 1,
-				"icon" : "badges/killed.png"
-			},
-			{
-				"name" : "First Step",
-				"category" : "Character",
-				"subcategory" : "Steps",
-				"count" : 1,
-				"icon" : "badges/arrow.png"
-			},
-			{
-				name : "Adventurer",
-				category : "Discover",
-				subcategory : "Rooms",
-				count : 10,
-				complete : 1,
-				icon : "badges/up.png"
-			},
-			{
-				name : "Explorer",
-				category : "Discover",
-				subcategory : "Maps",
-				count : 1,
-				icon : "badges/dup.png"
-			},
-			{
-				name : "Skillful",
-				category : "Skill",
-				count : 10,
-				icon : "badges/tstar.png"
-			}
-		]
-	}));
-	sendMessage();
-	*/
-	
-	ajax("php/getCharacterRoomLocation.php", {cid:cid}, function(args) {
-		queue.push(JSON.stringify({
-			action : "GetCharacterRoomLocation",
-			args : args
-		}));
-		sendMessage();
-	});
-	
-	ajax("php/getItemsInInventory.php", {cid:cid}, function(args) {		
-		queue.push(JSON.stringify({
-			action : "GetItemsInInventory",
-			args : args
-		}));
-		sendMessage();
-	});
-	
-	ajax("php/getCharacter.php", {cid:cid}, function(args) {
-		queue.push(JSON.stringify({
-			action : "GetCharacter",
-			args : args
-		}));
-		sendMessage();
-	});
-	
-	ajax("php/getSkills.php", {cid:cid}, function(args) {
-		queue.push(JSON.stringify({
-			action : "GetSkills",
-			args : args
-		}));
-		sendMessage();
-	});
-		
-	ajax("php/getWalls.php", {cid : cid}, function(args) {
-		queue.push(JSON.stringify({
-			action : "GetWalls",
-			args : args
-		}));
-		sendMessage();
-	});
-	$(function() {
-		//GET TILES
-		var r = [], s;
-		for(var i = 0; i < CONSTANTS.TILE.ROWS; i++) {
-			r.push(s = []);
-			for(var j = 0; j < CONSTANTS.TILE.COLUMNS; j++) {
-				s.push({
-					row : 11,
-					column : 0
-				});
-			}
-		}
-		queue.push(JSON.stringify({
-			action : "GetTiles",
-			args : r
-		}));
-		sendMessage();
-	
-		room.events.invoke("change");
-	});	
-	//END GET TILES
-	
-	ajax("php/getEquipment.php", {cid:cid}, function(args) {		
-		queue.push(JSON.stringify({
-			action : "GetEquipment",
-			args : args
-		}));
-		sendMessage();
-	});
-		
-	ajax("php/getAllWalls.php", {cid:cid}, function(args) {
-		queue.push(JSON.stringify({
-			action : "GetAllWalls",
-			args : args
-		}));
-		sendMessage();		
-	});
 	
 	//end function
 	/*
@@ -344,55 +260,7 @@ var Server = (function() {
 //http://pousse.rapiere.free.fr/tome/
 //9 x 17
 //opengameart.org - lpc
-var CONSTANTS = {
-	TILE : {
-		WIDTH : 48,
-		HEIGHT : 48,
-		ROWS : 7,
-		COLUMNS : 7,
-		MIDDLE : {
-			ROW : function() {
-				return Math.floor(CONSTANTS.TILE.ROWS / 2);
-			},
-			COLUMN : function() {
-				return Math.floor(CONSTANTS.TILE.COLUMNS / 2);
-			}
-		}
-	},
-	WIDTH : function() {
-		return CONSTANTS.TILE.WIDTH * CONSTANTS.TILE.COLUMNS;
-	},
-	HEIGHT : function() {
-		return CONSTANTS.TILE.HEIGHT * CONSTANTS.TILE.ROWS;
-	},
-	WALL : {
-		NONE : 0,
-		TOP : 1,
-		RIGHT : 2,
-		BOTTOM : 4,
-		LEFT : 8,
-		ALL : 15
-	},
-	DIRECTION : {
-		UP : 0,
-		RIGHT : 3,
-		DOWN : 2,
-		LEFT : 1
-	},
-	INBETWEEN : function() {
-		return canvas.width / 2 - ((CONSTANTS.TILE.ROWS + 2) * CONSTANTS.TILE.WIDTH) / 2 - 20;
-	},
-	START : {
-		X : function() {
-			return canvas.width / 2 - CONSTANTS.WIDTH() / 2;
-		},
-		Y : function() {
-			return canvas.height / 2 - CONSTANTS.HEIGHT() / 2;
-		}
-	},
-	MAX_WEIGHT : 4
-},
-tileset = new TileSet({
+var tileset = new TileSet({
 	columns : 9,
 	rows : 16,
 	src : "tiles.gif"

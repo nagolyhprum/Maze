@@ -1,16 +1,13 @@
 <?php 
-	require_once("classes/DAO.php");
-	
-	if(DB::connect()) { 
-		$character = new Character(); //get the active character
-		if($character->valid()) { //if the character is valid
-			$room = $character->getOne("Room");
-			if(!$room->RoomIsDiscovered) {
-				$room->RoomIsDiscovered = 1;
-				$room->update();
-			}
-			echo $room->RoomWalls; //print the character's current room's wall data
+	function getWalls($character) {
+		$room = $character->getOne("Room");
+		if(!$room->RoomIsDiscovered) {
+			$room->RoomIsDiscovered = 1;
+			$room->update();
 		}
-		DB::close(); 
+		return json_encode(array(
+			"args" => $room->RoomWalls,
+			"action" => "GetWalls"
+		));
 	}
 ?>

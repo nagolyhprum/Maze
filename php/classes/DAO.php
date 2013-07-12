@@ -86,7 +86,7 @@
 				$index = strpos($sql, "?", $index + 1);
 			}
 			$executed .= substr($sql, $last, strlen($sql) - $last);
-			//echo "$executed<br/><br/>";
+			//echo "$executed\n\n";
 			if(DB::$cache[$executed] && $useCache) {
 				$result = DB::$cache[$executed];
 				mysqli_data_seek($result, 0);
@@ -319,11 +319,15 @@
 	
 	class Character extends DAO {
 	
-		public function __construct() {
-			session_start();
-			$_SESSION["user"] = 1;
-			parent::__construct("Character", "CharacterID=? AND UserID=?", array((double)$_GET["cid"], $_SESSION["user"]));
-			session_commit();
+		public function __construct($condition = false, $parameters = array()) {
+			if(!$condition) {
+				session_start();
+				$_SESSION["user"] = 1;
+				parent::__construct("Character", "CharacterID=? AND UserID=?", array((double)$_GET["cid"], $_SESSION["user"]));
+				session_commit();
+			} else {
+				parent::__construct("Character", $condition, $parameters);
+			}
 		}
 		
 		public function timeToMove($now) {

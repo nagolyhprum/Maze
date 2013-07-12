@@ -1,11 +1,12 @@
 <?php 
-	require_once("classes/DAO.php");
-	if(DB::connect()) {
-		$character = new Character();
-		if($character->valid()) {
-			$room = $character->getOne("Room");
-			echo json_encode(array("column" => $room->RoomColumn, "row" => $room->RoomRow));	
-		}
-		DB::close();
+	function getCharacterRoomLocation($character) {
+		$room = $character->getOne("Room");
+		return json_encode(array(
+			"args" => array(
+				"column" => $room->RoomColumn, 
+				"row" => $room->RoomRow
+			),
+			"action" => "GetCharacterRoomLocation"
+		));	
 	}
 ?>

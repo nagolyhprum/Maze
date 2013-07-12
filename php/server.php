@@ -1,7 +1,23 @@
 <?php
 	require_once("ratchet/vendor/autoload.php");
 
+	require_once("classes/DAO.php");
+	require_once("getItem.php");
+	require_once("getSkill.php");
+	
 	require_once("getBadges.php");
+	require_once("getCharacterRoomLocation.php");
+	require_once("getItemsInInventory.php");
+	require_once("getCharacter.php");
+	require_once("getSkills.php");	
+	require_once("getWalls.php");
+	require_once("getTiles.php");
+	require_once("getEquipment.php");
+	require_once("getAllWalls.php");
+	
+	DB::connect();
+	
+	$character = new Character("CharacterID=?", array(1));
 	
 	use Ratchet\Server\IoServer;
 	use Ratchet\WebSocket\WsServer;
@@ -18,7 +34,7 @@
 
 		public function onOpen(ConnectionInterface $conn) {
 			$this->clients->attach($conn);
-			echo "connected\n";
+			echo "Connected\n";
 		}
 
 		public function onMessage(ConnectionInterface $from, $json) {
@@ -27,9 +43,20 @@
 			$args = $json["args"];
 			if($action && $args) {
 				switch($action) {
-					case "Initialize" :
-						$from->send(getBadges());
-						echo "Sending the badges.";
+					case "Initialize" :		
+						global $character;
+						if($character->valid()) {
+							$from->character = $character;
+							$from->send(getBadges());
+							$from->send(getTiles());
+							$from->send(getCharacterRoomLocation($from->character));
+							$from->send(getItemsInInventory($from->character));
+							$from->send(getCharacter($from->character));
+							$from->send(getSkills($from->character));
+							$from->send(getWalls($from->character));
+							$from->send(getEquipment($from->character));
+							$from->send(getAllWalls($from->character));
+						}						
 						break;
 				}
 			}
@@ -37,7 +64,7 @@
 
 		public function onClose(ConnectionInterface $conn) {
 			$this->clients->detach($conn);
-			echo "disconnected\n";
+			echo "Disconnected\n";
 		}
 
 		public function onError(ConnectionInterface $conn, \Exception $e) {

@@ -31,6 +31,7 @@ function ajax(src, params, success) {
 	}
 	src += "?" + s;
 	xmlhttp.onreadystatechange = function() {
+		console.log(src);
 		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 			success && success(JSON.parse(xmlhttp.responseText));
 		}

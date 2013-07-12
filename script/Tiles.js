@@ -9,7 +9,7 @@ $(function() {
 		context.strokeStyle = "black";
 		for(var i = 0; i < CONSTANTS.TILE.ROWS; i++) {
 			for(var j = 0; j < CONSTANTS.TILE.COLUMNS; j++) {
-				if(tileset.complete) {
+				if(tileset.complete && tiles) {
 					var tile = tiles[j][i],
 						sx = tile.column * tileset.width,
 						sy = tile.row * tileset.height,
