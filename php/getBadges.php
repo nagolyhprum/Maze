@@ -1,5 +1,5 @@
 <?php
-	function getBadges() {
+	function getBadges($from) {
 		$badges = new DAO("Badge", true);
 		foreach($badges as $badge) {
 			$json[] = array(
@@ -11,9 +11,9 @@
 			);
 		}
 		
-		return json_encode(array(
+		$from->send(json_encode(array(
 			"action" => "GetCharacterBadges",
 			"args" => $json			
-		));
+		)));
 	}
 ?>

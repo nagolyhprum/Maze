@@ -1,12 +1,12 @@
 <?php 
-	function getCharacterRoomLocation($character) {
+	function getCharacterRoomLocation($character, $from) {
 		$room = $character->getOne("Room");
-		return json_encode(array(
+		$from->send(json_encode(array(
 			"args" => array(
 				"column" => $room->RoomColumn, 
 				"row" => $room->RoomRow
 			),
 			"action" => "GetCharacterRoomLocation"
-		));	
+		)));	
 	}
 ?>

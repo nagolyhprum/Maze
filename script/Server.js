@@ -51,40 +51,46 @@ var CONSTANTS = {
 
 var Server = (function() {
 
-	var connection = new WebSocket("ws://localhost:8080");
-
-	var events = new EventHandler();
+	var connection = new WebSocket("ws://localhost:8080"), 
+		events = new EventHandler(), 
+		isLoaded = false, 
+		toReceive = [], 
+		toSend = [];
 	
-	var isLoaded = false;
-	
-	var queue = [];
+	//alerts to send and receive loading
 	
 	$(function() {
 		isLoaded = true;
+		receiveMessage();
+	})
+	
+	connection.onopen = function() {
+		events.message("Initialize", {cid : cid});
 		sendMessage();
-	});
+	};
+	
+	//for sending messages
 	
 	events.attach("Message", function(action, args) {
-		connection.send(JSON.stringify({action:action,args:args}));
+		toSend.push(JSON.stringify({action:action,args:args||true}));
+		sendMessage();
 	});
 	
 	events.message = function(action, args) {
 		this.invoke("Message", [action, args]);
 	};
 	
-	connection.onopen = function() {
-		events.message("Initialize", {cid : cid});
-	};
+	//for receiving messages
 	
 	connection.onmessage = function(msg) {
-		queue.push(msg.data);
-		sendMessage();
+		toReceive.push(msg.data);
+		receiveMessage();
 	};
-	
-	function sendMessage() {
+		
+	function receiveMessage() {
 		if(isLoaded) {
-			while(queue.length > 0) {
-				var data = queue.shift();
+			while(toReceive.length > 0) {
+				var data = toReceive.shift();
 				console.log(data);
 				data = JSON.parse(data);
 				events.invoke(data.action, data.args instanceof Array ? [data.args] : data.args);				
@@ -92,7 +98,15 @@ var Server = (function() {
 		}
 	}
 	
-	queue.push(JSON.stringify({
+	function sendMessage() {		
+		if(connection.readyState === 1) {
+			while(toSend.length > 0) {		
+				connection.send(toSend.shift());
+			}
+		}
+	}
+	
+	toReceive.push(JSON.stringify({
 		"action" : "GetCharacterBehaviors",
 		"args" : {
 			"Kill" : {
@@ -120,7 +134,7 @@ var Server = (function() {
 			}
 		}
 	}));
-	sendMessage();
+	receiveMessage();
 	
 	//end function
 	/*

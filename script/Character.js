@@ -38,8 +38,9 @@ $(function() {
 			} else {
 				moved = 0;
 				if(which === 32) {							
-					Server.sendDamage("");
-					addBehavior("Character", "Attacks");
+					Server.message("SendDamage", {
+						direction : character.display.row
+					});
 					character.attack();
 				}
 			}

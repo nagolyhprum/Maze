@@ -1,5 +1,5 @@
 <?php
-	function getTiles() {
+	function getTiles($from) {
 		for($i = 0; $i < ROOM_ROWS; $i++) {
 			for($j = 0; $j < ROOM_COLUMNS; $j++) {
 				$r[$i][$j]  = array(
@@ -8,9 +8,9 @@
 				);
 			}
 		}
-		return json_encode(array(
+		$from->send(json_encode(array(
 			"args" => $r,
 			"action" => "GetTiles"
-		));
+		)));
 	}
 ?>

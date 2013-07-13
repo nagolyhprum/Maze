@@ -110,15 +110,12 @@ $(function() {
 	
 	var menu = {
 		"Unequip" : function(c) {
-			Server.equipItem(c.item.id, function(result) {
-				if(result) {
-					var type = c.item.type;
-					if(c === equipment_items.offhand) {
-						type = "offhand";
-					}
-					unequip(type, inventory_items.indexOf(null));
-				}
-			});
+			Server.message("EquipItem", {iid:c.item.id});
+			var type = c.item.type;
+			if(c === equipment_items.offhand) {
+				type = "offhand";
+			}
+			unequip(type, inventory_items.indexOf(null));
 		}
 	};
 	

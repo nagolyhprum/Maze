@@ -1,13 +1,13 @@
 <?php 
-	function getWalls($character) {
+	function getWalls($character, $from) {
 		$room = $character->getOne("Room");
 		if(!$room->RoomIsDiscovered) {
 			$room->RoomIsDiscovered = 1;
 			$room->update();
 		}
-		return json_encode(array(
+		$from->send(json_encode(array(
 			"args" => $room->RoomWalls,
 			"action" => "GetWalls"
-		));
+		)));
 	}
 ?>

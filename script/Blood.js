@@ -1,4 +1,16 @@
 var Blood = (function() {
+	Server.attach("GetWalls", function() {
+		var row = stains[room.location.row] = (stains[room.location.row] || []),
+			column = row[room.location.column];
+		if(!column) {
+			column = document.createElement("canvas");
+			column.width = CONSTANTS.TILE.WIDTH * CONSTANTS.TILE.COLUMNS;
+			column.height = CONSTANTS.TILE.HEIGHT * CONSTANTS.TILE.ROWS;
+		}
+		row[room.location.column] = stains_canvas = column;
+		stains_context = column.getContext("2d");
+	});
+
 	function Blood(obj) { //location must be defined
 		var count = obj.count || 500,
 			colors = obj.colors || BLOOD_RED,
@@ -50,19 +62,7 @@ var Blood = (function() {
 			if(stains_canvas) {
 				context.drawImage(stains_canvas, CONSTANTS.START.X(), CONSTANTS.START.Y());
 			}
-		});
-		
-		room.events.attach("change", function() {
-			var row = stains[room.location.row] = (stains[room.location.row] || []),
-				column = row[room.location.column];
-			if(!column) {
-				column = document.createElement("canvas");
-				column.width = CONSTANTS.TILE.WIDTH * CONSTANTS.TILE.COLUMNS;
-				column.height = CONSTANTS.TILE.HEIGHT * CONSTANTS.TILE.ROWS;
-			}
-			row[room.location.column] = stains_canvas = column;
-			stains_context = column.getContext("2d");
-		});
+		});		
 	});
 
 	var BLOOD_RED = [

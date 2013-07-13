@@ -22,8 +22,7 @@
 	define("ROOM_COLUMNS", 7);
 	
 	class DB {
-		
-		private static $index = 0;
+	
 		private static $connection;	
 		
 		/*
@@ -59,8 +58,6 @@
 						$parameters[0] = "null";
 					}					
 					$executed .= DB::escape($parameters[0]);
-				} else if(is_array($parameters[0])) {					
-					$executed .= DB::escape($parameters[0]["name"]);					
 				} else {				
 					$executed .= "'" . DB::escape($parameters[0]) . "'";
 				}
@@ -81,11 +78,7 @@
 		}
 		
 		public static function insertID() {		
-			++DB::$index;
-			DB::query("SET @" . DB::$index . " = LAST_INSERT_ID();", array($id), false, false);
-			return array(
-				"name" => "@" . DB::$index
-			);
+			return mysqli_insert_id(DB::$connection);
 		}
 	}
 	

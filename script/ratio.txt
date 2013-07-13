@@ -1,2 +1,0 @@
-jsmin : 39917
-uglifyjs : 48807

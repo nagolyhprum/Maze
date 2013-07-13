@@ -1,5 +1,5 @@
 <?php
-	function getCharacter($character) {
+	function getCharacter($character, $from) {
 		//get the current statistics
 		foreach($character->getOne("Statistic", "CharacterCurrentStatisticID")->getMany("StatisticAttribute") as $attribute) {
 			$statistics[$attribute->getOne("StatisticName")->StatisticNameValue]["current"] = $attribute->StatisticAttributeValue;
@@ -36,9 +36,9 @@
 				);
 			}
 		}			
-		return json_encode(array(
+		$from->send(json_encode(array(
 			"args" => $json,
 			"action" => "GetCharacter"
-		));
+		)));
 	}
 ?>

@@ -15,6 +15,15 @@
 	require_once("getEquipment.php");
 	require_once("getAllWalls.php");
 	require_once("moveCharacter.php");
+	require_once("getRoomEnemies.php");
+	require_once("sendDamage.php");
+	require_once("getItemsInRoom.php");
+	
+	require_once("pickupItem.php");
+	require_once("equipItem.php");
+	
+	require_once("moveEnemy.php");
+	
 	
 	DB::connect();
 	
@@ -49,20 +58,39 @@
 						$character->rewind();					
 						if($character->valid()) {
 							$from->character = $character;
-							$from->send(getBadges());
-							$from->send(getTiles());
-							$from->send(getCharacterRoomLocation($from->character));
-							$from->send(getItemsInInventory($from->character));
-							$from->send(getCharacter($from->character));
-							$from->send(getSkills($from->character));
-							$from->send(getWalls($from->character));
-							$from->send(getEquipment($from->character));
-							$from->send(getAllWalls($from->character));
+							getBadges($from);
+							getTiles($from);
+							getCharacterRoomLocation($from->character, $from);
+							getItemsInInventory($from->character, $from);
+							getCharacter($from->character, $from);
+							getSkills($from->character, $from);
+							getWalls($from->character, $from);
+							getEquipment($from->character, $from);
+							getAllWalls($from->character, $from);
+							getRoomEnemies($from->character, $from);
+							getItemsInRoom($from->character, $from);
 						}						
 						break;
 					case "MoveCharacter" :
 						$from->character-rewind();
 						moveCharacter($from->character, $args, $from);
+						break;
+					case "SendDamage" :
+						$from->character-rewind();
+						sendDamage($from->character, $args, $from);
+						break;
+					case "EquipItem" :
+						$from->character-rewind();
+						equipItem($from->character, $args, $from);
+						break;
+					case "PickUpItem" :
+						$from->character-rewind();
+						pickupItem($from->character, $args, $from);
+						break;
+					case "MoveEnemy" :
+						$from->character-rewind();
+						moveEnemy($from->character, $args, $from);
+						break;
 				}
 			}
 		}

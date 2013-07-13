@@ -7,13 +7,10 @@ $(function() {
 					var item = items.list[i];
 					if(item.location.column === character.location.column && item.location.row === character.location.row) {						
 						if(index !== -1) {
-							Server.pickupItem(function(result) {
-								if(result) {
-									inventory_items[index] = item;		
-									Sound.effect(item.sounds.move);
-									items.list.splice(i, 1);
-								}
-							});
+							Server.message("PickUpItem");
+							inventory_items[index] = item;		
+							Sound.effect(item.sounds.move);
+							items.list.splice(i, 1);
 							break;						
 						} else {
 							alert("You have no room in your inventory for that item.");
@@ -48,35 +45,32 @@ $(function() {
 					free = inventory_items.indexOf(null),
 					i, 
 					type = c.type; 
-				Server.equipItem(c.id, function(result) {
-					if(result) {
-						if(c.type === "mainhand") {
-							if(c.weight === 1) {
-								if(equipment_items.mainhand.item && equipment_items.mainhand.item.weight === 3) {								
-									unequip("mainhand", index);						
-								} else {
-									unequip("offhand", index);
-								}
-								type = "offhand";
-							} else if(c.weight === 2) {
-								unequip("mainhand", index);									
-							} else if(c.weight === 3) {
-								if(!equipment_items.offhand.item || free !== -1) {
-									unequip("mainhand", index);					
-									if(equipment_items.offhand.item) {
-										unequip("offhand", free);
-									}
-								} else {
-									alert("You have no room in your inventory for your equipped items.");
-									return;
-								}
+				Server.message("EquipItem", {iid:c.id});
+				if(c.type === "mainhand") {
+					if(c.weight === 1) {
+						if(equipment_items.mainhand.item && equipment_items.mainhand.item.weight === 3) {								
+							unequip("mainhand", index);						
+						} else {
+							unequip("offhand", index);
+						}
+						type = "offhand";
+					} else if(c.weight === 2) {
+						unequip("mainhand", index);									
+					} else if(c.weight === 3) {
+						if(!equipment_items.offhand.item || free !== -1) {
+							unequip("mainhand", index);					
+							if(equipment_items.offhand.item) {
+								unequip("offhand", free);
 							}
 						} else {
-							unequip(c.type, index);
+							alert("You have no room in your inventory for your equipped items.");
+							return;
 						}
-						equip(c, type);
 					}
-				});
+				} else {
+					unequip(c.type, index);
+				}
+				equip(c, type);				
 			},
 			"Drop" : function(c) {
 				inventory_items[inventory_items.indexOf(c)] = null;

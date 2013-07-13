@@ -20,8 +20,12 @@ JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 
 Server.js
+C:\inetpub\wwwroot\Maze\script\Server.js(67): lint warning: missing semicolon
+	connection.onopen = function() {
+........^
 
-0 error(s), 0 warning(s)
+
+0 error(s), 1 warning(s)
 JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
 Developed by Matthias Miller (http://www.JavaScriptLint.com)
 

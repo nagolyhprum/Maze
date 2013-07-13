@@ -1,11 +1,11 @@
 <?php
-	function getItemsInInventory($character) {
+	function getItemsInInventory($character, $from) {
 		foreach($character->getMany("ItemInInventory") as $iii) {
 			$items[] = $iii->ItemID ? getItem($iii->ItemID) : null;
 		}
-		return json_encode(array(
+		$from->send(json_encode(array(
 			"args" => $items,
 			"action" => "GetItemsInInventory"
-		));
+		)));
 	}
 ?>

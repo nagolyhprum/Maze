@@ -49,7 +49,9 @@
 						$eir->EnemyInRoomUsedAt = $now;
 						$eir->update();
 						$character->RoomID = $room->RoomID;
-						$from->send(getWalls($character));
+						getWalls($character, $from);
+						getRoomEnemies($character, $from);
+						getItemsInRoom($character, $from);
 					} else {
 						$character->CharacterCanUse = $now + $character->timeToMove($now);
 					}
@@ -57,10 +59,8 @@
 					$character->CharacterRow = $row;
 					$character->CharacterColumn = $column;						
 					$character->update();
-					return 1;
 				}					
 			}
 		}
-		return 0;
 	}
 ?>
