@@ -14,6 +14,7 @@
 	require_once("getTiles.php");
 	require_once("getEquipment.php");
 	require_once("getAllWalls.php");
+	require_once("moveCharacter.php");
 	
 	DB::connect();
 	
@@ -43,8 +44,9 @@
 			$args = $json["args"];
 			if($action && $args) {
 				switch($action) {
-					case "Initialize" :		
+					case "Initialize" :	
 						global $character;
+						$character->rewind();					
 						if($character->valid()) {
 							$from->character = $character;
 							$from->send(getBadges());
@@ -58,11 +60,15 @@
 							$from->send(getAllWalls($from->character));
 						}						
 						break;
+					case "MoveCharacter" :
+						$from->character-rewind();
+						moveCharacter($from->character, $args, $from);
 				}
 			}
 		}
 
 		public function onClose(ConnectionInterface $conn) {
+			$conn = null;
 			$this->clients->detach($conn);
 			echo "Disconnected\n";
 		}

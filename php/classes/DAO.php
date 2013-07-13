@@ -24,9 +24,7 @@
 	class DB {
 		
 		private static $index = 0;
-		private static $connection;
-		private static $cache = array();		
-		private static $buffer = "";
+		private static $connection;	
 		
 		/*
 			Connects to the databse
@@ -40,25 +38,10 @@
 			return mysqli_real_escape_string(DB::$connection, $s);
 		}
 		
-		public static function flush() {
-			if(DB::$buffer) {
-				//echo str_replace(";", ";<br/>", DB::$buffer);
-				if(mysqli_multi_query(DB::$connection, DB::$buffer)) {
-					do {
-						if($result = mysqli_store_result(DB::$connection)){
-							mysqli_free_result($result);
-						}
-					} while(mysqli_more_results(DB::$connection) && mysqli_next_result(DB::$connection));
-				}			
-				DB::$buffer = "";
-			}
-		}
-		
 		/*
 			Disconnects from the databse
 		*/
 		public static function close() {
-			DB::flush();
 			mysqli_close(DB::$connection);
 		}
 		
@@ -87,16 +70,7 @@
 			}
 			$executed .= substr($sql, $last, strlen($sql) - $last);
 			//echo "$executed\n\n";
-			if(DB::$cache[$executed] && $useCache) {
-				$result = DB::$cache[$executed];
-				mysqli_data_seek($result, 0);
-				return $result;
-			}
-			if($immediate) {
-				return DB::$cache[$executed] = mysqli_query(DB::$connection, $executed);
-			} else {
-				DB::$buffer .= $executed;
-			}
+			return mysqli_query(DB::$connection, $executed);
 		}
 		
 		public static function getConnection() {

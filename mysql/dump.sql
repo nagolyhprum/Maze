@@ -103,7 +103,7 @@ CREATE TABLE `badge` (
 
 LOCK TABLES `badge` WRITE;
 /*!40000 ALTER TABLE `badge` DISABLE KEYS */;
-INSERT INTO `badge` VALUES (1,'First Step',NULL,1,2,1),(2,'Adventurer',NULL,10,11,6),(3,'Explorer',NULL,1,10,7),(4,'First Death',NULL,1,7,3),(5,'Killer',4,50,4,NULL),(6,'First Kill',4,1,5,NULL),(7,'Skillful',3,10,9,NULL);
+INSERT INTO `badge` VALUES (1,'First Step',1,1,2,1),(2,'Adventurer',2,10,11,6),(3,'Explorer',2,1,10,7),(4,'First Death',1,1,7,3),(5,'Killer',4,50,4,NULL),(6,'First Kill',4,1,5,NULL),(7,'Skillful',3,10,9,NULL);
 /*!40000 ALTER TABLE `badge` ENABLE KEYS */;
 UNLOCK TABLES;
 
