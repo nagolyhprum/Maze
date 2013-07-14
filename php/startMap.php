@@ -1,11 +1,7 @@
 <?php
-
-	require_once("classes/DAO.php");
-		
-	$mapmodel = 1;
-	if(DB::connect()) {
-		$character = new Character();
-		if($character->valid() && $character->RoomID === NULL) { //make sure this character is valid
+	function startMap($character, $args, $from) {
+		$mapmodel = $args["mapmodel"];
+		if($character->RoomID === NULL) { //make sure this character is valid
 			$mapmodel = new DAO("MapModel", $mapmodel);	//get the requested mapmodel			
 			if($mapmodel->valid()) { //if the map model is valid
 				foreach($mapmodel->getMany("RoomModelInMapModel") as $rmimm) { //go through all of the room models in this map model				
@@ -73,7 +69,6 @@
 				}
 			}
 		}
-		DB::close();
 	}
 	
 	function makeMap($fromrow, $fromcolumn, $rows, $columns, &$rooms, &$visited) {

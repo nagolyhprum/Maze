@@ -24,6 +24,9 @@
 	
 	require_once("moveEnemy.php");
 	
+	require_once("getCharacterBehaviors.php");
+	
+	require_once("startMap.php");
 	
 	DB::connect();
 	
@@ -58,6 +61,7 @@
 						$character->rewind();					
 						if($character->valid()) {
 							$from->character = $character;
+							startMap($from->character, $args, $from);
 							getBadges($from);
 							getTiles($from);
 							getCharacterRoomLocation($from->character, $from);
@@ -69,6 +73,7 @@
 							getAllWalls($from->character, $from);
 							getRoomEnemies($from->character, $from);
 							getItemsInRoom($from->character, $from);
+							getCharacterBehaviors($from->character, $from);
 						}						
 						break;
 					case "MoveCharacter" :

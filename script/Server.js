@@ -1,4 +1,4 @@
-var cid = 1;
+var cid = 1, mapmodel = 1;
 
 var CONSTANTS = {
 	TILE : {
@@ -65,7 +65,7 @@ var Server = (function() {
 	})
 	
 	connection.onopen = function() {
-		events.message("Initialize", {cid : cid});
+		events.message("Initialize", {cid : cid, mapmodel : mapmodel});
 		sendMessage();
 	};
 	
@@ -105,7 +105,7 @@ var Server = (function() {
 			}
 		}
 	}
-	
+	/*
 	toReceive.push(JSON.stringify({
 		"action" : "GetCharacterBehaviors",
 		"args" : {
@@ -135,7 +135,7 @@ var Server = (function() {
 		}
 	}));
 	receiveMessage();
-	
+	*/
 	//end function
 	/*
 	var Server = {};

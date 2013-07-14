@@ -1056,7 +1056,19 @@ CREATE TABLE `subcategory` (
 
 LOCK TABLES `subcategory` WRITE;
 /*!40000 ALTER TABLE `subcategory` DISABLE KEYS */;
-INSERT INTO `subcategory` VALUES (1,1,'Step'),(3,1,'Death'),(5,1,'Seconds Played'),(6,2,'Room'),(7,2,'Map'),(8,3,'Heal'),(9,3,'Power Thrust'),(10,3,'Fire Arrow'),(11,3,'Fire Wave'),(12,4,'Skeleton'),(13,5,'Taken'),(14,5,'Dealt');
+INSERT INTO `subcategory` VALUES 
+	(1,1,'Step'),
+	(2,1,'Death'),
+	(3,1,'Seconds Played'),
+	(4,2,'Room'),
+	(5,2,'Map'),
+	(6,3,'Heal'),
+	(7,3,'Power Thrust'),
+	(8,3,'Fire Arrow'),
+	(9,3,'Fire Wave'),
+	(10,4,'Skeleton'),
+	(11,5,'Taken'),
+	(12,5,'Dealt');
 /*!40000 ALTER TABLE `subcategory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1095,12 +1107,12 @@ DROP TABLE IF EXISTS `userbehavior`;
 CREATE TABLE `userbehavior` (
   `UserBehaviorID` bigint(20) NOT NULL AUTO_INCREMENT,
   `UserID` bigint(20) NOT NULL,
-  `BehaviorSubcategoryID` bigint(20) NOT NULL,
+  `SubcategoryID` bigint(20) NOT NULL,
   `UserBehaviorCount` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`UserBehaviorID`),
-  KEY `fk_UserBehavior_BehaviorSubcategory1_idx` (`BehaviorSubcategoryID`),
+  KEY `fk_UserBehavior_BehaviorSubcategory1_idx` (`SubcategoryID`),
   KEY `fk_UserBehavior_User1_idx` (`UserID`),
-  CONSTRAINT `fk_UserBehavior_BehaviorSubcategory1` FOREIGN KEY (`BehaviorSubcategoryID`) REFERENCES `subcategory` (`SubcategoryID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_UserBehavior_BehaviorSubcategory1` FOREIGN KEY (`SubcategoryID`) REFERENCES `subcategory` (`SubcategoryID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_UserBehavior_User1` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1111,6 +1123,19 @@ CREATE TABLE `userbehavior` (
 
 LOCK TABLES `userbehavior` WRITE;
 /*!40000 ALTER TABLE `userbehavior` DISABLE KEYS */;
+INSERT INTO `userbehavior` VALUES 
+	(1, 1, 1, 0),
+	(2, 1, 2, 0),
+	(3, 1, 3, 0),
+	(4, 1, 4, 0),
+	(5, 1, 5, 0),
+	(6, 1, 6, 0),
+	(7, 1, 7, 0),
+	(8, 1, 8, 0),
+	(9, 1, 9, 0),
+	(10, 1, 10, 0),
+	(11, 1, 11, 0),
+	(12, 1, 12, 0);
 /*!40000 ALTER TABLE `userbehavior` ENABLE KEYS */;
 UNLOCK TABLES;
 

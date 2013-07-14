@@ -65,16 +65,18 @@
 				$character->update();
 			}
 		}			
-		$from->send(json_encode(array(
-			"args" => array(
-				"character" => array(
-					"health" => $health - $damage
-				), 
-				"enemies" => $data, 
-				"cts" => $now
-			),
-			"action" => "MoveEnemy"
-		)));
+		if(count($data)) {
+			$from->send(json_encode(array(
+				"args" => array(
+					"character" => array(
+						"health" => $health - $damage
+					), 
+					"enemies" => $data, 
+					"cts" => $now
+				),
+				"action" => "MoveEnemy"
+			)));
+		}
 	}
 	
 	class LocationPQ extends SplPriorityQueue { 
