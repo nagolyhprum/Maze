@@ -16,7 +16,7 @@
 		}
 	}
 	
-	function asOptions($r, $value) {
+	function asOptions($r, $value = -1) {
 		echo "<option></option>";
 		foreach($r as $i) {
 			echo "<option";

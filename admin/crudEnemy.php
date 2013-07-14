@@ -57,43 +57,30 @@
 						<?php asOptions($images, -1); ?>
 					</select>
 				</div>
-				<div>
-					Attack Type
-					<select name="attacktype">
-						<?php asOptions($attacktypes, -1); ?>
-					</select>
-				</div>
-				<?php createStatisticForm(""); ?>
+				<?php createStatisticForm($c, ""); ?>
 				<input type="submit" name="action" value="Create"/>
 			</div>
 		</form>
 		<?php
 			if($c) {
-				$stmt = mysqli_prepare($c, "
-					SELECT 
-						e.EnemyID,
-						e.EnemyName,
-						e.EnemyPortrait,
-						e.AttackTypeID,
-						
-						s.StatisticID,
-						s.StatisticHealth,
-						s.StatisticEnergy,
-						s.StatisticStrength,
-						s.StatisticDefense,
-						s.StatisticIntelligence,
-						s.StatisticResistance
-					FROM 
-						Enemy as e 
-					INNER JOIN
-						Statistic as s
-					ON
-						e.StatisticID=s.StatisticID					
-				");		
-				$statistic = array();
-				mysqli_stmt_bind_result($stmt, $id, $name, $portrait, $attacktype, $statistic["id"], $statistic["health"], $statistic["energy"], $statistic["strength"], $statistic["defense"], $statistic["intelligence"], $statistic["resistance"]);
-				mysqli_stmt_execute($stmt);
-				while(mysqli_stmt_fetch($stmt)) {
+				for($i = 0;; $i++) {
+					$stmt = mysqli_prepare($c, "
+						SELECT 
+							EnemyID,
+							EnemyName,
+							ImageID,
+							StatisticID
+						FROM 
+							Enemy
+						LIMIT
+							?, 1
+					");		
+					mysqli_stmt_bind_param($stmt, "i", $i);
+					mysqli_stmt_bind_result($stmt, $id, $name, $portrait, $statistic);
+					mysqli_stmt_execute($stmt);
+					if(!mysqli_stmt_fetch($stmt)) {
+						break;
+					}
 					?>
 					<hr/>
 					<form method="post" action="crudEnemy.php">
@@ -108,20 +95,14 @@
 							</select>
 						</div>
 						<div>
-							Attack Type
-							<select name="attacktype">
-								<?php asOptions($attacktypes, $attacktype); ?>
-							</select>
-						</div>
-						<div>
 							<input type="submit" name="action" value="Delete"/>
 							<input type="submit" name="action" value="Update Enemy"/>
 						</div>
 					</form>
 					<?php 
-						updateStatisticForm($statistic, ""); 
+					mysqli_stmt_close($stmt);
+					updateStatisticForm($c, $statistic, ""); 				
 				}
-				mysqli_stmt_close($stmt);
 			}
 		?>
 	</body>

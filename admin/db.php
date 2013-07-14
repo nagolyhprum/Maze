@@ -1,6 +1,8 @@
 <?php
 	function connect() {
-		return mysqli_connect("localhost", "root", "root", "worldtactics");
+		$c = mysqli_connect("localhost", "root", "root", "worldtactics");
+		echo mysqli_error($c);
+		return $c;
 	}
 	
 	function close($c) {

@@ -1,66 +1,85 @@
 <?php
-	function createStatisticForm($prefix) {
-		?>
+	function createStatisticForm($c, $prefix) {	
+		if($table = mysqli_query($c, "SELECT StatisticNameValue, StatisticNameID FROM StatisticName")) {
+			while($row = mysqli_fetch_assoc($table)) {
+			?>
 			<div>
-				Health <input type="text" name="<?php echo $prefix; ?>health"/>
+				<?php echo $row["StatisticName"]; ?> 
+				<input type="text" name="<?php echo $prefix . "_" . $row["StatisticName"] . "_" . $row["StatisticNameID"]; ?>"/>
 			</div>
-			<div>
-				Energy <input type="text" name="<?php echo $prefix; ?>energy"/>
-			</div>
-			<div>
-				Strength <input type="text" name="<?php echo $prefix; ?>strength"/>
-			</div>
-			<div>
-				Defense <input type="text" name="<?php echo $prefix; ?>defense"/>
-			</div>
-			<div>
-				Intelligence <input type="text" name="<?php echo $prefix; ?>intelligence"/>
-			</div>
-			<div>
-				Resistance <input type="text" name="<?php echo $prefix; ?>resistance"/>				
-			</div>
-		<?php
+			<?php
+			}
+		}
 	}
 	
 	function createStatistic($c, $prefix) {
-		$stmt = mysqli_prepare($c, "INSERT INTO Statistic (StatisticHealth, StatisticEnergy, StatisticStrength, StatisticDefense, StatisticIntelligence, StatisticResistance) VALUES (?, ?, ?, ?, ?, ?)");
-		mysqli_stmt_bind_param($stmt, "iiiiii", $_REQUEST[$prefix . "health"], $_REQUEST[$prefix . "energy"], $_REQUEST[$prefix . "strength"], $_REQUEST[$prefix . "defense"], $_REQUEST[$prefix . "intelligence"], $_REQUEST[$prefix . "resistance"]);
-		mysqli_stmt_execute($stmt);
+		mysqli_query($c, "INSERT INTO Statistic (StatisticIsActive) VALUES (1)");
+		$statistic = mysqli_insert_id($c);
+		$stmt = mysqli_prepare($c, "INSERT INTO StatisticAttribute (StatisticID, StatisticAttributeValue, StatisticNameID) VALUES (?, ?, ?)");
+		mysqli_stmt_bind_param($c, "iii", $statistic, $value, $name);
+		foreach($_REQUEST as $key => $value) {
+			$r = explode($key, "_");
+			if(count($r) === 3 && $r[0] === $prefix) {
+				$name = $r[2];
+				mysqli_stmt_execute($stmt);	
+			}
+		}
 		mysqli_stmt_close($stmt);
-		return mysqli_insert_id($c);
+		return $statistic;
 	}
 	
-	function updateStatisticForm($obj, $prefix) {
-		?>
+	function updateStatisticForm($c, $statistic, $prefix) {
+		?>		
 		<form method="post">
-			<input type="hidden" name="id" value="<?php echo $obj["id"]; ?>"/>
-			<div>
-				Health <input type="text" name="<?php echo $prefix; ?>health" value="<?php echo $obj["health"]; ?>"/>
-			</div>
-			<div>
-				Energy <input type="text" name="<?php echo $prefix; ?>energy" value="<?php echo $obj["energy"]; ?>"/>
-			</div>
-			<div>
-				Strength <input type="text" name="<?php echo $prefix; ?>strength" value="<?php echo $obj["strength"]; ?>"/>
-			</div>
-			<div>
-				Defense <input type="text" name="<?php echo $prefix; ?>defense" value="<?php echo $obj["defense"]; ?>"/>
-			</div>
-			<div>
-				Intelligence <input type="text" name="<?php echo $prefix; ?>intelligence" value="<?php echo $obj["intelligence"]; ?>"/>
-			</div>
-			<div>
-				Resistance <input type="text" name="<?php echo $prefix; ?>resistance" value="<?php echo $obj["resistance"]; ?>"/>				
-			</div>
+			<?php
+				$stmt = mysqli_prepare($c, "
+					SELECT	
+						StatisticAttributeID,
+						StatisticAttributeValue,
+						StatisticNameValue
+					FROM
+						StatisticName as sn
+					INNER JOIN
+						StatisticAttribute as sa
+					ON
+						sn.StatisticNameID=sa.StatisticNameID
+					WHERE
+						StatisticID=?
+				");
+				mysqli_stmt_bind_param($stmt, "i", $statistic);
+				mysqli_stmt_bind_result($stmt, $id, $attr, $name);
+				mysqli_stmt_execute($stmt);
+				while(mysqli_stmt_fetch($stmt)) {
+					?>
+					<div>
+						<?php echo $name; ?>
+						<input type="text" name="<?php echo $prefix . "_" . $name . "_" . $id; ?>" value="<?php echo $attr; ?>"/>
+					</div>
+					<?php
+				}
+			?>
 			<input type="submit" name="action" value="Update Statistic"/>
 		</form>
 		<?php
 	}
 	
 	function updateStatistic($c, $prefix) {
-		$stmt = mysqli_prepare($c, "UPDATE Statistic SET StatisticHealth=?, StatisticEnergy=?, StatisticStrength=?, StatisticDefense=?, StatisticIntelligence=?, StatisticResistance=? WHERE StatisticID=?");
-		mysqli_stmt_bind_param($stmt, "iiiiiii", $_REQUEST["health"], $_REQUEST["energy"], $_REQUEST["strength"], $_REQUEST["defense"], $_REQUEST["intelligence"], $_REQUEST["resistance"], $_REQUEST["id"]);
-		mysqli_stmt_execute($stmt);
+		mysqli_prepare($c, "
+			UPDATE
+				StatisticAttribute
+			SET
+				StatisticAttributeValue = ?
+			WHERE
+				StatisticAttributeID = ?
+		");
+		mysqli_stmt_bind_param($stmt, "ii", $value, $id);
+		foreach($_REQUEST as $key => $value) {
+			$r = explode($key);
+			if(count($r) === 3 && $r[1] === $prefix) {
+				$id = $r[2];
+				mysqli_stmt_execute($stmt);
+			}
+		}
 		mysqli_stmt_close($stmt);
 	}
 ?>

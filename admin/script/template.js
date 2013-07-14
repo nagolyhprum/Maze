@@ -6,7 +6,11 @@ $(function() {
 			$(this).next().hide();
 		}
 	}
-	$("[data-image]").after("<img width='40' height='40' alt=''/>").click(updateImage).change(updateImage).click()
+	$("[data-image]")
+		.after("<img width='40' height='40' alt=''/>")
+		.click(updateImage)
+		.change(updateImage)
+		.click();
 	
 	$("select").css({
 		width : 150

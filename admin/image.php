@@ -12,7 +12,7 @@
 		} else if($ext === "jpg") {
 			header("Content-type: image/jpeg");
 		}
-		echo file_get_contents("../" . $name);
+		echo file_get_contents("../images/" . $name);
 	}
 	mysqli_stmt_close($stmt);
 	mysqli_close($c);

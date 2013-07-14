@@ -71,52 +71,33 @@
 				Is Male <input type="checkbox" name="ismale"/>
 			</div>
 			<h3>Statistic</h3>
-			<?php createStatisticForm(""); ?>
+			<?php createStatisticForm($c, ""); ?>
 			<div>
 				<input type="submit" name="action" value="Create"/>
 			</div>
 		</form>
 		<?php
 			if($c) {
-				$current = array();
-				$max = array();
-				$stmt = mysqli_prepare($c, "
-				SELECT 
-					c.CharacterID, 
-					c.CharacterName, 
-					c.CharacterPortrait, 
-					c.UserID, 
-					c.CharacterIsMale,
-					
-					ms.StatisticID,
-					ms.StatisticHealth,
-					ms.StatisticEnergy,
-					ms.StatisticStrength,
-					ms.StatisticDefense,
-					ms.StatisticIntelligence,
-					ms.StatisticResistance,
-					
-					cs.StatisticID,
-					cs.StatisticHealth,
-					cs.StatisticEnergy,
-					cs.StatisticStrength,
-					cs.StatisticDefense,
-					cs.StatisticIntelligence,
-					cs.StatisticResistance
-				FROM 
-					`Character` as c
-				INNER JOIN
-					Statistic as ms
-				ON
-					ms.StatisticID=c.CharacterMaxStatisticID
-				INNER JOIN
-					Statistic as cs
-				ON
-					cs.StatisticID=c.CharacterCurrentStatisticID");	
-				echo mysqli_error($c);
-				mysqli_stmt_bind_result($stmt, $id, $name, $portrait, $user, $ismale, $max["id"], $max["health"], $max["energy"], $max["strength"], $max["defense"], $max["intelligence"], $max["resistance"], $current["id"], $current["health"], $current["energy"], $current["strength"], $current["defense"], $current["intelligence"], $current["resistance"]);
-				mysqli_stmt_execute($stmt);
-				while(mysqli_stmt_fetch($stmt)) {
+				for($i = 0;; $i++) {
+					$stmt = mysqli_prepare($c, "
+					SELECT 
+						CharacterID, 
+						CharacterName, 
+						ImageID, 
+						UserID, 
+						CharacterIsMale,				
+						CharacterMaxStatisticID,
+						CharacterCurrentStatisticID
+					FROM 
+						`Character`
+					LIMIT
+						?, 1");	
+					mysqli_stmt_bind_param($stmt, "i", $i);
+					mysqli_stmt_bind_result($stmt, $id, $name, $portrait, $user, $ismale, $max, $current);
+					mysqli_stmt_execute($stmt);
+					if(!mysqli_stmt_fetch($stmt)) {
+						break;
+					}
 					?>
 					<hr/>
 					<form action="crudCharacter.php" method="post">
@@ -145,12 +126,13 @@
 						<input type="submit" name="action" value="Update Character"/>
 					</form>
 					<h3>Current</h3>
-					<?php updateStatisticForm($current, ""); ?>
+					<?php 					
+						mysqli_stmt_close($stmt);
+						updateStatisticForm($c, $current, ""); ?>
 					<h3>Max</h3>
 					<?php 
-						updateStatisticForm($max, ""); 
+						updateStatisticForm($c, $max, ""); 
 				}
-				mysqli_stmt_close($stmt);
 			}
 		?>
 	</body>

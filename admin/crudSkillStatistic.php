@@ -57,38 +57,31 @@
 			<div>
 				Is Add <input type="checkbox" name="isadd"/>
 			</div>
-			<?php createStatisticForm(""); ?>
+			<?php createStatisticForm($c, ""); ?>
 			<div>
 				<input type="submit" name="action" value="Create"/>
 			</div>
 		</form>
 		<?php
 			if($c) {
-				$stmt = mysqli_prepare($c, "
-					SELECT 
-						SkillStatisticID,
-						SkillID,
-						SkillStatisticIsAdd,
-						SkillStatisticDuration,
-						
-						s.StatisticID,
-						StatisticHealth,
-						StatisticEnergy,
-						StatisticStrength,
-						StatisticDefense,
-						StatisticIntelligence,
-						StatisticResistance
-					FROM 
-						SkillStatistic as ss
-					INNER JOIN
-						Statistic as s
-					ON
-						ss.StatisticID=s.StatisticID
-				");		
-				$statistic = array();
-				mysqli_stmt_bind_result($stmt, $id, $skill, $isadd, $duration, $statistic["id"], $statistic["health"], $statistic["energy"], $statistic["strength"], $statistic["defense"], $statistic["intelligence"], $statistic["resistance"]);
-				mysqli_stmt_execute($stmt);
-				while(mysqli_stmt_fetch($stmt)) {
+				for($i = 0;; $i++) {
+					$stmt = mysqli_prepare($c, "
+						SELECT 
+							SkillStatisticID,
+							SkillID,
+							SkillStatisticIsAdd,
+							SkillStatisticDuration,						
+							StatisticID
+						FROM 
+							SkillStatistic as ss
+						LIMIT ?, 1
+					");		
+					mysqli_stmt_bind_param($stmt, "i", $i);
+					mysqli_stmt_bind_result($stmt, $id, $skill, $isadd, $duration, $statistic);
+					mysqli_stmt_execute($stmt);
+					if(!mysqli_stmt_fetch($stmt)) {
+						break;
+					}
 					?>
 					<hr/>
 					<form action="crudSkillStatistic.php" method="post">
@@ -109,9 +102,9 @@
 						<input type="submit" name="action" value="Update Skill Statistic"/>
 					</form>
 					<?php 
-						updateStatisticForm($statistic, ""); 
+					mysqli_stmt_close($stmt);
+					updateStatisticForm($c, $statistic, ""); 
 				}
-				mysqli_stmt_close($stmt);
 			}
 		?>
 	</body>
