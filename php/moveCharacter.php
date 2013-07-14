@@ -59,6 +59,7 @@
 					$character->CharacterRow = $row;
 					$character->CharacterColumn = $column;						
 					$character->update();
+					addBehavior($character, "Character", "Steps", 1, $from);
 				}					
 			}
 		}

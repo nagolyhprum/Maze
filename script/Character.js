@@ -1,17 +1,14 @@
+Server.attach("HealEnergy", function(args) {
+	character.statistics.energy.current = args;
+});
+
 $(function() {
 	lock("character", function() {	
 		canvas.events.attach("draw", function() {
 			canvas.drawWith(8);
 			character.draw(context);
 		});
-		
-		setCatchup(function() {
-			if(character.statistics.getCurrent("energy") < character.statistics.getMax("energy")) {
-				Server.healEnergy();
-				character.statistics.energy.current++;
-			}
-		}, 1000);
-		
+				
 		canvas.events.attach("keydown", function(which) {
 			if(character.tween.isTweening() || character.statistics.getCurrent("health") <= 0) return;
 			var moved = 1, l = {
@@ -62,7 +59,6 @@ $(function() {
 					Server.message("MoveCharacter", l);
 					character.location.column = (l.column + CONSTANTS.TILE.COLUMNS) % CONSTANTS.TILE.COLUMNS;
 					character.location.row = (l.row + CONSTANTS.TILE.ROWS) % CONSTANTS.TILE.ROWS;
-					addBehavior("Character", "Steps");
 					if(!change) {
 						character.moveBy(horizontal, vertical);
 					}

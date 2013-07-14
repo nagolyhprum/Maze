@@ -103,7 +103,14 @@ CREATE TABLE `badge` (
 
 LOCK TABLES `badge` WRITE;
 /*!40000 ALTER TABLE `badge` DISABLE KEYS */;
-INSERT INTO `badge` VALUES (1,'First Step',1,1,2,1),(2,'Adventurer',2,10,11,6),(3,'Explorer',2,1,10,7),(4,'First Death',1,1,7,3),(5,'Killer',4,50,4,NULL),(6,'First Kill',4,1,5,NULL),(7,'Skillful',3,10,9,NULL);
+INSERT INTO `badge` VALUES 
+	(1,'First Step',1,1,2,1),
+	(2,'Adventurer',2,10,11,4),
+	(3,'Explorer',2,1,10,5),
+	(4,'First Death',1,1,7,2),
+	(5,'Killer',4,50,4,NULL),
+	(6,'First Kill',4,1,5,NULL),
+	(7,'Skillful',3,10,9,NULL);
 /*!40000 ALTER TABLE `badge` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -127,7 +134,7 @@ CREATE TABLE `category` (
 
 LOCK TABLES `category` WRITE;
 /*!40000 ALTER TABLE `category` DISABLE KEYS */;
-INSERT INTO `category` VALUES (1,'Character'),(2,'Discover'),(3,'Skill'),(4,'Kill'),(5,'Damage');
+INSERT INTO `category` VALUES (1,'Character'),(2,'Discovered'),(3,'Skills Used'),(4,'Kills'),(5,'Damage');
 /*!40000 ALTER TABLE `category` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1057,11 +1064,11 @@ CREATE TABLE `subcategory` (
 LOCK TABLES `subcategory` WRITE;
 /*!40000 ALTER TABLE `subcategory` DISABLE KEYS */;
 INSERT INTO `subcategory` VALUES 
-	(1,1,'Step'),
-	(2,1,'Death'),
+	(1,1,'Steps'),
+	(2,1,'Deaths'),
 	(3,1,'Seconds Played'),
-	(4,2,'Room'),
-	(5,2,'Map'),
+	(4,2,'Rooms'),
+	(5,2,'Maps'),
 	(6,3,'Heal'),
 	(7,3,'Power Thrust'),
 	(8,3,'Fire Arrow'),

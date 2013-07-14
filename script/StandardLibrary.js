@@ -558,11 +558,6 @@ var BLOOD = [
 
 Character.prototype.damage = function(damage, killed, complete) {
 	if(damage > 0) {
-		if(this === character) {
-			addBehavior("Damage", "Received", damage);
-		} else {
-			addBehavior("Damage", "Dealt", damage);
-		}
 		var s = this.statistics;
 		if(s.getCurrent("health") > 0) {
 			Sound.effect(BLOOD[Math.floor(BLOOD.length * Math.random())]);
@@ -578,19 +573,6 @@ Character.prototype.damage = function(damage, killed, complete) {
 				var me = this;
 				killed && killed.call(me);				
 				me.die(function() {				
-					if(me === character) {
-						room.location.column = 0;
-						room.location.row = 0;
-						character.statistics.health.current = character.statistics.health.max;
-						character.statistics.energy.current = character.statistics.energy.max;
-						character.display.row = CONSTANTS.DIRECTION.DOWN;
-						character.display.column = 0;
-						character.location.column = 0;
-						character.location.row = 0;
-						character.active = character.walk;
-						addBehavior("Character", "Deaths");
-						room.events.invoke("change");
-					}
 					complete && complete();
 				});
 			}

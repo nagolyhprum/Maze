@@ -1,23 +1,30 @@
-function addBehavior(category, subcategory, amount) {
-	behaviors[category][subcategory] += (amount || 1);
-	for(var i = 0; i < badges.length; i++) {
-		var b = badges[i];
-		if(!b.complete) {
-			var cat = b.category, scat = b.subcategory, count = 0;
+Server.attach("AddBehavior", function(args) {
+	var category = args.category,
+		subcategory = args.subcategory,
+		count = args.count, i = 0, j, b, cat, scat, total;
+	for(; i < badges.length; i++) {
+		b = badges[i];
+		cat = b.category;
+		scat = b.subcategory;
+		total = 0;
+		if(cat === category && (scat === subcategory || scat === null)) {
 			if(!scat) {
-				for(var j in behaviors[cat]) {
-					count += behaviors[cat][j];
+				for(j in behaviors[cat]) {
+					total += behaviors[cat][j];
 				}
 			} else {
-				count = behaviors[cat][scat];
+				total = behaviors[cat][scat];
 			}
-			if(count >= b.count) {
+			if(total < b.count && total + count >= b.count) {
 				b.complete = 1;
 				alert(b.name + " earned.");
+			} else if(total >= b.count) {
+				b.complete = 1;
 			}
 		}
 	}
-}
+	behaviors[category][subcategory] += count;
+});
 
 $(function() {
 	var	width = 200, 

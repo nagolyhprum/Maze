@@ -59,10 +59,15 @@
 				$enemy->update();
 			}		
 			$h->StatisticAttributeValue -= $damage;
+			if($damage > 0) {
+				addBehavior($character, "Damage", "Taken", $damage, $from);
+			}
 			$h->update();
 			if($h->StatisticAttributeValue <= 0) {
+				addBehavior($character, "Character", "Deaths", 1, $from);
 				$character->RoomID = null;
 				$character->update();
+				reload($from);
 			}
 		}			
 		if(count($data)) {

@@ -297,7 +297,7 @@ items = {
 inventory_items = [],
 equipment_items = {},
 enemies = [],
-behaviors = {},
+behaviors = {placeholder:true},
 badges = [];
 
 Server.attach("GetCharacterRoomLocation", function(l) {
@@ -306,6 +306,9 @@ Server.attach("GetCharacterRoomLocation", function(l) {
 
 Server.attach("GetCharacterBehaviors", function(b) {
 	behaviors = b;
+	if(badges.length) {
+		initCharacterBadges();
+	}
 });
 
 Server.attach("GetCharacterBadges", function(b) {
@@ -313,7 +316,22 @@ Server.attach("GetCharacterBadges", function(b) {
 		b[i].icon = loadImage(b[i].icon);
 	}
 	badges = b;
+	if(!behaviors.placeholder) {
+		initCharacterBadges();
+	}
 });
+
+function initCharacterBadges() {
+	for(var i in behaviors) {
+		for(var j in behaviors[i]) {
+			Server.invoke("AddBehavior", {
+				category : i,
+				subcategory : j,
+				count : 0
+			});
+		}
+	}
+}
 
 Server.attach("GetItemsInInventory", function(iii) {
 	inventory_items = iii;
@@ -347,8 +365,8 @@ Server.attach("GetSkills", function(s) {
 	skills = s;
 });
 
-//make sure we get skills first
+//make sure we get skills first?
 
-Server.attach("AddBehavior", function(args) {
-	addBehavior(args.category, args.subcategory);
+Server.attach("Reload", function() {
+	window.location = "index.html";
 });

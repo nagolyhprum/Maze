@@ -1,32 +1,31 @@
 <?php
-	require_once("ratchet/vendor/autoload.php");
-
-	require_once("classes/DAO.php");
-	require_once("getItem.php");
-	require_once("getSkill.php");
-	
-	require_once("getBadges.php");
-	require_once("getCharacterRoomLocation.php");
-	require_once("getItemsInInventory.php");
-	require_once("getCharacter.php");
-	require_once("getSkills.php");	
-	require_once("getWalls.php");
-	require_once("getTiles.php");
-	require_once("getEquipment.php");
-	require_once("getAllWalls.php");
-	require_once("moveCharacter.php");
-	require_once("getRoomEnemies.php");
-	require_once("sendDamage.php");
-	require_once("getItemsInRoom.php");
-	
-	require_once("pickupItem.php");
-	require_once("equipItem.php");
-	
-	require_once("moveEnemy.php");
-	
-	require_once("getCharacterBehaviors.php");
-	
-	require_once("startMap.php");
+	require("ratchet/vendor/autoload.php");
+	require("classes/DAO.php");
+	require("getItem.php");
+	require("getSkill.php");	
+	require("getBadges.php");
+	require("getCharacterRoomLocation.php");
+	require("getItemsInInventory.php");
+	require("getCharacter.php");
+	require("getSkills.php");	
+	require("getWalls.php");
+	require("getTiles.php");
+	require("getEquipment.php");
+	require("getAllWalls.php");
+	require("moveCharacter.php");
+	require("getRoomEnemies.php");
+	require("sendDamage.php");
+	require("getItemsInRoom.php");	
+	require("pickupItem.php");
+	require("equipItem.php");	
+	require("moveEnemy.php");	
+	require("getCharacterBehaviors.php");	
+	require("startMap.php");
+	require("addBehavior.php");
+	require("healEnergy.php");
+	require("reload.php");
+	require("getSkillMapping.php");
+	require("setSkillIndex.php");
 	
 	DB::connect();
 	
@@ -64,23 +63,28 @@
 							startMap($from->character, $args, $from);
 							getBadges($from);
 							getTiles($from);
+							getCharacterBehaviors($from->character, $from);
 							getCharacterRoomLocation($from->character, $from);
 							getItemsInInventory($from->character, $from);
 							getCharacter($from->character, $from);
 							getSkills($from->character, $from);
 							getWalls($from->character, $from);
 							getEquipment($from->character, $from);
-							getAllWalls($from->character, $from);
 							getRoomEnemies($from->character, $from);
 							getItemsInRoom($from->character, $from);
-							getCharacterBehaviors($from->character, $from);
+							getAllWalls($from->character, $from);
+							getSkillMapping($from->character, $from);
 						}						
 						break;
 					case "MoveCharacter" :
 						$from->character-rewind();
+						moveEnemy($from->character, $args, $from);
+						$from->character-rewind();
 						moveCharacter($from->character, $args, $from);
 						break;
 					case "SendDamage" :
+						$from->character-rewind();
+						moveEnemy($from->character, $args, $from);
 						$from->character-rewind();
 						sendDamage($from->character, $args, $from);
 						break;
@@ -96,6 +100,14 @@
 						$from->character-rewind();
 						moveEnemy($from->character, $args, $from);
 						break;
+					case "SetSkillIndex" :
+						$from->character-rewind();
+						setSkillIndex($from->character, $args, $from);
+						break;
+				}
+				if($from->character) {
+					$from->character->rewind();
+					healEnergy($from->character, $from);
 				}
 			}
 		}

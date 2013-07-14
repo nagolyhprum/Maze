@@ -2,6 +2,9 @@ var allwalls = {data:[],columns:0,rows:0}, alpha = 0;
 Server.attach("GetAllWalls", function(w) {
 	allwalls = w;
 });
+Server.attach("GetWalls", function(w) {
+	allwalls.data[room.location.row * allwalls.columns + room.location.column] = w;
+});
 $(function() {
 	setInterval(function() {
 		alpha += Math.PI / 10;

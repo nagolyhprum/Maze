@@ -27,7 +27,7 @@
 				makeMap(0, 0, $mapmodel->MapModelRows, $mapmodel->MapModelColumns, $rooms, $visited); //prepared the rooms for adding later
 				$room = new DAO("Room"); //dao for creating rooms
 				$room->MapID = $map->MapID; //for this map
-				$room->RoomIsDiscovered = 1; //DEBUG
+				//$room->RoomIsDiscovered = 1; //DEBUG
 				for($room->RoomRow = 0; $room->RoomRow < $mapmodel->MapModelRows; $room->RoomRow++) { //go through all of the rows
 					for($room->RoomColumn = 0; $room->RoomColumn < $mapmodel->MapModelColumns; $room->RoomColumn++) { //and columns of this map
 						$room->RoomWalls = $rooms[$room->RoomRow][$room->RoomColumn]["walls"] ^ WALL_ALL; //create the room with this wall data

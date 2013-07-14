@@ -1,9 +1,4 @@
 <?php
-	
-	require_once("../admin/db.php");
-	
-	require_once "classes/DAO.php";
-	
 	function sendDamage($character, $args, $from) {
 		$data = array("enemies" => array());
 		$index = (int)$args["index"];
@@ -39,7 +34,7 @@
 						$e = new DAO("StatisticAttribute", "StatisticID=? AND StatisticNameID=?", array($character->CharacterCurrentStatisticID, $energy->StatisticNameID));
 						$e->StatisticAttributeValue -= $skill->SkillEnergy;
 						$e->update();
-						DB::flush();
+						addBehavior($character, "Skills Used", $skill->SkillName, 1, $from);
 						//permanant skills
 						$csas = $character->getOne("Statistic", "CharacterCurrentStatisticID")->getMany("StatisticAttribute");							
 						foreach($skill->getMany("SkillStatistic") as $ss) {
@@ -108,12 +103,14 @@
 					getAssultedEnemy($enemies, $tiles, $character->CharacterRow, $character->CharacterColumn - 1, 0, -1, $area);
 				}
 				$dead = array();
+				$total = 0;
 				for($i = 0; $i < count($enemies); $i++) {
 					$eir = $enemies[$i];
 					$h = new DAO("StatisticAttribute", "StatisticNameID=? AND StatisticID=?", array($health->StatisticNameID, $eir->StatisticID));
 					if($h->StatisticAttributeValue > 0) {
 						$dr = new DAO("StatisticAttribute", "StatisticNameID=? AND StatisticID=?", array($sn->StatisticNameID, $eir->StatisticID));
 						$d = ceil($damage - $damage * $dr->StatisticAttributeValue / 100);
+						$total += max(0, $h->StatisticAttributeValue - $d) + $d; //can only deal max life
 						$h->StatisticAttributeValue = max(0, $h->StatisticAttributeValue - $d);
 						$h->update();
 						if($h->StatisticAttributeValue <= 0) {
@@ -125,7 +122,11 @@
 						);
 					}
 				}
-				foreach($dead as $eir) {						
+				if($total > 0) {
+					addBehavior($character, "Damage", "Dealt", $total, $from);
+				}
+				foreach($dead as $eir) {	
+					addBehavior($character, "Kills", $eir->getOne("Enemy")->EnemyName, 1, $from);
 					$chance = mt_rand(0, 100);
 					$ei = new DAO("EnemyItem", "EnemyID=? AND EnemyItemChance > ? ORDER BY EnemyItemChance ASC LIMIT 1", array($eir->EnemyID, $chance));
 					if($ei->valid()) {

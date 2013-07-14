@@ -1,6 +1,9 @@
 $(function() {
 	skills.visible = 0;
-	var background, location = {x:0,y:0}, click, active = skills[0];
+	var background, location = {x:0,y:0}, click, active;
+	Server.attach("GetSkills", function(skills) {
+		active = skills[0];
+	});
 	loadImage("window/texture.png", function(img) {
 		background = context.createPattern(img, "repeat");
 	});
@@ -10,16 +13,15 @@ $(function() {
 			performSkill(key);
 		}
 		if(skills.visible && active && !isNaN(key) && active.isCool) {
-			Server.setSkillIndex(active.id, key, function() {
-				for(var i in skillMapping) {
-					var s = skillMapping[i];
-					if(s && s.id === active.id) {
-						delete skillMapping[i];
-						break;
-					}
+			Server.message("SetSkillIndex", {sid : active.id, index : key});
+			for(var i in skillMapping) {
+				var s = skillMapping[i];
+				if(s && s.id === active.id) {
+					delete skillMapping[i];
+					break;
 				}
-				skillMapping[(key + 9) % 10] = active;
-			});
+			}
+			skillMapping[(key + 9) % 10] = active;
 		} else if(keycode === 82) { //r
 			skills.visible = !skills.visible;
 		} else {
@@ -33,33 +35,31 @@ $(function() {
 			if(skill.isCool) {
 				if((equipment_items.mainhand.item && equipment_items.mainhand.item.attack === skill.action) || skill.action === null) {
 					if(character.statistics.getCurrent("energy") >= skill.energy) {
-						Server.sendDamage((key + 9) % 10, function() {
-							addBehavior("Skill", skill.name);
-							character.statistics.energy.current -= skill.energy;
-							character.attack(skill.action || "spellcast");
-							for(i = 0; i < skill.add.length; i++) {
-								character.statistics.add(skill.add[i], true);
-							}
-							for(i = 0; i < skill.multiply.length; i++) {
-								character.statistics.multiply(skill.multiply[i]);
-							}
-							if(skill.area > 0) { //then it is a linear skill
-								sendDamage(character.getDirection(), skill);
-							} else if(skill.area < 0) { //then it is a circular skill							
-								sendDamage({column : 1, row : 0}, skill);
-								sendDamage({column : -1, row : 0}, skill);
-								sendDamage({column : 0, row : 1}, skill);
-								sendDamage({column : 0, row : -1}, skill);
-							}  //otherwise this is a self skill
-							skill.lastUse = new Date().getTime();
-							skill.isCool = false;			
-							for(i = 0; i < skill.add.length; i++) {
-								remove(skill.add[i]);
-							}
-							for(i = 0; i < skill.multiply.length; i++) {
-								remove(multiply.add[i]);
-							}
-						});
+						Server.message("SendDamage", {index : (key + 9) % 10, direction : character.display.row}); 
+						character.statistics.energy.current -= skill.energy;
+						character.attack(skill.action || "spellcast");
+						for(i = 0; i < skill.add.length; i++) {
+							character.statistics.add(skill.add[i], true);
+						}
+						for(i = 0; i < skill.multiply.length; i++) {
+							character.statistics.multiply(skill.multiply[i]);
+						}
+						if(skill.area > 0) { //then it is a linear skill
+							sendDamage(character.getDirection(), skill);
+						} else if(skill.area < 0) { //then it is a circular skill							
+							sendDamage({column : 1, row : 0}, skill);
+							sendDamage({column : -1, row : 0}, skill);
+							sendDamage({column : 0, row : 1}, skill);
+							sendDamage({column : 0, row : -1}, skill);
+						}  //otherwise this is a self skill
+						skill.lastUse = new Date().getTime();
+						skill.isCool = false;			
+						for(i = 0; i < skill.add.length; i++) {
+							remove(skill.add[i]);
+						}
+						for(i = 0; i < skill.multiply.length; i++) {
+							remove(multiply.add[i]);
+						}
 					} else {
 						alert("Not enough energy.");
 					}
@@ -80,7 +80,17 @@ $(function() {
 
 	var skillMapping = [];	
 	
-	Server.attach("GetSkillMapping", function(sm) {
+	Server.attach("GetSkillMapping", function(sm) {	
+		for(var i = 0; i < sm.length; i++) {
+			if(sm[i]) {
+				for(var j = 0; j < skills.length; j++) {
+					if(sm[i] === skills[j].id) {
+						sm[i] = skills[j];
+						break;
+					}
+				}
+			}
+		}
 		skillMapping = sm;
 	});
 	
