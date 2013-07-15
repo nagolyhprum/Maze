@@ -4,8 +4,8 @@
 			while($row = mysqli_fetch_assoc($table)) {
 			?>
 			<div>
-				<?php echo $row["StatisticName"]; ?> 
-				<input type="text" name="<?php echo $prefix . "_" . $row["StatisticName"] . "_" . $row["StatisticNameID"]; ?>"/>
+				<?php echo $row["StatisticNameValue"]; ?> 
+				<input type="text" name="<?php echo $prefix . "_" . $row["StatisticNameValue"] . "_" . $row["StatisticNameID"]; ?>"/>
 			</div>
 			<?php
 			}
@@ -13,12 +13,12 @@
 	}
 	
 	function createStatistic($c, $prefix) {
-		mysqli_query($c, "INSERT INTO Statistic (StatisticIsActive) VALUES (1)");
+		mysqli_query($c, "INSERT INTO Statistic (StatisticIsActive) VALUES (1)");		
 		$statistic = mysqli_insert_id($c);
 		$stmt = mysqli_prepare($c, "INSERT INTO StatisticAttribute (StatisticID, StatisticAttributeValue, StatisticNameID) VALUES (?, ?, ?)");
-		mysqli_stmt_bind_param($c, "iii", $statistic, $value, $name);
+		mysqli_stmt_bind_param($stmt, "iii", $statistic, $value, $name);
 		foreach($_REQUEST as $key => $value) {
-			$r = explode($key, "_");
+			$r = explode("_", $key);
 			if(count($r) === 3 && $r[0] === $prefix) {
 				$name = $r[2];
 				mysqli_stmt_execute($stmt);	
@@ -74,7 +74,7 @@
 		");
 		mysqli_stmt_bind_param($stmt, "ii", $value, $id);
 		foreach($_REQUEST as $key => $value) {
-			$r = explode($key);
+			$r = explode("_", $key);
 			if(count($r) === 3 && $r[1] === $prefix) {
 				$id = $r[2];
 				mysqli_stmt_execute($stmt);

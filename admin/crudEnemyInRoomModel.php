@@ -9,13 +9,13 @@
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
 		} else if($_POST["action"] === "Create") {
-			$stmt = mysqli_prepare($c, "INSERT INTO EnemyInRoomModel (EnemyID, RoomModelID, EnemyInRoomModelDirection, EnemyInRoomModelRow, EnemyInRoomModelColumn) VALUES (?, ?, ?, ?, ?)");
-			mysqli_stmt_bind_param($stmt, "iiiii", $_POST["enemy"], $_POST["roommodel"], $_POST["direction"], $_POST["row"], $_POST["column"]);
+			$stmt = mysqli_prepare($c, "INSERT INTO EnemyInRoomModel (EnemyID, RoomModelID, EnemyInRoomModelRow, EnemyInRoomModelColumn) VALUES (?, ?, ?, ?)");
+			mysqli_stmt_bind_param($stmt, "iiii", $_POST["enemy"], $_POST["roommodel"], $_POST["row"], $_POST["column"]);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
 		} else if($_POST["action"] === "Update") {
-			$stmt = mysqli_prepare($c, "UPDATE EnemyInRoomModel SET EnemyID=?, RoomModelID=?, EnemyInRoomModelDirection=?, EnemyInRoomModelRow=?, EnemyInRoomModelColumn=? WHERE EnemyInRoomModelID=?");
-			mysqli_stmt_bind_param($stmt, "iiiiii", $_POST["enemy"], $_POST["roommodel"], $_POST["direction"], $_POST["row"], $_POST["column"], $_POST["id"]);
+			$stmt = mysqli_prepare($c, "UPDATE EnemyInRoomModel SET EnemyID=?, RoomModelID=?, EnemyInRoomModelRow=?, EnemyInRoomModelColumn=? WHERE EnemyInRoomModelID=?");
+			mysqli_stmt_bind_param($stmt, "iiiii", $_POST["enemy"], $_POST["roommodel"], $_POST["row"], $_POST["column"], $_POST["id"]);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
 		}
@@ -51,16 +51,13 @@
 				Column <input type="text" name="column"/>
 			</div>
 			<div>
-				Direction <input type="text" name="direction"/>
-			</div>
-			<div>
 				<input type="submit" name="action" value="Create"/>
 			</div>
 		</form>
 		<?php
 			if($c) {
-				$stmt = mysqli_prepare($c, "SELECT EnemyInRoomModelID, EnemyID, RoomModelID, EnemyInRoomModelDirection, EnemyInRoomModelRow, EnemyInRoomModelColumn FROM EnemyInRoomModel");		
-				mysqli_stmt_bind_result($stmt, $id, $enemy, $roommodel, $direction, $row, $column);
+				$stmt = mysqli_prepare($c, "SELECT EnemyInRoomModelID, EnemyID, RoomModelID, EnemyInRoomModelRow, EnemyInRoomModelColumn FROM EnemyInRoomModel");		
+				mysqli_stmt_bind_result($stmt, $id, $enemy, $roommodel, $row, $column);
 				mysqli_stmt_execute($stmt);
 				while(mysqli_stmt_fetch($stmt)) {
 					?>
@@ -84,9 +81,6 @@
 						</div>
 						<div>
 							Column <input type="text" name="column" value="<?php echo $column; ?>"/>
-						</div>
-						<div>
-							Direction <input type="text" name="direction" value="<?php echo $direction; ?>"/>
 						</div>
 						<div>									
 							<input type="submit" name="action" value="Delete"/>

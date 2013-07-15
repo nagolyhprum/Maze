@@ -128,7 +128,7 @@
 				foreach($dead as $eir) {	
 					addBehavior($character, "Kills", $eir->getOne("Enemy")->EnemyName, 1, $from);
 					$chance = mt_rand(0, 100);
-					$ei = new DAO("EnemyItem", "EnemyID=? AND EnemyItemChance > ? ORDER BY EnemyItemChance ASC LIMIT 1", array($eir->EnemyID, $chance));
+					$ei = new DAO("EnemyItemModel", "EnemyID=? AND EnemyItemModelChance > ? ORDER BY EnemyItemModelChance ASC LIMIT 1", array($eir->EnemyID, $chance));
 					if($ei->valid()) {
 						$i = new DAO("Item");
 						$i->ItemModelID = $ei->ItemModelID;

@@ -7,13 +7,17 @@
 		if($_POST["action"] === "Delete") {		
 			$stmt = mysqli_prepare($c, "
 				DELETE 
-					e, s 
+					e, s, sa
 				FROM 
 					Enemy as e 
-				INNER JOIN
+				LEFt JOIN
 					Statistic as s
 				ON
 					e.StatisticID=s.StatisticID
+				LEFT JOIN
+					StatisticAttribute as sa
+				ON
+					sa.StatisticID=e.StatisticID
 				WHERE 
 					e.EnemyID=?
 			");
@@ -22,13 +26,13 @@
 			mysqli_stmt_close($stmt);
 		} else if($_POST["action"] === "Create") {
 			$statistic = createStatistic($c, "");
-			$stmt = mysqli_prepare($c, "INSERT INTO Enemy (EnemyPortrait, EnemyName, StatisticID, AttackTypeID) VALUES (?, ?, ?, ?)");
-			mysqli_stmt_bind_param($stmt, "isii", $_POST["portrait"], $_POST["name"], $statistic, $_POST["attacktype"]);
+			$stmt = mysqli_prepare($c, "INSERT INTO Enemy (ImageID, EnemyName, StatisticID) VALUES (?, ?, ?)");
+			mysqli_stmt_bind_param($stmt, "isi", $_POST["portrait"], $_POST["name"], $statistic);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
 		} else if($_POST["action"] === "Update Enemy") {
-			$stmt = mysqli_prepare($c, "UPDATE Enemy SET EnemyPortrait=?, EnemyName=?, AttackTypeID=? WHERE EnemyID=?");
-			mysqli_stmt_bind_param($stmt, "isii", $_POST["portrait"], $_POST["name"], $_POST["attacktype"], $_POST["id"]);
+			$stmt = mysqli_prepare($c, "UPDATE Enemy SET EnemyPortrait=?, EnemyName=? WHERE EnemyID=?");
+			mysqli_stmt_bind_param($stmt, "isi", $_POST["portrait"], $_POST["name"], $_POST["id"]);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
 		} else if($_POST["action"] === "Update Statistic") {
@@ -36,7 +40,6 @@
 		}
 	}
 	$images = getNameID($c, "Image");
-	$attacktypes = getNameID($c, "AttackType");
 ?>
 <!doctype html>
 <html>

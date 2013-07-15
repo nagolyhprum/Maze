@@ -1,10 +1,12 @@
 <?php
 	function startMap($character, $args, $from) {
 		$mapmodel = $args["mapmodel"];
+		$character->RoomID = null; //TEST
 		if($character->RoomID === NULL) { //make sure this character is valid
 			$mapmodel = new DAO("MapModel", $mapmodel);	//get the requested mapmodel			
 			if($mapmodel->valid()) { //if the map model is valid
 				foreach($mapmodel->getMany("RoomModelInMapModel") as $rmimm) { //go through all of the room models in this map model				
+					$enemies = array();
 					foreach($rmimm->getOne("RoomModel")->getMany("EnemyInRoomModel") as $eirm) { //go through all of the enemies in each room model
 						$enemy = $eirm->getOne("Enemy"); //get the associated enemy
 						//set up simple data

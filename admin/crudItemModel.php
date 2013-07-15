@@ -11,12 +11,12 @@
 			mysqli_stmt_close($stmt);
 		} else if($_POST["action"] === "Create") {
 			$statistic = createStatistic($c, "");
-			$stmt = mysqli_prepare($c, "INSERT INTO ItemModel (ItemModelName, ItemModelArea, StatisticID, AttackTypeID, ItemModelWeight, ItemTypeID, ItemModelPortrait) VALUES (?, ?, ?, ?, ?, ?, ?)");
+			$stmt = mysqli_prepare($c, "INSERT INTO ItemModel (ItemModelName, ItemModelArea, StatisticID, AttackTypeID, ItemModelWeight, ItemTypeID, ImageID) VALUES (?, ?, ?, ?, ?, ?, ?)");
 			mysqli_stmt_bind_param($stmt, "siiiiii", $_POST["name"], $_POST["area"], $statistic, $_POST["attacktype"], $_POST["weight"], $_POST["itemtype"], $_POST["portrait"]);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
 		} else if($_POST["action"] === "Update Item Model") {
-			$stmt = mysqli_prepare($c, "UPDATE ItemModel SET ItemModelName=?, ItemModelArea=?, AttackTypeID=?, ItemModelWeight=?, ItemTypeID=?, ItemModelPortrait=? WHERE ItemModelID=?");
+			$stmt = mysqli_prepare($c, "UPDATE ItemModel SET ItemModelName=?, ItemModelArea=?, AttackTypeID=?, ItemModelWeight=?, ItemTypeID=?, ImageID=? WHERE ItemModelID=?");
 			mysqli_stmt_bind_param($stmt, "siiiiii", $_POST["name"], $_POST["area"], $_POST["attacktype"], $_POST["weight"], $_POST["itemtype"], $_POST["portrait"], $_POST["id"]);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
@@ -54,7 +54,7 @@
 			</div>
 			<div>
 				Item Type 
-				<select name="itemtype">
+				<select name="itemtype" data-image>
 					<?php asOptions($itemtypes); ?>
 				</select>
 			</div>
@@ -121,7 +121,7 @@
 							</div>
 							<div>
 								Portrait 
-								<select name="portrait">
+								<select name="portrait" data-image>
 									<?php asOptions($images, $portrait); ?>
 								</select>
 							</div>

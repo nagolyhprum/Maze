@@ -77,31 +77,33 @@
 						}						
 						break;
 					case "MoveCharacter" :
-						$from->character-rewind();
+						$from->character->rewind();
 						moveEnemy($from->character, $args, $from);
-						$from->character-rewind();
+						$from->character->rewind();
 						moveCharacter($from->character, $args, $from);
 						break;
 					case "SendDamage" :
-						$from->character-rewind();
+						$from->character->rewind();
 						moveEnemy($from->character, $args, $from);
-						$from->character-rewind();
+						$from->character->rewind();
 						sendDamage($from->character, $args, $from);
 						break;
 					case "EquipItem" :
-						$from->character-rewind();
+						$from->character->rewind();
 						equipItem($from->character, $args, $from);
 						break;
 					case "PickUpItem" :
-						$from->character-rewind();
+						$from->character->rewind();
 						pickupItem($from->character, $args, $from);
 						break;
 					case "MoveEnemy" :
-						$from->character-rewind();
-						moveEnemy($from->character, $args, $from);
+						if($from->character) {
+							$from->character->rewind();
+							moveEnemy($from->character, $args, $from);
+						}
 						break;
 					case "SetSkillIndex" :
-						$from->character-rewind();
+						$from->character->rewind();
 						setSkillIndex($from->character, $args, $from);
 						break;
 				}
@@ -113,7 +115,7 @@
 		}
 
 		public function onClose(ConnectionInterface $conn) {
-			$conn = null;
+			$conn->character = null;
 			$this->clients->detach($conn);
 			echo "Disconnected\n";
 		}

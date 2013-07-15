@@ -4,15 +4,6 @@
 -- ------------------------------------------------------
 -- Server version	5.6.12
 
-
-UNLOCK TABLES;
-
-DROP SCHEMA IF EXISTS worldtactics;
-
-CREATE SCHEMA IF NOT EXISTS worldtactics;
-
-USE worldtactics;
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -69,7 +60,7 @@ CREATE TABLE `audio` (
 
 LOCK TABLES `audio` WRITE;
 /*!40000 ALTER TABLE `audio` DISABLE KEYS */;
-INSERT INTO `audio` VALUES (1,'music/dungeon'),(56,'sound/battle/magic1'),(57,'sound/battle/spell'),(58,'sound/battle/swing1'),(59,'sound/battle/swing2'),(60,'sound/battle/swing3'),(61,'sound/battle/sword-unsheat'),(66,'sound/blood/blood1'),(67,'sound/blood/blood2'),(68,'sound/blood/blood3'),(69,'sound/blood/blood4'),(70,'sound/grunts/grunt1'),(71,'sound/grunts/grunt10'),(72,'sound/grunts/grunt11'),(73,'sound/grunts/grunt2'),(74,'sound/grunts/grunt3'),(75,'sound/grunts/grunt4'),(76,'sound/grunts/grunt5'),(77,'sound/grunts/grunt6'),(78,'sound/grunts/grunt7'),(79,'sound/grunts/grunt8'),(80,'sound/grunts/grunt9'),(81,'sound/interface/interface1'),(82,'sound/interface/interface2'),(83,'sound/interface/interface3'),(84,'sound/interface/interface4'),(85,'sound/interface/interface5'),(86,'sound/interface/interface6'),(87,'sound/inventory/armor-light'),(88,'sound/inventory/beads'),(89,'sound/inventory/bottle'),(90,'sound/inventory/bubble'),(91,'sound/inventory/bubble2'),(92,'sound/inventory/bubble3'),(93,'sound/inventory/chainmail1'),(94,'sound/inventory/chainmail2'),(95,'sound/inventory/cloth-heavy'),(96,'sound/inventory/cloth'),(97,'sound/inventory/coin'),(98,'sound/inventory/coin2'),(99,'sound/inventory/coin3'),(100,'sound/inventory/metal-ring'),(101,'sound/inventory/metal-small'),(104,'sound/inventory/wood-small'),(105,'sound/misc/burp'),(106,'sound/misc/random1'),(107,'sound/misc/random2'),(108,'sound/misc/random3'),(109,'sound/misc/random4'),(110,'sound/misc/random5'),(111,'sound/misc/random6'),(2,'sound/NPC/beetle/bite-small'),(5,'sound/NPC/giant/giant1'),(6,'sound/NPC/giant/giant2'),(7,'sound/NPC/giant/giant3'),(8,'sound/NPC/giant/giant4'),(9,'sound/NPC/giant/giant5'),(10,'sound/NPC/gutteral beast/mnstr1'),(25,'sound/NPC/misc/wolfman'),(26,'sound/NPC/ogre/ogre1'),(27,'sound/NPC/ogre/ogre2'),(28,'sound/NPC/ogre/ogre3'),(29,'sound/NPC/ogre/ogre4'),(30,'sound/NPC/ogre/ogre5'),(31,'sound/NPC/shade/shade1'),(32,'sound/NPC/shade/shade10'),(33,'sound/NPC/shade/shade11'),(34,'sound/NPC/shade/shade12'),(35,'sound/NPC/shade/shade13'),(36,'sound/NPC/shade/shade14'),(37,'sound/NPC/shade/shade15'),(38,'sound/NPC/shade/shade2'),(39,'sound/NPC/shade/shade3'),(40,'sound/NPC/shade/shade4'),(41,'sound/NPC/shade/shade5'),(42,'sound/NPC/shade/shade6'),(43,'sound/NPC/shade/shade7'),(44,'sound/NPC/shade/shade8'),(45,'sound/NPC/shade/shade9'),(46,'sound/NPC/slime/slime1'),(47,'sound/NPC/slime/slime10'),(48,'sound/NPC/slime/slime2'),(49,'sound/NPC/slime/slime3'),(50,'sound/NPC/slime/slime4'),(51,'sound/NPC/slime/slime5'),(52,'sound/NPC/slime/slime6'),(53,'sound/NPC/slime/slime7'),(54,'sound/NPC/slime/slime8'),(55,'sound/NPC/slime/slime9'),(112,'sound/scream/scream1'),(114,'sound/scream/scream2'),(116,'sound/scream/scream3'),(118,'sound/scream/scream4'),(120,'sound/scream/scream5'),(122,'sound/walk/stepdirt_1'),(123,'sound/walk/stepdirt_2'),(124,'sound/walk/stepdirt_3'),(125,'sound/walk/stepdirt_4'),(126,'sound/walk/stepdirt_5'),(127,'sound/walk/stepdirt_6'),(128,'sound/walk/stepdirt_7'),(129,'sound/walk/stepdirt_8'),(130,'sound/walk/stepsnow_1'),(131,'sound/walk/stepsnow_2'),(132,'sound/walk/stepstone_1'),(133,'sound/walk/stepstone_2'),(134,'sound/walk/stepstone_3'),(135,'sound/walk/stepstone_4'),(136,'sound/walk/stepstone_5'),(137,'sound/walk/stepstone_6'),(138,'sound/walk/stepstone_7'),(139,'sound/walk/stepstone_8'),(140,'sound/walk/stepwater_1'),(141,'sound/walk/stepwater_2'),(142,'sound/walk/stepwood_1'),(143,'sound/walk/stepwood_2'),(144,'sound/world/door');
+INSERT INTO `audio` VALUES (1,'music/dungeon'),(56,'sound/battle/magic1'),(57,'sound/battle/spell'),(58,'sound/battle/swing1'),(59,'sound/battle/swing2'),(60,'sound/battle/swing3'),(61,'sound/battle/sword-unsheat'),(66,'sound/blood/blood1'),(67,'sound/blood/blood2'),(68,'sound/blood/blood3'),(69,'sound/blood/blood4'),(70,'sound/grunts/grunt1'),(71,'sound/grunts/grunt10'),(72,'sound/grunts/grunt11'),(73,'sound/grunts/grunt2'),(74,'sound/grunts/grunt3'),(75,'sound/grunts/grunt4'),(76,'sound/grunts/grunt5'),(77,'sound/grunts/grunt6'),(78,'sound/grunts/grunt7'),(79,'sound/grunts/grunt8'),(80,'sound/grunts/grunt9'),(81,'sound/interface/interface1'),(82,'sound/interface/interface2'),(83,'sound/interface/interface3'),(84,'sound/interface/interface4'),(85,'sound/interface/interface5'),(86,'sound/interface/interface6'),(87,'sound/inventory/armor-light'),(88,'sound/inventory/beads'),(89,'sound/inventory/bottle'),(90,'sound/inventory/bubble'),(91,'sound/inventory/bubble2'),(92,'sound/inventory/bubble3'),(93,'sound/inventory/chainmail1'),(94,'sound/inventory/chainmail2'),(96,'sound/inventory/cloth'),(95,'sound/inventory/cloth-heavy'),(97,'sound/inventory/coin'),(98,'sound/inventory/coin2'),(99,'sound/inventory/coin3'),(100,'sound/inventory/metal-ring'),(101,'sound/inventory/metal-small'),(104,'sound/inventory/wood-small'),(105,'sound/misc/burp'),(106,'sound/misc/random1'),(107,'sound/misc/random2'),(108,'sound/misc/random3'),(109,'sound/misc/random4'),(110,'sound/misc/random5'),(111,'sound/misc/random6'),(2,'sound/NPC/beetle/bite-small'),(5,'sound/NPC/giant/giant1'),(6,'sound/NPC/giant/giant2'),(7,'sound/NPC/giant/giant3'),(8,'sound/NPC/giant/giant4'),(9,'sound/NPC/giant/giant5'),(10,'sound/NPC/gutteral beast/mnstr1'),(25,'sound/NPC/misc/wolfman'),(26,'sound/NPC/ogre/ogre1'),(27,'sound/NPC/ogre/ogre2'),(28,'sound/NPC/ogre/ogre3'),(29,'sound/NPC/ogre/ogre4'),(30,'sound/NPC/ogre/ogre5'),(31,'sound/NPC/shade/shade1'),(32,'sound/NPC/shade/shade10'),(33,'sound/NPC/shade/shade11'),(34,'sound/NPC/shade/shade12'),(35,'sound/NPC/shade/shade13'),(36,'sound/NPC/shade/shade14'),(37,'sound/NPC/shade/shade15'),(38,'sound/NPC/shade/shade2'),(39,'sound/NPC/shade/shade3'),(40,'sound/NPC/shade/shade4'),(41,'sound/NPC/shade/shade5'),(42,'sound/NPC/shade/shade6'),(43,'sound/NPC/shade/shade7'),(44,'sound/NPC/shade/shade8'),(45,'sound/NPC/shade/shade9'),(46,'sound/NPC/slime/slime1'),(47,'sound/NPC/slime/slime10'),(48,'sound/NPC/slime/slime2'),(49,'sound/NPC/slime/slime3'),(50,'sound/NPC/slime/slime4'),(51,'sound/NPC/slime/slime5'),(52,'sound/NPC/slime/slime6'),(53,'sound/NPC/slime/slime7'),(54,'sound/NPC/slime/slime8'),(55,'sound/NPC/slime/slime9'),(112,'sound/scream/scream1'),(114,'sound/scream/scream2'),(116,'sound/scream/scream3'),(118,'sound/scream/scream4'),(120,'sound/scream/scream5'),(122,'sound/walk/stepdirt_1'),(123,'sound/walk/stepdirt_2'),(124,'sound/walk/stepdirt_3'),(125,'sound/walk/stepdirt_4'),(126,'sound/walk/stepdirt_5'),(127,'sound/walk/stepdirt_6'),(128,'sound/walk/stepdirt_7'),(129,'sound/walk/stepdirt_8'),(130,'sound/walk/stepsnow_1'),(131,'sound/walk/stepsnow_2'),(132,'sound/walk/stepstone_1'),(133,'sound/walk/stepstone_2'),(134,'sound/walk/stepstone_3'),(135,'sound/walk/stepstone_4'),(136,'sound/walk/stepstone_5'),(137,'sound/walk/stepstone_6'),(138,'sound/walk/stepstone_7'),(139,'sound/walk/stepstone_8'),(140,'sound/walk/stepwater_1'),(141,'sound/walk/stepwater_2'),(142,'sound/walk/stepwood_1'),(143,'sound/walk/stepwood_2'),(144,'sound/world/door');
 /*!40000 ALTER TABLE `audio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -103,14 +94,7 @@ CREATE TABLE `badge` (
 
 LOCK TABLES `badge` WRITE;
 /*!40000 ALTER TABLE `badge` DISABLE KEYS */;
-INSERT INTO `badge` VALUES 
-	(1,'First Step',1,1,2,1),
-	(2,'Adventurer',2,10,11,4),
-	(3,'Explorer',2,1,10,5),
-	(4,'First Death',1,1,7,2),
-	(5,'Killer',4,50,4,NULL),
-	(6,'First Kill',4,1,5,NULL),
-	(7,'Skillful',3,10,9,NULL);
+INSERT INTO `badge` VALUES (1,'First Step',1,1,2,1),(2,'Adventurer',2,10,11,4),(3,'Explorer',2,1,10,5),(4,'First Death',1,1,7,2),(5,'Killer',4,50,4,NULL),(6,'First Kill',4,1,5,NULL),(7,'Skillful',3,10,9,NULL);
 /*!40000 ALTER TABLE `badge` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -156,9 +140,9 @@ CREATE TABLE `character` (
   `CharacterColumn` bigint(20) DEFAULT NULL,
   `CharacterRow` bigint(20) DEFAULT NULL,
   `CharacterIsMale` tinyint(1) NOT NULL,
-  `CharacterCanUse` BIGINT NOT NULL DEFAULT 0,
-	`CharacterUsedAt` BIGINT DEFAULT NULL,
-	`CharacterLastEnergyUpdate` BIGINT DEFAULT NULL,
+  `CharacterCanUse` bigint(20) NOT NULL DEFAULT '0',
+  `CharacterUsedAt` bigint(20) DEFAULT NULL,
+  `CharacterLastEnergyUpdate` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`CharacterID`),
   KEY `fk_Character_Image1_idx` (`ImageID`),
   KEY `fk_Character_Statistic1_idx` (`CharacterCurrentStatisticID`),
@@ -179,7 +163,7 @@ CREATE TABLE `character` (
 
 LOCK TABLES `character` WRITE;
 /*!40000 ALTER TABLE `character` DISABLE KEYS */;
-INSERT INTO `character` VALUES (1,'nagolyhprum',50,1,2,1,null,null,null,1, 0, NULL, 0);
+INSERT INTO `character` VALUES (1,'nagolyhprum',50,1,2,1,NULL,NULL,NULL,1,0,NULL,0);
 /*!40000 ALTER TABLE `character` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -315,8 +299,8 @@ CREATE TABLE `characterskill` (
   `CharacterID` bigint(20) NOT NULL,
   `SkillID` bigint(20) NOT NULL,
   `CharacterSkillIndex` bigint(20) DEFAULT NULL,
-  `CharacterSkillCanUse` BIGINT NOT NULL DEFAULT 0,
-  `CharacterSkillUsedAt` BIGINT DEFAULT NULL,
+  `CharacterSkillCanUse` bigint(20) NOT NULL DEFAULT '0',
+  `CharacterSkillUsedAt` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`CharacterSkillID`),
   KEY `fk_CharacterSkill_Skill2_idx` (`SkillID`),
   KEY `fk_CharacterSkill_Character2_idx` (`CharacterID`),
@@ -331,11 +315,7 @@ CREATE TABLE `characterskill` (
 
 LOCK TABLES `characterskill` WRITE;
 /*!40000 ALTER TABLE `characterskill` DISABLE KEYS */;
-INSERT INTO `characterskill` VALUES 
-	(1,1,1,0,0,NULL),
-	(2,1,2,1,0,NULL),
-	(3,1,3,2,0,NULL),
-	(4,1,4,3,0,NULL);
+INSERT INTO `characterskill` VALUES (1,1,1,0,0,NULL),(2,1,2,1,0,NULL),(3,1,3,2,0,NULL),(4,1,4,3,0,NULL);
 /*!40000 ALTER TABLE `characterskill` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -356,7 +336,7 @@ CREATE TABLE `enemy` (
   KEY `fk_Enemy_Statistic1_idx` (`StatisticID`),
   CONSTRAINT `fk_Enemy_Image1` FOREIGN KEY (`ImageID`) REFERENCES `image` (`ImageID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Enemy_Statistic1` FOREIGN KEY (`StatisticID`) REFERENCES `statistic` (`StatisticID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -365,7 +345,7 @@ CREATE TABLE `enemy` (
 
 LOCK TABLES `enemy` WRITE;
 /*!40000 ALTER TABLE `enemy` DISABLE KEYS */;
-INSERT INTO `enemy` VALUES (1,53,'Skeleton',3);
+INSERT INTO `enemy` VALUES (1,53,'Skeleton',3),(2,53,'Skeleton King',6);
 /*!40000 ALTER TABLE `enemy` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -388,7 +368,7 @@ CREATE TABLE `enemyaudio` (
   CONSTRAINT `fk_EnemySound_AttackType1` FOREIGN KEY (`AttackTypeID`) REFERENCES `attacktype` (`AttackTypeID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_EnemySound_Enemy1` FOREIGN KEY (`EnemyID`) REFERENCES `enemy` (`EnemyID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_EnemySound_Sound1` FOREIGN KEY (`AudioID`) REFERENCES `audio` (`AudioID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -397,7 +377,7 @@ CREATE TABLE `enemyaudio` (
 
 LOCK TABLES `enemyaudio` WRITE;
 /*!40000 ALTER TABLE `enemyaudio` DISABLE KEYS */;
-INSERT INTO `enemyaudio` VALUES (1,31,1,2),(2,58,1,1);
+INSERT INTO `enemyaudio` VALUES (1,31,1,2),(2,58,1,1),(3,31,2,1),(4,58,2,1);
 /*!40000 ALTER TABLE `enemyaudio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -425,7 +405,7 @@ CREATE TABLE `enemyimage` (
   CONSTRAINT `fk_EnemyImage_Enemy1` FOREIGN KEY (`EnemyID`) REFERENCES `enemy` (`EnemyID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_EnemyImage_Image1` FOREIGN KEY (`ImageID`) REFERENCES `image` (`ImageID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_EnemyImage_ItemType1` FOREIGN KEY (`ItemTypeID`) REFERENCES `itemtype` (`ItemTypeID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -434,7 +414,7 @@ CREATE TABLE `enemyimage` (
 
 LOCK TABLES `enemyimage` WRITE;
 /*!40000 ALTER TABLE `enemyimage` DISABLE KEYS */;
-INSERT INTO `enemyimage` VALUES (1,1,61,1,1,6,2),(2,1,192,1,4,6,1),(3,1,315,1,4,9,5);
+INSERT INTO `enemyimage` VALUES (1,1,61,1,1,6,2),(2,1,192,1,4,6,1),(3,1,315,1,4,9,5),(4,2,192,1,4,6,1),(5,2,61,1,1,6,2),(6,2,315,1,4,9,5);
 /*!40000 ALTER TABLE `enemyimage` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -452,8 +432,8 @@ CREATE TABLE `enemyinroom` (
   `RoomID` bigint(20) NOT NULL,
   `EnemyInRoomColumn` bigint(20) NOT NULL,
   `EnemyInRoomRow` bigint(20) NOT NULL,
-	`EnemyInRoomCanUse` BIGINT NOT NULL DEFAULT 0,
-	`EnemyInRoomUsedAt` BIGINT DEFAULT NULL,
+  `EnemyInRoomCanUse` bigint(20) NOT NULL DEFAULT '0',
+  `EnemyInRoomUsedAt` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`EnemyInRoomID`),
   KEY `fk_EnemyInRoom_Room1_idx` (`RoomID`),
   KEY `fk_EnemyInRoom_Enemy1_idx` (`EnemyID`),
@@ -463,6 +443,15 @@ CREATE TABLE `enemyinroom` (
   CONSTRAINT `fk_EnemyInRoom_Statistic1` FOREIGN KEY (`StatisticID`) REFERENCES `statistic` (`StatisticID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `enemyinroom`
+--
+
+LOCK TABLES `enemyinroom` WRITE;
+/*!40000 ALTER TABLE `enemyinroom` DISABLE KEYS */;
+/*!40000 ALTER TABLE `enemyinroom` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `enemyinroommodel`
@@ -478,7 +467,7 @@ CREATE TABLE `enemyinroommodel` (
   `EnemyInRoomModelRow` bigint(20) NOT NULL,
   `EnemyInRoomModelColumn` bigint(20) NOT NULL,
   PRIMARY KEY (`EnemyInRoomModelID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -487,8 +476,38 @@ CREATE TABLE `enemyinroommodel` (
 
 LOCK TABLES `enemyinroommodel` WRITE;
 /*!40000 ALTER TABLE `enemyinroommodel` DISABLE KEYS */;
-INSERT INTO `enemyinroommodel` VALUES (1,1,1,3,1),(2,1,1,1,3);
+INSERT INTO `enemyinroommodel` VALUES (1,1,1,3,1),(2,1,1,1,3),(3,2,2,3,3);
 /*!40000 ALTER TABLE `enemyinroommodel` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `enemyitemmodel`
+--
+
+DROP TABLE IF EXISTS `enemyitemmodel`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `enemyitemmodel` (
+  `EnemyItemModelID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `EnemyID` bigint(20) NOT NULL,
+  `EnemyItemModelChance` bigint(20) NOT NULL,
+  `ItemModelID` bigint(20) NOT NULL,
+  PRIMARY KEY (`EnemyItemModelID`),
+  KEY `EnemyID` (`EnemyID`),
+  KEY `ItemModelID` (`ItemModelID`),
+  CONSTRAINT `enemyitemmodel_ibfk_1` FOREIGN KEY (`EnemyID`) REFERENCES `enemy` (`EnemyID`),
+  CONSTRAINT `enemyitemmodel_ibfk_2` FOREIGN KEY (`ItemModelID`) REFERENCES `itemmodel` (`ItemModelID`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `enemyitemmodel`
+--
+
+LOCK TABLES `enemyitemmodel` WRITE;
+/*!40000 ALTER TABLE `enemyitemmodel` DISABLE KEYS */;
+INSERT INTO `enemyitemmodel` VALUES (1,1,100,1),(2,2,100,1),(3,1,50,2);
+/*!40000 ALTER TABLE `enemyitemmodel` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -551,15 +570,16 @@ DROP TABLE IF EXISTS `iteminequipment`;
 CREATE TABLE `iteminequipment` (
   `ItemInEquipmentID` bigint(20) NOT NULL AUTO_INCREMENT,
   `CharacterID` bigint(20) NOT NULL,
-	`ItemTypeID` BIGINT NOT NULL,
-  `ItemID` bigint(20),
+  `ItemTypeID` bigint(20) NOT NULL,
+  `ItemID` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`ItemInEquipmentID`),
   KEY `fk_ItemInEquipment_Item1_idx` (`ItemID`),
   KEY `fk_ItemInEquipment_Character1_idx` (`CharacterID`),
-	FOREIGN KEY (`ItemTypeID`) REFERENCES `ItemType`(`ItemTypeID`),
+  KEY `ItemTypeID` (`ItemTypeID`),
+  CONSTRAINT `iteminequipment_ibfk_1` FOREIGN KEY (`ItemTypeID`) REFERENCES `itemtype` (`ItemTypeID`),
   CONSTRAINT `fk_ItemInEquipment_Character1` FOREIGN KEY (`CharacterID`) REFERENCES `character` (`CharacterID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ItemInEquipment_Item1` FOREIGN KEY (`ItemID`) REFERENCES `item` (`ItemID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -568,14 +588,7 @@ CREATE TABLE `iteminequipment` (
 
 LOCK TABLES `iteminequipment` WRITE;
 /*!40000 ALTER TABLE `iteminequipment` DISABLE KEYS */;
-INSERT INTO ItemInEquipment VALUES 
-	(1, 1, 7, NULL), 
-	(2, 1, 8, NULL), 
-	(3, 1, 9, NULL), 
-	(4, 1, 10, NULL), 
-	(5, 1, 11, NULL), 
-	(6, 1, 12, NULL), 
-	(7, 1, 12, NULL);
+INSERT INTO `iteminequipment` VALUES (1,1,7,NULL),(2,1,8,NULL),(3,1,9,NULL),(4,1,10,NULL),(5,1,11,NULL),(6,1,12,NULL),(7,1,12,NULL);
 /*!40000 ALTER TABLE `iteminequipment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -590,14 +603,14 @@ CREATE TABLE `itemininventory` (
   `ItemInInventoryID` bigint(20) NOT NULL AUTO_INCREMENT,
   `ItemInInventoryColumn` bigint(20) NOT NULL,
   `ItemInInventoryRow` bigint(20) NOT NULL,
-  `ItemID` bigint(20),
+  `ItemID` bigint(20) DEFAULT NULL,
   `CharacterID` bigint(20) NOT NULL,
   PRIMARY KEY (`ItemInInventoryID`),
   KEY `fk_ItemInInventory_Item1_idx` (`ItemID`),
   KEY `fk_ItemInInventory_Character1_idx` (`CharacterID`),
   CONSTRAINT `fk_ItemInInventory_Character1` FOREIGN KEY (`CharacterID`) REFERENCES `character` (`CharacterID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ItemInInventory_Item1` FOREIGN KEY (`ItemID`) REFERENCES `item` (`ItemID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -606,31 +619,7 @@ CREATE TABLE `itemininventory` (
 
 LOCK TABLES `itemininventory` WRITE;
 /*!40000 ALTER TABLE `itemininventory` DISABLE KEYS */;
-INSERT INTO ItemInInventory VALUES
-	(1, 0, 0, NULL, 1),
-	(2, 1, 0, NULL, 1),
-	(3, 2, 0, NULL, 1),
-	(4, 3, 0, NULL, 1),
-	(5, 4, 0, NULL, 1),
-	(6, 5, 0, NULL, 1),
-	(7, 0, 1, NULL, 1),
-	(8, 1, 1, NULL, 1),
-	(9, 2, 1, NULL, 1),
-	(10, 3, 1, NULL, 1),
-	(11, 4, 1, NULL, 1),
-	(12, 5, 1, NULL, 1),
-	(13, 0, 2, NULL, 1),
-	(14, 1, 2, NULL, 1),
-	(15, 2, 2, NULL, 1),
-	(16, 3, 2, NULL, 1),
-	(17, 4, 2, NULL, 1),
-	(18, 5, 2, NULL, 1),
-	(19, 0, 3, NULL, 1),
-	(20, 1, 3, NULL, 1),
-	(21, 2, 3, NULL, 1),
-	(22, 3, 3, NULL, 1),
-	(23, 4, 3, NULL, 1),
-	(24, 5, 3, NULL, 1);
+INSERT INTO `itemininventory` VALUES (1,0,0,NULL,1),(2,1,0,NULL,1),(3,2,0,NULL,1),(4,3,0,NULL,1),(5,4,0,NULL,1),(6,5,0,NULL,1),(7,0,1,NULL,1),(8,1,1,NULL,1),(9,2,1,NULL,1),(10,3,1,NULL,1),(11,4,1,NULL,1),(12,5,1,NULL,1),(13,0,2,NULL,1),(14,1,2,NULL,1),(15,2,2,NULL,1),(16,3,2,NULL,1),(17,4,2,NULL,1),(18,5,2,NULL,1),(19,0,3,NULL,1),(20,1,3,NULL,1),(21,2,3,NULL,1),(22,3,3,NULL,1),(23,4,3,NULL,1),(24,5,3,NULL,1);
 /*!40000 ALTER TABLE `itemininventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -647,7 +636,7 @@ CREATE TABLE `iteminroom` (
   `ItemInRoomRow` bigint(20) NOT NULL,
   `RoomID` bigint(20) NOT NULL,
   `ItemID` bigint(20) NOT NULL,
-	`ItemInRoomIsActive` BOOLEAN NOT NULL DEFAULT 1,
+  `ItemInRoomIsActive` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`ItemInRoomID`),
   KEY `fk_ItemInRoom_Room1_idx` (`RoomID`),
   KEY `fk_ItemInRoom_Item1_idx` (`ItemID`),
@@ -676,10 +665,10 @@ DROP TABLE IF EXISTS `itemmodel`;
 CREATE TABLE `itemmodel` (
   `ItemModelID` bigint(20) NOT NULL AUTO_INCREMENT,
   `ItemModelName` varchar(32) NOT NULL,
-  `ItemModelArea` bigint(20),
+  `ItemModelArea` bigint(20) DEFAULT NULL,
   `StatisticID` bigint(20) NOT NULL,
-  `AttackTypeID` bigint(20),
-  `ItemModelWeight` bigint(20),
+  `AttackTypeID` bigint(20) DEFAULT NULL,
+  `ItemModelWeight` bigint(20) DEFAULT NULL,
   `ItemTypeID` bigint(20) NOT NULL,
   `ImageID` bigint(20) NOT NULL,
   PRIMARY KEY (`ItemModelID`),
@@ -691,7 +680,7 @@ CREATE TABLE `itemmodel` (
   CONSTRAINT `fk_ItemModel_Image1` FOREIGN KEY (`ImageID`) REFERENCES `image` (`ImageID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ItemModel_ItemType1` FOREIGN KEY (`ItemTypeID`) REFERENCES `itemtype` (`ItemTypeID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ItemModel_Statistic1` FOREIGN KEY (`StatisticID`) REFERENCES `statistic` (`StatisticID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -700,7 +689,7 @@ CREATE TABLE `itemmodel` (
 
 LOCK TABLES `itemmodel` WRITE;
 /*!40000 ALTER TABLE `itemmodel` DISABLE KEYS */;
-INSERT INTO `itemmodel` VALUES (1,'Short Sword',1,5,1,2,12,131);
+INSERT INTO `itemmodel` VALUES (1,'Short Sword',1,5,1,2,12,131),(2,'Leather Armor',1,8,5,0,7,106);
 /*!40000 ALTER TABLE `itemmodel` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -720,7 +709,7 @@ CREATE TABLE `itemmodelaudio` (
   KEY `fk_ItemSound_Sound1_idx` (`AudioID`),
   CONSTRAINT `fk_ItemSound_ItemModel1` FOREIGN KEY (`ItemModelID`) REFERENCES `itemmodel` (`ItemModelID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ItemSound_Sound1` FOREIGN KEY (`AudioID`) REFERENCES `audio` (`AudioID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -729,7 +718,7 @@ CREATE TABLE `itemmodelaudio` (
 
 LOCK TABLES `itemmodelaudio` WRITE;
 /*!40000 ALTER TABLE `itemmodelaudio` DISABLE KEYS */;
-INSERT INTO `itemmodelaudio` VALUES (1,1,97);
+INSERT INTO `itemmodelaudio` VALUES (1,1,97),(2,2,93);
 /*!40000 ALTER TABLE `itemmodelaudio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -754,7 +743,7 @@ CREATE TABLE `itemmodelimage` (
   CONSTRAINT `fk_ItemModelImage_AttackType1` FOREIGN KEY (`AttackTypeID`) REFERENCES `attacktype` (`AttackTypeID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ItemModelImage_Image1` FOREIGN KEY (`ImageID`) REFERENCES `image` (`ImageID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ItemModelImage_ItemModel1` FOREIGN KEY (`ItemModelID`) REFERENCES `itemmodel` (`ItemModelID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -763,7 +752,7 @@ CREATE TABLE `itemmodelimage` (
 
 LOCK TABLES `itemmodelimage` WRITE;
 /*!40000 ALTER TABLE `itemmodelimage` DISABLE KEYS */;
-INSERT INTO `itemmodelimage` VALUES (1,214,1,1,6,4);
+INSERT INTO `itemmodelimage` VALUES (1,214,1,1,6,4),(2,339,2,5,9,4),(3,215,2,1,6,4);
 /*!40000 ALTER TABLE `itemmodelimage` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -788,7 +777,7 @@ CREATE TABLE `itemtype` (
 
 LOCK TABLES `itemtype` WRITE;
 /*!40000 ALTER TABLE `itemtype` DISABLE KEYS */;
-INSERT INTO `itemtype` VALUES (1,'default body',1),(2,'default head',2),(3,'default torso',3),(4,'default legs',4),(5,'default feet',5),(6,'default hands',6),(7,'torso',10),(8,'head',11),(9,'hands',13),(10,'legs',14),(11,'feet',15),(12,'mainhand',16);
+INSERT INTO `itemtype` VALUES (1,'default body',1),(2,'default head',2),(3,'default chest',3),(4,'default legs',4),(5,'default feet',5),(6,'default hands',6),(7,'chest',10),(8,'head',11),(9,'hands',13),(10,'legs',14),(11,'feet',15),(12,'mainhand',16);
 /*!40000 ALTER TABLE `itemtype` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -801,11 +790,19 @@ DROP TABLE IF EXISTS `map`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `map` (
   `MapID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `MapIsActive` tinyint(1) NOT NULL DEFAULT 1,
+  `MapIsActive` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`MapID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Dumping data for table `map`
+--
+
+LOCK TABLES `map` WRITE;
+/*!40000 ALTER TABLE `map` DISABLE KEYS */;
+/*!40000 ALTER TABLE `map` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `mapmodel`
@@ -846,13 +843,22 @@ CREATE TABLE `room` (
   `MapID` bigint(20) NOT NULL,
   `RoomColumn` bigint(20) NOT NULL,
   `RoomRow` bigint(20) NOT NULL,
-  `RoomIsDiscovered` tinyint(1) NOT NULL DEFAULT 0,
+  `RoomIsDiscovered` tinyint(1) NOT NULL DEFAULT '0',
   `RoomWalls` bigint(20) NOT NULL,
   PRIMARY KEY (`RoomID`),
   KEY `fk_Room_Map1_idx` (`MapID`),
   CONSTRAINT `fk_Room_Map1` FOREIGN KEY (`MapID`) REFERENCES `map` (`MapID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `room`
+--
+
+LOCK TABLES `room` WRITE;
+/*!40000 ALTER TABLE `room` DISABLE KEYS */;
+/*!40000 ALTER TABLE `room` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `roommodel`
@@ -865,7 +871,7 @@ CREATE TABLE `roommodel` (
   `RoomModelID` bigint(20) NOT NULL AUTO_INCREMENT,
   `RoomModelName` varchar(32) NOT NULL,
   PRIMARY KEY (`RoomModelID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -874,7 +880,7 @@ CREATE TABLE `roommodel` (
 
 LOCK TABLES `roommodel` WRITE;
 /*!40000 ALTER TABLE `roommodel` DISABLE KEYS */;
-INSERT INTO `roommodel` VALUES (1,'Two Skeletons');
+INSERT INTO `roommodel` VALUES (1,'Two Skeletons'),(2,'Skeleton King');
 /*!40000 ALTER TABLE `roommodel` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -891,7 +897,7 @@ CREATE TABLE `roommodelinmapmodel` (
   `MapModelID` bigint(20) NOT NULL,
   `RoomModelInMapModelCount` bigint(20) NOT NULL,
   PRIMARY KEY (`RoomModelInMapModelID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -900,7 +906,7 @@ CREATE TABLE `roommodelinmapmodel` (
 
 LOCK TABLES `roommodelinmapmodel` WRITE;
 /*!40000 ALTER TABLE `roommodelinmapmodel` DISABLE KEYS */;
-INSERT INTO `roommodelinmapmodel` VALUES (1,1,1,24);
+INSERT INTO `roommodelinmapmodel` VALUES (1,1,1,23),(2,2,1,1);
 /*!40000 ALTER TABLE `roommodelinmapmodel` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -924,7 +930,8 @@ CREATE TABLE `skill` (
   PRIMARY KEY (`SkillID`),
   UNIQUE KEY `SkillName_UNIQUE` (`SkillName`),
   KEY `fk_Skill_AttackType1_idx` (`AttackTypeID`),
-	FOREIGN KEY (`ImageID`) REFERENCES Image(ImageID),
+  KEY `ImageID` (`ImageID`),
+  CONSTRAINT `skill_ibfk_1` FOREIGN KEY (`ImageID`) REFERENCES `image` (`ImageID`),
   CONSTRAINT `fk_Skill_AttackType1` FOREIGN KEY (`AttackTypeID`) REFERENCES `attacktype` (`AttackTypeID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -951,7 +958,7 @@ CREATE TABLE `skillstatistic` (
   `StatisticID` bigint(20) NOT NULL,
   `SkillID` bigint(20) NOT NULL,
   `SkillStatisticIsAdd` tinyint(1) NOT NULL,
-  `SkillStatisticDuration` BIGINT(20) NOT NULL,
+  `SkillStatisticDuration` bigint(20) NOT NULL,
   PRIMARY KEY (`SkillStatisticID`),
   KEY `fk_SkillStatistics_Statistic1_idx` (`StatisticID`),
   KEY `fk_SkillStatistics_Skill1_idx` (`SkillID`),
@@ -966,79 +973,87 @@ CREATE TABLE `skillstatistic` (
 
 LOCK TABLES `skillstatistic` WRITE;
 /*!40000 ALTER TABLE `skillstatistic` DISABLE KEYS */;
-INSERT INTO `skillstatistic` VALUES (1,4,1,1, -1);
+INSERT INTO `skillstatistic` VALUES (1,4,1,1,-1);
 /*!40000 ALTER TABLE `skillstatistic` ENABLE KEYS */;
 UNLOCK TABLES;
 
+--
+-- Table structure for table `statistic`
+--
 
-DROP TABLE IF EXISTS Statistic;
+DROP TABLE IF EXISTS `statistic`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `statistic` (
+  `StatisticID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `StatisticIsActive` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`StatisticID`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE Statistic (
-	StatisticID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	StatisticIsActive BOOLEAN NOT NULL DEFAULT 1
-);
+--
+-- Dumping data for table `statistic`
+--
 
-INSERT INTO Statistic VALUES (1, 1), (2, 1), (3, 1), (4, 1), (5, 1);
+LOCK TABLES `statistic` WRITE;
+/*!40000 ALTER TABLE `statistic` DISABLE KEYS */;
+INSERT INTO `statistic` VALUES (1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1),(8,1);
+/*!40000 ALTER TABLE `statistic` ENABLE KEYS */;
+UNLOCK TABLES;
 
-DROP TABLE IF EXISTS StatisticAttribute;
+--
+-- Table structure for table `statisticattribute`
+--
 
-CREATE TABLE StatisticAttribute (
-	StatisticAttributeID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	StatisticID BIGINT NOT NULL,
-	StatisticNameID BIGINT NOT NULL,
-	StatisticAttributeValue BIGINT NOT NULL,
-	FOREIGN KEY (StatisticID) REFERENCES Statistic(StatisticID),
-	FOREIGN KEY (StatisticNameID) REFERENCES StatisticName(StatisticNameID)
-);
+DROP TABLE IF EXISTS `statisticattribute`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `statisticattribute` (
+  `StatisticAttributeID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `StatisticID` bigint(20) NOT NULL,
+  `StatisticNameID` bigint(20) NOT NULL,
+  `StatisticAttributeValue` bigint(20) NOT NULL,
+  PRIMARY KEY (`StatisticAttributeID`),
+  KEY `StatisticID` (`StatisticID`),
+  KEY `StatisticNameID` (`StatisticNameID`),
+  CONSTRAINT `statisticattribute_ibfk_1` FOREIGN KEY (`StatisticID`) REFERENCES `statistic` (`StatisticID`),
+  CONSTRAINT `statisticattribute_ibfk_2` FOREIGN KEY (`StatisticNameID`) REFERENCES `statisticname` (`StatisticNameID`)
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-INSERT INTO StatisticAttribute VALUES
---  id, s, sn, v 
-	-- current
-	(1, 1, 1, 0),
-	(2, 1, 2, 0),
-	(3, 1, 3, 0),
-	(4, 1, 4, 0),
-	(5, 1, 5, 0),
-	(6, 1, 6, 0),
-	(7, 1, 7, 0), -- health
-	(8, 1, 8, 0),
-	-- max
-	(9, 2, 1, 10),
-	(10, 2, 2, 20),
-	(11, 2, 3, 0),
-	(12, 2, 4, 0),
-	(13, 2, 5, 20),
-	(14, 2, 6, 0),
-	(15, 2, 7, 100), -- health
-	(16, 2, 8, 100),
-	-- enemy
-	(17, 3, 7, 20), -- health
-	(18, 3, 8, 20), 
-	(19, 3, 1, 5),
-	(20, 3, 2, 5), -- defense
-	(21, 3, 5, 5),
-	-- skill
-	(22, 4, 7, 100),
-	-- item
-	(23, 5, 1, 5),
-	(24, 5, 5, 5);
+--
+-- Dumping data for table `statisticattribute`
+--
 
-DROP TABLE IF EXISTS StatisticName;
+LOCK TABLES `statisticattribute` WRITE;
+/*!40000 ALTER TABLE `statisticattribute` DISABLE KEYS */;
+INSERT INTO `statisticattribute` VALUES (1,1,1,0),(2,1,2,0),(3,1,3,0),(4,1,4,0),(5,1,5,0),(6,1,6,0),(7,1,7,0),(8,1,8,0),(9,2,1,10),(10,2,2,20),(11,2,3,0),(12,2,4,0),(13,2,5,20),(14,2,6,0),(15,2,7,100),(16,2,8,100),(17,3,1,5),(18,3,2,5),(19,3,3,0),(20,3,4,0),(21,3,5,5),(22,3,6,0),(23,3,7,20),(24,3,8,20),(25,4,1,0),(26,4,2,0),(27,4,3,0),(28,4,4,0),(29,4,5,0),(30,4,6,0),(31,4,7,100),(32,4,8,0),(34,5,1,5),(35,5,2,0),(36,5,3,0),(37,5,4,0),(38,5,5,5),(39,5,6,0),(40,5,7,0),(41,5,8,0),(42,6,1,20),(43,6,2,20),(44,6,3,0),(45,6,4,0),(46,6,5,10),(47,6,6,100),(48,6,7,100),(49,6,8,0),(50,7,1,0),(51,7,2,10),(52,7,3,0),(53,7,4,1),(54,7,5,1),(55,7,6,0),(56,7,7,10),(57,7,8,0),(58,8,1,0),(59,8,2,10),(60,8,3,0),(61,8,4,1),(62,8,5,1),(63,8,6,0),(64,8,7,10),(65,8,8,0);
+/*!40000 ALTER TABLE `statisticattribute` ENABLE KEYS */;
+UNLOCK TABLES;
 
-CREATE TABLE StatisticName (
-	StatisticNameID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	StatisticNameValue VARCHAR(32) NOT NULL
-);
+--
+-- Table structure for table `statisticname`
+--
 
-INSERT INTO StatisticName VALUES 
-	(1, "strength"), 
-	(2, "defense"), 
-	(3, "intelligence"), 
-	(4, "resistance"), 
-	(5, "speed"), 
-	(6, "experience"), 
-	(7, "health"), 
-	(8, "energy");
+DROP TABLE IF EXISTS `statisticname`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `statisticname` (
+  `StatisticNameID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `StatisticNameValue` varchar(32) NOT NULL,
+  PRIMARY KEY (`StatisticNameID`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `statisticname`
+--
+
+LOCK TABLES `statisticname` WRITE;
+/*!40000 ALTER TABLE `statisticname` DISABLE KEYS */;
+INSERT INTO `statisticname` VALUES (1,'strength'),(2,'defense'),(3,'intelligence'),(4,'resistance'),(5,'speed'),(6,'experience'),(7,'health'),(8,'energy');
+/*!40000 ALTER TABLE `statisticname` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `subcategory`
@@ -1063,19 +1078,7 @@ CREATE TABLE `subcategory` (
 
 LOCK TABLES `subcategory` WRITE;
 /*!40000 ALTER TABLE `subcategory` DISABLE KEYS */;
-INSERT INTO `subcategory` VALUES 
-	(1,1,'Steps'),
-	(2,1,'Deaths'),
-	(3,1,'Seconds Played'),
-	(4,2,'Rooms'),
-	(5,2,'Maps'),
-	(6,3,'Heal'),
-	(7,3,'Power Thrust'),
-	(8,3,'Fire Arrow'),
-	(9,3,'Fire Wave'),
-	(10,4,'Skeleton'),
-	(11,5,'Taken'),
-	(12,5,'Dealt');
+INSERT INTO `subcategory` VALUES (1,1,'Steps'),(2,1,'Deaths'),(3,1,'Seconds Played'),(4,2,'Rooms'),(5,2,'Maps'),(6,3,'Heal'),(7,3,'Power Thrust'),(8,3,'Fire Arrow'),(9,3,'Fire Wave'),(10,4,'Skeleton'),(11,5,'Taken'),(12,5,'Dealt');
 /*!40000 ALTER TABLE `subcategory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1121,7 +1124,7 @@ CREATE TABLE `userbehavior` (
   KEY `fk_UserBehavior_User1_idx` (`UserID`),
   CONSTRAINT `fk_UserBehavior_BehaviorSubcategory1` FOREIGN KEY (`SubcategoryID`) REFERENCES `subcategory` (`SubcategoryID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_UserBehavior_User1` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1130,34 +1133,17 @@ CREATE TABLE `userbehavior` (
 
 LOCK TABLES `userbehavior` WRITE;
 /*!40000 ALTER TABLE `userbehavior` DISABLE KEYS */;
-INSERT INTO `userbehavior` VALUES 
-	(1, 1, 1, 0),
-	(2, 1, 2, 0),
-	(3, 1, 3, 0),
-	(4, 1, 4, 0),
-	(5, 1, 5, 0),
-	(6, 1, 6, 0),
-	(7, 1, 7, 0),
-	(8, 1, 8, 0),
-	(9, 1, 9, 0),
-	(10, 1, 10, 0),
-	(11, 1, 11, 0),
-	(12, 1, 12, 0);
+INSERT INTO `userbehavior` VALUES (1,1,1,0),(2,1,2,0),(3,1,3,0),(4,1,4,0),(5,1,5,0),(6,1,6,0),(7,1,7,0),(8,1,8,0),(9,1,9,0),(10,1,10,0),(11,1,11,0),(12,1,12,0);
 /*!40000 ALTER TABLE `userbehavior` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
-DROP TABLE IF EXISTS EnemyItem;
-
-CREATE TABLE EnemyItem (
-	EnemyItemID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	EnemyID BIGINT NOT NULL,
-	EnemyItemChance BIGINT NOT NULL,
-	ItemModelID BIGINT NOT NULL,
-	FOREIGN KEY (EnemyID) REFERENCES Enemy(EnemyID),
-	FOREIGN KEY (ItemModelID) REFERENCES ItemModel(ItemModelID)
-);
-
-INSERT INTO EnemyItem VALUES (1, 1, 100, 1);
-
-SET FOREIGN_KEY_CHECKS=1;
+-- Dump completed on 2013-07-14 22:36:19
