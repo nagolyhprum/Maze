@@ -142,15 +142,25 @@
 						getItemsInRoom($character, $from);
 					}
 				}
-				$character->CharacterCanUse = $now + $character->timeToMove($now);
-				$character->CharacterUsedAt = $now;
-				$character->update();
+				if($data["enemies"]) {
+					$from->send(json_encode(array(
+						"args" => $data,
+						"action" => "DamageEnemies"
+					)));
+				}
 			}
+			$character->CharacterCanUse = $now + $character->timeToMove($now);
+			$character->CharacterUsedAt = $now;
+			$character->update();
+		} else {
+			$from->send(json_encode(array(
+				"action" => "StopCharacter",
+				"args" => array(
+					"row" => $character->CharacterRow,
+					"column" => $character->CharacterColumn
+				)
+			)));
 		}
-		$from->send(json_encode(array(
-			"args" => $data,
-			"action" => "DamageEnemies"
-		)));
 	}
 	
 	function getAssultedEnemy(&$enemies, $tiles, $row, $column, $moveRow, $moveColumn, $area) {	

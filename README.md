@@ -4,6 +4,7 @@ World Tactics
 Future
 ---
 
+Maze
 - ~~Random Cries~~
 - ~~Weapons, Two Handed, Dual Wielding~~
 - ~~Bow / Lance~~
@@ -18,3 +19,9 @@ Future
 - Skills may automatically unlock as you level versus you leveling them
 - ~~Badges~~
 - ~~options~~
+
+Character Selection and Customization
+
+Map Selection
+
+More Default Data

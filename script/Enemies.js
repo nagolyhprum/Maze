@@ -39,9 +39,6 @@ $(function() {
 			}
 		});		
 	});
-	setInterval(function() {
-		Server.message("MoveEnemy");
-	}, 1000);
 });
 
 Server.attach("MoveEnemy", function(movement) {

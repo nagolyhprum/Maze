@@ -1,7 +1,6 @@
 <?php
 	function startMap($character, $args, $from) {
 		$mapmodel = $args["mapmodel"];
-		$character->RoomID = null; //TEST
 		if($character->RoomID === NULL) { //make sure this character is valid
 			$mapmodel = new DAO("MapModel", $mapmodel);	//get the requested mapmodel			
 			if($mapmodel->valid()) { //if the map model is valid

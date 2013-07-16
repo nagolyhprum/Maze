@@ -2,6 +2,12 @@ Server.attach("HealEnergy", function(args) {
 	character.statistics.energy.current = args;
 });
 
+Server.attach("StopCharacter", function(args) {
+	character.tween.clear();
+	character.location.row = args.row;
+	character.location.column = args.column;
+});
+
 $(function() {
 	lock("character", function() {	
 		canvas.events.attach("draw", function() {

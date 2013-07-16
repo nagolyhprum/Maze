@@ -1,5 +1,5 @@
 <?php
-	function moveEnemy($character, $args, $from) {
+	function moveEnemy($character, $from) {
 		$now = currentTimeMillis();
 		$enemies = new DAO("EnemyInRoom", "RoomID=? AND EnemyInRoomCanUse <= ? ORDER BY abs(? - EnemyInRoomRow) + abs(? - EnemyInRoomColumn) ASC", array($character->RoomID, $now, $character->CharacterRow, $character->CharacterColumn));			
 		if($enemies->valid()) {
