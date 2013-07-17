@@ -463,7 +463,8 @@ Character.prototype.draw = function(ctx) {
 		}
 	}		
 };
-var SPEED = 500;
+
+var SPEED = 500, REDUCE_SPEED = 500;
 
 Character.prototype.timeToMove = function() {
 	return Math.ceil(SPEED / this.statistics.speed.current * CONSTANTS.TILE.WIDTH);
@@ -491,8 +492,9 @@ var WALK = [
 
 Character.prototype.moveBy = function(horizontal, vertical, complete) {
 	var me = this;
-	this.tween.push({
+	me.tween.push({
 		init : function() {
+			me.face(me.location.column + horizontal, me.location.row + vertical);
 			Sound.effect(WALK[Math.floor(WALK.length * Math.random())]);
 			me.location.x = -horizontal;
 			me.location.y = -vertical;
@@ -503,7 +505,7 @@ Character.prototype.moveBy = function(horizontal, vertical, complete) {
 			me.display.column = Math.max((me.display.column + 1) % me.active[0].columns, 1);
 			return Math.abs(me.location.x) + Math.abs(me.location.y) !== 0;
 		},
-		interval : SPEED / this.statistics.speed.current,
+		interval : (SPEED + REDUCE_SPEED) / me.statistics.speed.current,
 		complete : function() {
 			me.display.column = me.location.x = me.location.y = 0;
 			complete && complete();
@@ -524,7 +526,7 @@ Character.prototype.attack = function(action, complete) {
 			me.display.column = Math.floor(column / CONSTANTS.TILE.WIDTH * me.active[0].columns);
 			return column !== CONSTANTS.TILE.WIDTH;
 		},
-		interval : SPEED / this.statistics.speed.current,
+		interval : (SPEED + REDUCE_SPEED) / this.statistics.speed.current,
 		complete : function() {
 			me.active = me.walk;
 			me.display.column = 0;

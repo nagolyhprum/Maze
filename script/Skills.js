@@ -1,9 +1,25 @@
+var skillMapping = [], activeSkill;	
+Server.attach("GetSkillMapping", function(sm) {	
+	for(var i = 0; i < sm.length; i++) {
+		if(sm[i]) {
+			for(var j = 0; j < skills.length; j++) {
+				if(sm[i] === skills[j].id) {
+					sm[i] = skills[j];
+					break;
+				}
+			}
+		}
+	}
+	skillMapping = sm;
+});
+
+Server.attach("GetSkills", function(skills) {
+	activeSkill = skills[0];
+});
+
 $(function() {
 	skills.visible = 0;
-	var background, location = {x:0,y:0}, click, active;
-	Server.attach("GetSkills", function(skills) {
-		active = skills[0];
-	});
+	var background, location = {x:0,y:0}, click, activeSkill;
 	loadImage("window/texture.png", function(img) {
 		background = context.createPattern(img, "repeat");
 	});
@@ -12,16 +28,16 @@ $(function() {
 		if(!skills.visible) {
 			performSkill(key);
 		}
-		if(skills.visible && active && !isNaN(key) && active.isCool) {
-			Server.message("SetSkillIndex", {sid : active.id, index : key});
+		if(skills.visible && activeSkill && !isNaN(key) && activeSkill.isCool) {
+			Server.message("SetSkillIndex", {sid : activeSkill.id, index : key});
 			for(var i in skillMapping) {
 				var s = skillMapping[i];
-				if(s && s.id === active.id) {
+				if(s && s.id === activeSkill.id) {
 					delete skillMapping[i];
 					break;
 				}
 			}
-			skillMapping[(key + 9) % 10] = active;
+			skillMapping[(key + 9) % 10] = activeSkill;
 		} else if(keycode === 82) { //r
 			skills.visible = !skills.visible;
 		} else {
@@ -77,22 +93,6 @@ $(function() {
 			character.statistics.remove(s);			
 		}, s.duration);
 	}
-
-	var skillMapping = [];	
-	
-	Server.attach("GetSkillMapping", function(sm) {	
-		for(var i = 0; i < sm.length; i++) {
-			if(sm[i]) {
-				for(var j = 0; j < skills.length; j++) {
-					if(sm[i] === skills[j].id) {
-						sm[i] = skills[j];
-						break;
-					}
-				}
-			}
-		}
-		skillMapping = sm;
-	});
 	
 	canvas.events.attach("mousemove", function(l) {
 		location = l;
@@ -129,7 +129,7 @@ $(function() {
 				for(j = 0; j < columns; j++, index++) {
 					x = canvas.padding + j * (cellwidth + canvas.padding * 2);
 					y = 3 * canvas.padding + canvas.padding * 2 + canvas.fontSize() + i * (cellheight + canvas.padding * 2);
-					if(active && skills[index] && active === skills[index]) {	
+					if(activeSkill && skills[index] && activeSkill === skills[index]) {	
 						context.strokeStyle = "yellow";
 						context.strokeRect(x, y, cellwidth, cellheight);
 						context.strokeStyle = "black";
@@ -147,7 +147,7 @@ $(function() {
 							};
 						}
 						if(click && click.x >= start.x + x && click.y >= start.y + y && click.x <= start.x + x + cellwidth && click.y <= start.y + y + cellheight) {
-							active = skill;
+							activeSkill = skill;
 						}
 					}
 				}

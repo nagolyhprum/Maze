@@ -2,12 +2,6 @@ Server.attach("HealEnergy", function(args) {
 	character.statistics.energy.current = args;
 });
 
-Server.attach("StopCharacter", function(args) {
-	character.tween.clear();
-	character.location.row = args.row;
-	character.location.column = args.column;
-});
-
 $(function() {
 	lock("character", function() {	
 		canvas.events.attach("draw", function() {
@@ -62,12 +56,14 @@ $(function() {
 					} else {
 						change = false;
 					}
-					Server.message("MoveCharacter", l);
 					character.location.column = (l.column + CONSTANTS.TILE.COLUMNS) % CONSTANTS.TILE.COLUMNS;
 					character.location.row = (l.row + CONSTANTS.TILE.ROWS) % CONSTANTS.TILE.ROWS;
 					if(!change) {
 						character.moveBy(horizontal, vertical);
+					} else {
+						canvas.load("ChangeRoom");
 					}
+					Server.message("MoveCharacter", l);
 				}
 			}
 		});

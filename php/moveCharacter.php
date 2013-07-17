@@ -62,14 +62,6 @@
 					addBehavior($character, "Character", "Steps", 1, $from);
 				}					
 			}
-		} else {
-			$from->send(json_encode(array(
-				"action" => "StopCharacter",
-				"args" => array(
-					"row" => $character->CharacterRow,
-					"column" => $character->CharacterColumn
-				)
-			)));
 		}
 	}
 ?>

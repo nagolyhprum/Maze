@@ -45,7 +45,7 @@
 					$character->rewind();					
 					if($character->valid()) {
 						$from->character = $character;
-						startMap($from->character, $args, $from);
+						startMap($from->character, $args, $from); //TODO
 						getBadges($from);
 						getTiles($from);
 						getCharacterBehaviors($from->character, $from);
@@ -125,6 +125,8 @@
 			}
 			if($socket->isClosed()) {
 				onClose($socket);
+				array_splice($sockets, $i, 1);
+				--$i;
 			}
 		}		
 		time_nanosleep(0 , 1000);
@@ -210,13 +212,20 @@
 		
 		public function send($msg) {
 			$msg = encode($msg);			
-			socket_send($this->socket, $msg, strlen($msg), 0);
+			socket_write($this->socket, $msg, strlen($msg));			
+			if($errorcode = socket_last_error($this->socket)) {
+				$errormsg = socket_strerror($errorcode);
+			}
 		}
 		
 		public function receive() {		
-			if($this->hasheaders) {				
-				if(@socket_recv($this->socket, $msg, 2048, 0)) {
+			if($this->hasheaders) {		
+				if($msg = socket_read($this->socket, 2048)) {
 					return decode($msg);
+				}
+				if($msg !== false) {
+					socket_close($this->socket);
+					$this->closed = true;
 				}
 			} else {
 				$this->handshake();
@@ -224,17 +233,21 @@
 		}
 		
 		public function handshake() {		
-			if(@socket_recv($this->socket, $msg, 2048, 0)) {
-				$key = getHeader($msg, "Sec-WebSocket-Key");
+			if($msg = socket_read($this->socket, 2048)) {
 				$version = getHeader($msg, "Sec-WebSocket-Version");
 				if($version == 13) {
+					$key = getHeader($msg, "Sec-WebSocket-Key");
 					$key = base64_encode(sha1($key . "258EAFA5-E914-47DA-95CA-C5AB0DC85B11", true));
 					$talkback = "HTTP/1.1 101 Switching Protocols\r\n" .
 						"Upgrade: websocket\r\n" .
 						"Connection: Upgrade\r\n" .
 						"Sec-WebSocket-Accept: $key\r\n\r\n";
-					socket_send($this->socket, $talkback, strlen($talkback), 0);
+					socket_write($this->socket, $talkback, strlen($talkback));
 					$this->hasheaders = true;
+				} else {
+					$talkback = "HTTP/1.1 400 Bad Request\r\n" .
+						"Sec-WebSocket-Version: 13\r\n\r\n";
+					socket_write($this->socket, $talkback, strlen($talkback));
 				}
 			}
 		}

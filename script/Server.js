@@ -72,12 +72,12 @@ var Server = (function() {
 	//for sending messages
 	
 	events.attach("Message", function(action, args) {
-		toSend.push(JSON.stringify({action:action,args:args||true}));
-		sendMessage();
+		throw "Please use events.message instead.";
 	});
 	
 	events.message = function(action, args) {
-		this.invoke("Message", [action, args]);
+		toSend.push(JSON.stringify({action:action,args:args||true}));
+		sendMessage();
 	};
 	
 	//for receiving messages
@@ -91,7 +91,7 @@ var Server = (function() {
 		if(isLoaded) {
 			while(toReceive.length > 0) {
 				var data = toReceive.shift();
-				console.log(data);
+				//console.log(data);
 				data = JSON.parse(data);
 				events.invoke(data.action, data.args instanceof Array ? [data.args] : data.args);				
 			}
@@ -106,120 +106,6 @@ var Server = (function() {
 		}
 	}
 	/*
-	toReceive.push(JSON.stringify({
-		"action" : "GetCharacterBehaviors",
-		"args" : {
-			"Kill" : {
-				"Skeleton" : 0
-			},			
-			"Character" : {
-				"Deaths" : 0,
-				"Steps" : 0,
-				"Attacks" : 0,
-				"Seconds Played" : 0
-			},
-			"Skill" : {
-				"Power Thrust" : 0,
-				"Fire Wave" : 0,
-				"Fire Arrow" : 0,
-				"Heal" : 0
-			},
-			"Damage" : {
-				"Dealt" : 0,
-				"Received" : 0
-			},
-			"Discover" : {
-				"Rooms" : 0,
-				"Maps" : 0
-			}
-		}
-	}));
-	receiveMessage();
-	*/
-	//end function
-	/*
-	var Server = {};
-	
-	Server.healEnergy = function() {
-		ajax("php/healEnergy.php", {cid:cid});
-	};
-	
-	Server.getSkillMapping = function(success) {
-		ajax("php/getSkillMapping.php", {cid:cid}, function(sm) {
-			for(var i = 0; i < sm.length; i++) {
-				if(sm[i]) {
-					for(var j = 0; j < skills.length; j++) {
-						if(sm[i] === skills[j].id) {
-							sm[i] = skills[j];
-							break;
-						}
-					}
-				}
-			}
-			success(sm);
-		});
-	};
-	
-	Server.setSkillIndex = function(sid, index, success) {
-		ajax("php/setSkillIndex.php", {sid:sid,index:index,cid:cid}, success);
-	};
-
-	Server.equipItem = function(iid, success) {
-		ajax("php/equipItem.php", {iid:iid, cid:cid}, success);
-	};
-	
-	Server.pickupItem = function(success) {
-		ajax("php/pickupItem.php", {cid:cid}, success);
-	};
-	
-	Server.moveEnemies = function(complete) {
-		ajax("php/moveEnemy.php", {cid:cid}, complete);
-	};
-	
-	Server.sendDamage = function(index, complete) {
-		var i, j, thisRoom = room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column;
-		ajax("php/sendDamage.php", {cid:cid, direction:character.display.row, index:index}, function(result) {
-			for(i = 0; i < result.enemies.length; i++) {
-				for(j = 0; j < enemies.length; j++) {
-					if(result.enemies[i].id === enemies[j].id) {
-						enemies[j].damage(result.enemies[i].damage);
-					}
-				}
-			}
-			if(result.items) {
-				Server.getRoomItems(function(is) {
-					roomItems = is;
-					items.events.invoke("drop");
-				});
-			}
-			complete && complete();
-		});
-	};
-
-	Server.getRoomEnemies = function(success) {
-		ajax("php/getRoomEnemies.php", {cid:cid}, function(e) {
-			var started = new Date().getTime();			
-			for(var i = 0; i < e.length; i++) {
-				e[i] = new Character(e[i]); //this is the only requirement
-				e[i].lastTime = started;
-				e[i].elapsedTime = 0;
-			}
-			success(e);
-		});
-	};
-
-	Server.moveCharacter = function(l, success) {
-		var current = {column : character.location.column, row : character.location.row};
-		ajax("php/moveCharacter.php", {cid:cid,row:l.row,column:l.column}, function(data) {
-			if(!data) {
-				character.tween.clear();
-				character.location.row = current.row;
-				character.location.column = current.column;
-			}
-			success();
-		});
-	};
-
 	//@DEPRECATED
 	Server.attack = function(enemies, index, physical) {
 		var thisRoom = room.location.row * CONSTANTS.TILE.COLUMNS + room.location.column,
@@ -253,19 +139,6 @@ var Server = (function() {
 		});
 	};
 
-	var roomItems = [];
-
-	Server.getRoomItems = function(success) {
-		ajax("php/getItemsInRoom.php", {cid:cid}, function(items) {
-			if(items) {
-				for(var i = 0; i < items.length; i++) {
-					items[i] = new Item(items[i]);
-				}
-			}
-			success(items || []);
-		});
-	};
-	
 	*/
 
 	return events;
@@ -368,5 +241,6 @@ Server.attach("GetSkills", function(s) {
 //make sure we get skills first?
 
 Server.attach("Reload", function() {
-	window.location = "index.html";
+	canvas.load("Initialize");
+	Server.message("Initialize", {cid : cid, mapmodel : mapmodel});
 });

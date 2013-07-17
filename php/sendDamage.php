@@ -152,14 +152,6 @@
 			$character->CharacterCanUse = $now + $character->timeToMove($now);
 			$character->CharacterUsedAt = $now;
 			$character->update();
-		} else {
-			$from->send(json_encode(array(
-				"action" => "StopCharacter",
-				"args" => array(
-					"row" => $character->CharacterRow,
-					"column" => $character->CharacterColumn
-				)
-			)));
 		}
 	}
 	

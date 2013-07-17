@@ -1,5 +1,87 @@
+Server.attach("CreateMap", function() {
+	canvas.load("CreateMap");
+});
+
 $(function() {	
 	canvas = {width : 800, height : 600};
+	
+	//loader
+	canvas.load = (function() {
+		var components = {
+			"CreateMap" : [
+				"Update",
+				"GetCharacterBehaviors",
+				"GetTiles",
+				"GetCharacterBehaviors",
+				"GetCharacterRoomLocation",
+				"GetItemsInInventory",
+				"GetCharacter",
+				"GetSkills",
+				"GetWalls",
+				"GetEquipment",
+				"GetRoomEnemies",
+				"GetItemsInRoom",
+				"GetAllWalls",
+				"GetSkillMapping"
+			],
+			"Initialize" : [
+				"GetCharacterBehaviors",
+				"GetTiles",
+				"GetCharacterBehaviors",
+				"GetCharacterRoomLocation",
+				"GetItemsInInventory",
+				"GetCharacter",
+				"GetSkills",
+				"GetWalls",
+				"GetEquipment",
+				"GetRoomEnemies",
+				"GetItemsInRoom",
+				"GetAllWalls",
+				"GetSkillMapping"
+			],
+			"ChangeRoom" : [
+				"GetWalls",
+				"GetRoomEnemies",
+				"GetItemsInRoom"
+			]
+		}, log, name, toload;
+		function load(n) {			
+			name = n;
+			log = 0;
+			toload = 0;
+			if(components[name]) {
+				function logger(data) {
+					log++;
+					if(data.toload) {
+						toload += data.toload;
+					}
+					if(components[name].length + toload === log) {
+						for(var i = 0; i < components[name].length; i++) {
+							if(components[name][i]) {
+								Server.detach(components[name][i], logger);
+							}
+						}
+						name = false;
+					}
+				}
+				for(var i = 0; i < components[name].length; i++) {
+					if(components[name][i]) {
+						Server.attach(components[name][i], logger);
+					}
+				}
+			}
+		};
+		load.progress = function() {
+			return Math.floor(100 * log / (components[name].length + toload));
+		};
+		load.isLoading = function() {
+			return name;
+		};
+		return load;
+	}());
+	canvas.load("Initialize");
+	//end loader
+	
 	canvas.events = new EventHandler();
 	canvas.drawWith = function(index) {
 		if(!contexts[index]) {
@@ -15,32 +97,40 @@ $(function() {
 	};
 	var contexts = [];
 	attachEvent(document, "click", function(e) {
-		var bb = document.body.getBoundingClientRect();
-		canvas.events.invoke("click", [{ 
-			x : (e.pageX - bb.left) * (canvas.width / document.body.clientWidth), 
-			y : (e.pageY - bb.top) * (canvas.height / document.body.clientHeight)
-		}]);
+		if(!canvas.load.isLoading()) {
+			var bb = document.body.getBoundingClientRect();
+			canvas.events.invoke("click", [{ 
+				x : (e.pageX - bb.left) * (canvas.width / document.body.clientWidth), 
+				y : (e.pageY - bb.top) * (canvas.height / document.body.clientHeight)
+			}]);
+		}
 	});
 	attachEvent(document, "mousemove", function(e) {
-		var bb = document.body.getBoundingClientRect();
-		canvas.events.invoke("mousemove", [{ 
-			x : (e.pageX - bb.left) * (canvas.width / document.body.clientWidth), 
-			y : (e.pageY - bb.top) * (canvas.height / document.body.clientHeight)
-		}]);
+		if(!canvas.load.isLoading()) {
+			var bb = document.body.getBoundingClientRect();
+			canvas.events.invoke("mousemove", [{ 
+				x : (e.pageX - bb.left) * (canvas.width / document.body.clientWidth), 
+				y : (e.pageY - bb.top) * (canvas.height / document.body.clientHeight)
+			}]);
+		}
 	});
 	
 	var down = [];
 	attachEvent(document, "keydown", function(e) {
-		if(!down[e.which]) {
-			canvas.events.invoke("keydown", e.which);
-			down[e.which] = 1;
+		if(!canvas.load.isLoading()) {
+			if(!down[e.which]) {
+				canvas.events.invoke("keydown", e.which);
+				down[e.which] = 1;
+			}
+			e.preventDefault();
 		}
-		e.preventDefault();
 	});
 	attachEvent(document, "keyup", function(e) {
-		canvas.events.invoke("keyup", e.which);
-		down[e.which] = 0;
-		e.preventDefault();
+		if(!canvas.load.isLoading()) {
+			canvas.events.invoke("keyup", e.which);
+			down[e.which] = 0;
+			e.preventDefault();
+		}
 	});
 		
 	var tick = (function() {
@@ -129,15 +219,25 @@ $(function() {
 	function frame() {
 		requestAnimFrame(frame);
 		tick();
-		for(var i in contexts) {
-			var toClear = contexts[i];
-			toClear.clearRect(0, 0, toClear.canvas.width, toClear.canvas.height);
+		if(!canvas.load.isLoading()) {
+			for(var i in contexts) {
+				var toClear = contexts[i];
+				toClear.clearRect(0, 0, toClear.canvas.width, toClear.canvas.height);
+			}
 		}
 		canvas.drawWith(0);
 		if(background && background.complete) {
 			context.drawImage(background, 0, 0, canvas.width, canvas.height);
 		}
-		canvas.events.invoke("draw");
+		if(!canvas.load.isLoading()) {
+			canvas.events.invoke("draw");
+		} else {
+			canvas.drawWith(20);
+			var width = (canvas.width - 200) * canvas.load.progress() / 100;
+			context.fillStyle = context.strokeStyle = "white";
+			context.fillRect(100, canvas.height / 2 - 10, width, 20);
+			context.strokeRect(100, canvas.height / 2 - 10, canvas.width - 200, 20);
+		}
 	}
 	
 	frame();

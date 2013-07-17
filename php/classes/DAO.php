@@ -145,6 +145,7 @@
 						}
 						$this->data[] = $row;
 					}
+					mysqli_free_result($result);
 				}
 			} else { //we are attempting to do an insert and should at least provide the fields necessary
 				if($result = DB::query("SHOW COLUMNS IN ??", array($table))) {					
@@ -157,6 +158,7 @@
 						}
 						$this->data[0][$row["Field"]] = $value;
 					}
+					mysqli_free_result($result);
 				}
 			}
 		}

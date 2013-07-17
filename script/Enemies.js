@@ -57,7 +57,6 @@ Server.attach("MoveEnemy", function(movement) {
 						} else {
 							var h = CONSTANTS.TILE.WIDTH * (me.column - me.lastColumn), 
 								v = CONSTANTS.TILE.HEIGHT * (me.row - me.lastRow);									
-							e.face(me.column, me.row);
 							e.location.row = me.row;
 							e.location.column = me.column;
 							e.moveBy(h, v, function() {

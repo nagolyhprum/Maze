@@ -1,7 +1,12 @@
 <?php
+	function updateLoader($from, $name, $toload = 0) {
+		$from->send(json_encode(array("action" => $name, "args" => array("toload" => $toload))));
+	}
+
 	function startMap($character, $args, $from) {
 		$mapmodel = $args["mapmodel"];
 		if($character->RoomID === NULL) { //make sure this character is valid
+			updateLoader($from, "CreateMap");
 			$mapmodel = new DAO("MapModel", $mapmodel);	//get the requested mapmodel			
 			if($mapmodel->valid()) { //if the map model is valid
 				foreach($mapmodel->getMany("RoomModelInMapModel") as $rmimm) { //go through all of the room models in this map model				
@@ -22,6 +27,7 @@
 						--$rmimm->RoomModelInMapModelCount;
 					}
 				}
+				updateLoader($from, "Update", count($roommodel)); 
 				shuffle($roommodel); //randomize the room models
 				$map = new DAO("Map"); //make the map
 				$map->insert(true);			
@@ -66,6 +72,7 @@
 							}
 							array_shift($roommodel);
 						}
+						updateLoader($from, "Update");
 					}
 				}
 			}
