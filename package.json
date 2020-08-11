@@ -1,0 +1,23 @@
+{
+  "name": "maze",
+  "version": "1.0.0",
+  "description": "CONTROLS ======== Up, Right, Down, Left - Move Ctrl = Pick up item Space - Attack E - Equipment   Staff - hits all around   Bow - hits first in facing direction   Long sword - hits up to 2 away   Dagger - hits adjacent R - Skills (click skill then press number to assign)   Skills have cooldowns and require certain equipments in order to use G - General Statistics C - Character Statistics B - Badges I - Inventory   Compare to equipped items, click to equip",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nagolyhprum/Maze.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nagolyhprum/Maze/issues"
+  },
+  "homepage": "https://github.com/nagolyhprum/Maze#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
